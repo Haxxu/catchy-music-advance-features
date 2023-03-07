@@ -1,0 +1,68 @@
+.containter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40rem;
+
+    .title {
+        margin: 3rem 0 1rem;
+        font-size: 5rem;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .form-container {
+        width: 100%;
+
+        .input-container {
+            margin: 2.5rem 0;
+        }
+
+        .date-of-birth-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 0.5rem 0;
+
+            p {
+                margin: 0.5rem 0 1.5rem;
+                font-size: 1.8rem;
+            }
+
+            .date-of-birth {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                gap: 0.5rem;
+
+                p {
+                    font-weight: normal;
+                }
+
+                .month {
+                    width: 40%;
+                }
+
+                .date {
+                    width: 20%;
+                }
+
+                .year {
+                    width: 30%;
+                }
+            }
+        }
+    }
+
+    .login-section {
+        width: 100%;
+        text-align: center;
+        margin: 4rem 0 5rem;
+        border-top: 1px solid var(--text-primary);
+
+        .title {
+            font-size: 2rem;
+        }
+    }
+}

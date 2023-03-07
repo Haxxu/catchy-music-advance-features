@@ -1,0 +1,159 @@
+.container {
+    .header {
+        display: flex;
+        padding: 0 32px 24px;
+
+        .image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 240px;
+            height: 240px;
+            // margin-right: 24px;
+            // color: var(--primary-color);
+            // background: rgb(0, 128, 0);
+            // background: linear-gradient(130deg, rgba(0, 128, 0, 1) 35%, rgba(0, 212, 255, 1) 100%);
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+
+        .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            margin-left: 24px;
+
+            .type {
+                font-size: 1.4rem;
+            }
+
+            .name {
+                font-size: 4.5rem;
+                font-weight: 700;
+                margin-top: 10px;
+            }
+
+            .description {
+                margin-top: 15px;
+                font-size: 1.6rem;
+                color: var(--text-secondary);
+
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 5;
+                overflow: hidden;
+            }
+
+            .detail {
+                margin-top: 10px;
+
+                .owner-name {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    text-decoration: none;
+                    padding-right: 5px;
+                    color: var(--text-primary);
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+
+                    // &::before {
+                    //     content: '\00B7';
+                    //     padding-left: 5px;
+                    // }
+
+                    &::after {
+                        font-size: 2rem;
+                        content: '\00B7';
+                        padding-left: 5px;
+                    }
+                }
+
+                .year,
+                .total-tracks,
+                .total-saved {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    margin-right: 5px;
+                    color: var(--text-primary);
+
+                    &::after {
+                        content: '\00B7';
+                        padding-left: 5px;
+                        font-size: 2rem;
+                    }
+                }
+                .total-time {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    margin-right: 5px;
+                    color: var(--text-secondary);
+                }
+            }
+        }
+    }
+
+    .actions {
+        padding: 0 32px;
+        display: flex;
+        align-items: center;
+
+        .action {
+            margin-right: 8px;
+        }
+
+        .play-btn {
+            // color: var(--primary-color);
+            color: var(--dark-green);
+            z-index: 10;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    .content {
+        padding: 0 32px;
+        // margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        .lyrics {
+            .heading {
+                font-size: 2.4rem;
+                margin: 40px 0 25px;
+            }
+
+            .sentence {
+                font-size: 1.4rem;
+                padding: 6px 0 4px;
+            }
+        }
+
+        .artist-container {
+            max-width: 250px;
+            .heading {
+                font-size: 2.4rem;
+                margin: 40px 0 25px;
+            }
+        }
+    }
+
+    .notification {
+        margin: 40px 0;
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .section-container {
+        margin-top: 50px;
+        padding: 0 32px 24px;
+
+        .heading {
+            font-size: 2.4rem;
+            margin: 40px 0 25px;
+        }
+    }
+}

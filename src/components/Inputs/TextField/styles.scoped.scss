@@ -1,0 +1,47 @@
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: transparent;
+
+    .label {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+
+        &.error {
+            color: var(--danger);
+
+            &::after {
+                content: '*';
+            }
+        }
+    }
+
+    .input {
+        font-size: 1.6rem;
+        width: 100%;
+        height: 5rem;
+        padding: 1.5rem;
+        border: 0.15rem solid var(--text-primary);
+        border-radius: 0.5rem;
+        color: var(--text-primary);
+        background-color: transparent;
+
+        &:hover {
+            outline: 0.05rem solid var(--text-primary);
+        }
+
+        &.error {
+            border: 0.15rem solid var(--danger);
+            outline: var(--danger);
+        }
+    }
+
+    .error-msg {
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+        color: var(--danger);
+    }
+}

@@ -1,0 +1,235 @@
+.container {
+    margin-top: 8px;
+    padding: 20px;
+
+    .heading {
+        font-weight: 700;
+        font-size: 3rem;
+        color: var(--text-primary);
+    }
+
+    .section-container {
+        margin-top: 20px;
+
+        .heading {
+            font-size: 2.4rem;
+            margin: 25px 0 15px;
+        }
+
+        .content {
+            .table-container {
+                border-radius: 1rem !important;
+
+                table {
+                    thead {
+                        background-color: var(--background2-color);
+
+                        th {
+                            // line-height: 3rem;
+                            font-size: 1.6rem;
+                            font-weight: 500;
+                            color: var(--text-primary);
+                            text-transform: capitalize;
+                        }
+                    }
+
+                    tbody {
+                        td {
+                            font-size: 1.4rem;
+                            color: var(--text-primary);
+                            font-weight: 500;
+
+                            .edit_btn {
+                                color: var(--blue-black);
+                                svg {
+                                    width: 2rem;
+                                    height: 2rem;
+                                }
+                            }
+
+                            .delete_btn {
+                                color: var(--error);
+                                svg {
+                                    width: 2rem;
+                                    height: 2rem;
+                                }
+                            }
+
+                            .play_btn {
+                                color: var(--primary);
+                                svg {
+                                    width: 3rem;
+                                    height: 3rem;
+                                }
+                            }
+
+                            .song_img {
+                                width: 3rem;
+                                height: 3rem;
+                                border-radius: 50%;
+                                object-fit: contain;
+                            }
+                        }
+                    }
+                }
+
+                .track-container {
+                    .order {
+                        min-width: 25px;
+                        cursor: default;
+                        display: flex;
+                        justify-content: center;
+
+                        .order-number {
+                        }
+
+                        .play-btn {
+                            display: none;
+                        }
+                    }
+
+                    .info {
+                        display: flex;
+                        align-items: center;
+                        font-size: 1.6rem;
+
+                        .left {
+                        }
+
+                        .right {
+                            margin-left: 8px;
+
+                            .name {
+                                display: -webkit-box;
+                                overflow: hidden;
+                                -webkit-box-orient: vertical;
+                                -webkit-line-clamp: 1;
+
+                                .name-link {
+                                    font-size: 1.6rem;
+                                    font-weight: 700;
+                                    color: var(--text-primary);
+                                    text-decoration: none;
+
+                                    &:hover {
+                                        text-decoration: underline;
+                                    }
+
+                                    &.active {
+                                        color: var(--primary-color);
+                                    }
+                                }
+                            }
+
+                            .artists {
+                                display: -webkit-box;
+                                overflow: hidden;
+                                -webkit-box-orient: vertical;
+                                -webkit-line-clamp: 1;
+
+                                a {
+                                    font-size: 1.4rem;
+                                    font-weight: 700;
+                                    color: var(--text-secondary);
+                                    text-decoration: none;
+
+                                    &:hover {
+                                        text-decoration: underline;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    .album-name {
+                        display: -webkit-box;
+                        overflow: hidden;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 2;
+
+                        .album-name-link {
+                            font-size: 1.4rem;
+                            font-weight: 700;
+                            color: var(--text-secondary);
+                            text-decoration: none;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+
+                    .added-date {
+                        font-size: 1.4rem;
+                        font-weight: 700;
+                        color: var(--text-secondary);
+                        cursor: default;
+                    }
+
+                    .track-menu {
+                        // display: none;
+                        min-width: 25px;
+                        padding: 5px;
+                    }
+
+                    &:hover {
+                        background-color: var(--background3-color);
+                        transition: all 0.2s ease-in;
+
+                        .order {
+                            color: var(--primary-color);
+                            .order-number {
+                                display: none;
+                            }
+
+                            .play-btn {
+                                display: block;
+                            }
+                        }
+
+                        .info {
+                            .left {
+                            }
+
+                            .right {
+                                .artists {
+                                    a {
+                                        color: var(--text-primary);
+                                    }
+                                }
+                            }
+                        }
+
+                        .album-name {
+                            .album-name-link {
+                                color: var(--text-primary);
+                            }
+                        }
+
+                        .track-menu {
+                            // display: flex;
+                        }
+                    }
+
+                    &.active {
+                        background-color: var(--background3-color);
+                        transition: all 0.2s ease-in;
+
+                        .order {
+                            color: var(--primary-color);
+                        }
+
+                        .track-menu {
+                            display: flex;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .notification {
+        font-size: 2.4rem;
+        padding: 0 16px 0;
+    }
+}

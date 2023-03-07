@@ -1,0 +1,121 @@
+@import '/src/assets/styles/mixins.scss';
+
+.container {
+    width: 100%;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 0;
+    overflow: hidden;
+
+    @include Responsive(SM) {
+        padding: 0 10rem;
+        flex-direction: row;
+    }
+
+    @include Responsive(XL) {
+        padding: 0 20rem;
+    }
+
+    .left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2rem;
+        flex: 1;
+
+        @include Responsive(SM) {
+            margin-top: 0;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+
+            .title {
+                font-size: 3rem;
+                letter-spacing: -0.01em;
+                font-weight: 900;
+                margin: 0 0 4rem;
+                padding-bottom: 1rem;
+                text-align: center;
+
+                @include Responsive(MD) {
+                    font-size: 5rem;
+                }
+            }
+
+            .text {
+                font-size: 1.6rem;
+                font-weight: 400;
+                margin: 0 0 1rem;
+                padding: 0 2rem 2rem;
+                line-height: 3rem;
+                text-align: center;
+
+                @include Responsive(MD) {
+                    font-size: 2rem;
+                }
+            }
+        }
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        flex: 1;
+
+        @include Responsive(SM) {
+        }
+
+        .record {
+            width: 270px;
+            height: 270px;
+            transition: all ease 4s;
+            -webkit-animation: spin 4s linear infinite;
+            -moz-animation: spin 4s linear infinite;
+            animation: spin 4s linear infinite;
+
+            @-moz-keyframes spin {
+                100% {
+                    -moz-transform: rotate(360deg);
+                }
+            }
+            @-webkit-keyframes spin {
+                100% {
+                    -webkit-transform: rotate(360deg);
+                }
+            }
+            @keyframes spin {
+                100% {
+                    -webkit-transform: rotate(360deg);
+                    transform: rotate(360deg);
+                }
+            }
+
+            @include Responsive(MD) {
+                width: unset;
+                height: unset;
+            }
+        }
+
+        .record-arm {
+            height: 240px;
+            width: 135px;
+            position: absolute;
+            left: 50%;
+
+            @include Responsive(MD) {
+                width: unset;
+                height: unset;
+            }
+        }
+    }
+}

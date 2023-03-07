@@ -1,0 +1,22 @@
+.container {
+    padding: 24px 32px;
+    .heading {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .lyrics {
+        .sentence {
+            font-size: 2.2rem;
+            font-weight: 600;
+            padding: 6px 4px;
+        }
+    }
+
+    .notification {
+        font-size: 3rem;
+        font-weight: 600;
+        text-align: center;
+    }
+}

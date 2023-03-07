@@ -1,0 +1,107 @@
+.container {
+    // position: sticky;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.01);
+
+    .navigation {
+        display: flex;
+        align-items: center;
+
+        .icon {
+            background-color: var(--background2-color);
+            margin: 0 0.2rem;
+            padding: 0.6rem;
+            border-radius: 999px;
+            cursor: pointer;
+
+            svg {
+                font-size: 2rem;
+                color: var(--text-primary);
+            }
+        }
+    }
+
+    .settings {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 2rem;
+    }
+
+    .profile {
+        position: relative;
+
+        .avatar {
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        .profile-menu {
+            font-family: 'Public Sans', 'Roboto', sans-serif;
+            position: absolute;
+            width: 200px;
+            top: calc(100% + 10px);
+            right: 0;
+            border-radius: 6px;
+            color: var(--text-primary);
+            background-color: var(--background2-color);
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            z-index: 100;
+
+            .info {
+                margin: 12px 0;
+                padding: 0 20px;
+                .name {
+                    font-size: 1.4rem;
+                    font-weight: 500;
+                }
+                .email {
+                    margin-top: 5px;
+                    font-size: 1.2rem;
+                    font-weight: 400;
+                    overflow-wrap: break-word;
+                }
+            }
+
+            .options {
+                padding: 8px;
+                border-top: 1px dashed var(--text-primary);
+                border-bottom: 0.5px dashed var(--text-secondary);
+            }
+
+            .option {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                height: 34px;
+                color: var(--text-primary);
+                font-size: 1.4rem;
+                font-weight: 500;
+                padding: 6px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: var(--text-secondary);
+                    color: var(--background2-color);
+                }
+
+                .icon {
+                    margin-right: 6px;
+                }
+            }
+
+            .logout {
+                padding: 8px;
+            }
+        }
+    }
+}

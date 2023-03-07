@@ -1,0 +1,40 @@
+.container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+
+    .label {
+        margin: 0 0 1rem;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .select {
+        height: 5rem;
+        font-size: 1.6rem;
+        border-radius: 0.5rem;
+        border: 0.1rem solid var(--text-primary);
+        padding: 0 1rem;
+        background-color: transparent;
+        text-indent: 1rem 0;
+
+        option {
+            background-color: var(--background-color);
+            padding: 1rem 0;
+        }
+
+        [data-theme='dark'] & {
+            color: var(--text-primary);
+
+            option {
+                background-color: var(--background-color);
+            }
+        }
+
+        &:hover {
+            outline: 0.1rem solid var(--text-primary);
+        }
+    }
+}

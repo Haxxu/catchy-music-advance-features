@@ -1,0 +1,51 @@
+.containter {
+    // background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 45rem;
+    padding: 5rem;
+    border-radius: 1rem;
+    border: 0.1rem solid var(--secondary-color);
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+    .title {
+        margin: 1rem 0;
+        font-size: 5rem;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .form-container {
+        width: 100%;
+
+        .input-container {
+            margin: 2.5rem 0;
+        }
+
+        .password-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 1.8rem;
+
+            .forget-password {
+                display: inline-block;
+                font-size: 1.4rem;
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    .signup-section {
+        width: 100%;
+        text-align: center;
+        margin-top: 4rem;
+        border-top: 1px solid var(--text-primary);
+
+        .title {
+            font-size: 2rem;
+        }
+    }
+}

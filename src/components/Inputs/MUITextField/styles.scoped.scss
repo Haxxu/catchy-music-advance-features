@@ -1,0 +1,36 @@
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: transparent;
+
+    .label {
+        font-size: 2rem;
+    }
+
+    .input {
+        font-size: 2rem;
+        width: 100%;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 0.1rem solid var(--text-primary);
+        border-radius: 1rem;
+        color: var(--text-primary);
+        background-color: transparent;
+
+        &:hover {
+            outline: 0.05rem solid var(--text-primary);
+        }
+
+        &.error {
+            border-color: var(--danger);
+            outline: var(--danger);
+        }
+    }
+
+    .error-msg {
+        font-size: 1.6rem;
+        color: var(--danger);
+    }
+}

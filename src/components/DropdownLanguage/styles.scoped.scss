@@ -1,0 +1,39 @@
+.container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+
+    .label {
+        font-size: 1.6rem;
+    }
+
+    .select {
+        height: 3rem;
+        min-width: 25rem;
+        font-size: 1.6rem;
+        border: 0.1rem solid var(--text-primary);
+        padding: 0 1rem;
+        background-color: transparent;
+        text-indent: 1rem 0;
+
+        .option {
+            background-color: var(--background-color);
+            padding: 1rem 0;
+            height: 3rem;
+        }
+
+        [data-theme='dark'] & {
+            color: var(--text-primary);
+
+            option {
+                background-color: var(--background-color);
+            }
+        }
+
+        &:hover {
+            outline: 0.1rem solid var(--text-primary);
+        }
+    }
+}

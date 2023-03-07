@@ -1,0 +1,36 @@
+.container {
+    padding: 20px;
+    min-width: 180px;
+    min-height: 180px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+
+    .name {
+        font-size: 2.4rem;
+        // line-height: 3rem;
+        font-weight: 700;
+        overflow: hidden;
+        height: 100%;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        z-index: 2;
+    }
+
+    .image {
+        transform: rotate(20deg);
+        position: absolute;
+        object-fit: cover;
+        bottom: 0;
+        right: 0;
+        width: 75px;
+        height: 75px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
+            rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+    }
+}
