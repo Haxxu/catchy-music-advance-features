@@ -32,17 +32,30 @@ const sendMail = async (to, url, txt) => {
             to: to,
             subject: 'CatchyMusic',
             html: `
-                <div style="max-width: 700px; margin:auto; border: 10px solid #ddd; padding: 50px 20px; font-size: 110%;">
-                <h2 style="text-align: center; text-transform: uppercase;color: teal;">Welcome to the DevAT channel.</h2>
-                <p>Congratulations! You're almost set to start using BlogDEV.
-                    Just click the button below to validate your email address.
-                </p>
-                
-                <a href=${url} style="background: crimson; text-decoration: none; color: white; padding: 10px 20px; margin: 10px 0; display: inline-block;">${txt}</a>
-            
-                <p>If the button doesn't work for any reason, you can also click on the link below:</p>
-            
-                <div>${url}</div>
+                <div style="max-width: 700px; margin: auto; border: 10px solid #ffaaab; padding: 50px 20px; font-size: 110%; border-radius: 5px;">
+                    <h2 style="text-align: center; text-transform: uppercase; color: #000">Welcome to Catchy Music.</h2>
+                    <p>
+                    Congratulations! You're almost set to start using Catchy Music. Just click the button below to validate your
+                    email address.
+                    </p>
+
+                    <a
+                        href="${url}"
+                        style="
+                            background: #ff5e6c;
+                            text-decoration: none;
+                            color: white;
+                            padding: 10px 20px;
+                            margin: 10px 0;
+                            display: inline-block;
+                            border-radius: 5px;
+                        "
+                        >${txt}</a
+                    >
+
+                    <p>If the button doesn't work for any reason, you can also click on the link below:</p>
+
+                    <div>${url}</div>
                 </div>
             `,
         };
