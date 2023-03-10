@@ -13,6 +13,7 @@ import styles from './styles.scoped.scss';
 import CustomButton from '~/components/CustomButton';
 import CheckboxInput from '~/components/Inputs/CheckboxInput';
 import { routes } from '~/config';
+import SocialLogin from '~/components/SocialLogin';
 
 const cx = classNames.bind(styles);
 
@@ -98,6 +99,10 @@ function Login() {
                     {t('Login')}
                 </CustomButton>
             </form>
+            <div className={cx('google-login-section')}>
+                <h5>{t('OR')}</h5>
+                <SocialLogin />
+            </div>
             <div className={cx('signup-section')}>
                 <h4 className={cx('title')}>{t("Doesn't have an account?")}</h4>
                 <CustomButton fullWidth variant='outlined' onClick={() => navigate(routes.signup)}>
