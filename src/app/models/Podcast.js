@@ -2,36 +2,35 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const playlistSchema = new mongoose.Schema(
+const podcastSchema = new mongoose.Schema(
     {
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         name: { type: String, default: '' },
         description: { type: String, default: '' },
-        tracks: [
+        episodes: [
             {
                 track: { type: String, required: true },
-                album: { type: String, required: true },
                 addedAt: { type: Date, default: Date.now() },
                 _id: false,
             },
         ],
-        image: { type: String, default: '' },
-        isPublic: { type: Boolean, default: true },
+        images: [{ type: String }],
         saved: { type: Number, default: 0 },
+        categories: [{ type: String }],
     },
     { timestamps: true },
 );
 
-const validatePlaylist = (playlist) => {
+const validatePodcast = (podcast) => {
     const schema = Joi.object({
         name: Joi.string().required(),
         description: Joi.string().allow(''),
-        image: Joi.string().allow(),
+        images: Joi.array().items(Joi.string()),
     });
 
-    return schema.validate(playlist);
+    return schema.validate(podcast);
 };
 
-const Playlist = mongoose.model('Playlist', playlistSchema);
+const Playlist = mongoose.model('Playlist', podcastSchema);
 
 module.exports = { Playlist, validatePlaylist };
