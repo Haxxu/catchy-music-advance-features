@@ -10,6 +10,9 @@ const audioPlayerSchema = new mongoose.Schema(
             album: { type: String, default: '' },
             context_uri: { type: String, default: '' },
             position: { type: Number, default: -1 },
+            podcast: { type: String, default: '' },
+            // type: song, episode, chapter
+            trackType: { type: String, default: 'song' },
         },
         isPlaying: { type: Boolean, default: false },
         queue: {
@@ -21,14 +24,18 @@ const audioPlayerSchema = new mongoose.Schema(
                     position: { type: Number, default: 0 },
                     addedAt: { type: Date, default: Date.now() },
                     order: { type: Number },
+                    // type: song, episode, chapter
+                    trackType: { type: String, default: 'song' },
                     _id: false,
                 },
             ],
             currentTrackWhenQueueActive: {
                 track: { type: String, default: '' },
                 album: { type: String, default: '' },
+                podcast: { type: String, default: '' },
                 context_uri: { type: String, default: '' },
                 position: { type: Number, default: 0 },
+                trackType: { type: String, default: 'song' },
                 type: Object,
                 default: null,
             },

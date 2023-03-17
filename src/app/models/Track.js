@@ -20,6 +20,9 @@ const trackSchema = new Schema(
         plays: { type: Number, default: 0 },
         saved: { type: Number, default: 0 },
         lyrics: [String],
+        // type: song, episode, audio book
+        type: { type: String, default: 'song' },
+        videoCanvas: { type: String },
     },
     { timestamps: true },
 );
