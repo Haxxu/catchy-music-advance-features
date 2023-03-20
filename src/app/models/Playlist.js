@@ -10,7 +10,8 @@ const playlistSchema = new mongoose.Schema(
         tracks: [
             {
                 track: { type: String, required: true },
-                album: { type: String, required: true },
+                album: { type: String, default: '' },
+                podcast: { type: String, default: '' },
                 addedAt: { type: Date, default: Date.now() },
                 _id: false,
             },

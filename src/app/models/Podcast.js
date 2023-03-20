@@ -17,6 +17,9 @@ const podcastSchema = new mongoose.Schema(
         images: [{ type: String }],
         saved: { type: Number, default: 0 },
         categories: [{ type: String }],
+        date: { type: String, required: true },
+        month: { type: String, required: true },
+        year: { type: String, required: true },
     },
     { timestamps: true },
 );
@@ -25,12 +28,17 @@ const validatePodcast = (podcast) => {
     const schema = Joi.object({
         name: Joi.string().required(),
         description: Joi.string().allow(''),
+        episodes: Joi.array().items(Joi.object()),
         images: Joi.array().items(Joi.string()),
+        categories: Joi.array().items(Joi.string()),
+        date: Joi.string().required(),
+        month: Joi.string().required(),
+        year: Joi.string().required(),
     });
 
     return schema.validate(podcast);
 };
 
-const Playlist = mongoose.model('Playlist', podcastSchema);
+const Podcast = mongoose.model('Podcast', podcastSchema);
 
-module.exports = { Playlist, validatePlaylist };
+module.exports = { Podcast, validatePodcast };

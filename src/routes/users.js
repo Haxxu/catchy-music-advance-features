@@ -15,6 +15,10 @@ router.get('/info', adminAuth, userController.getUsersInfo);
 router.post('/verify-artist/:id', [adminAuth, validateObjectId], userController.verifyArtist);
 // [POST] /api/users/unverify-artist/:id (user_d) => unverify artist
 router.post('/unverify-artist/:id', [adminAuth, validateObjectId], userController.unverifyArtist);
+// [POST] /api/users/verify-artist/:id (user_id) => verify artist
+router.post('/verify-podcaster/:id', [adminAuth, validateObjectId], userController.verifyPodcaster);
+// [POST] /api/users/unverify-artist/:id (user_d) => unverify artist
+router.post('/unverify-podcaster/:id', [adminAuth, validateObjectId], userController.unverifyPodcaster);
 // [POST] /api/users/update-password => change password
 router.post('/update-password', userController.updatePassword);
 // [PATCH] /api/users/freeze/:id => freeze user by id

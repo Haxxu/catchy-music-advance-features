@@ -398,6 +398,40 @@ class UserController {
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }
+
+    // Verify podcaster
+    async verifyPodcaster(req, res, next) {
+        try {
+            const user = await User.findById(req.params.id); //user_id
+            if (!user) {
+                return res.status(400).send({ message: 'User does not exist' });
+            }
+
+            await user.updateOne({ type: 'podcaster' });
+
+            return res.status(200).send({ message: 'Verify podcaster successfullly' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Unverify artist
+    async unverifyPodcaster(req, res, next) {
+        try {
+            const user = await User.findById(req.params.id); //user_id
+            if (!user) {
+                return res.status(400).send({ message: 'User does not exist' });
+            }
+
+            await user.updateOne({ type: 'user' });
+
+            return res.status(200).send({ message: 'Unverify podcaster successfullly' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
 }
 
 module.exports = new UserController();
