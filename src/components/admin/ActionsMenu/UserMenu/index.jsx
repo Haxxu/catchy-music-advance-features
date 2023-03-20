@@ -7,7 +7,14 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 
 import styles from './styles.scoped.scss';
 import axiosInstance from '~/api/axiosInstance';
-import { freezeUserUrl, unfreezeUserUrl, verifyArtistUrl, unverifyArtistUrl } from '~/api/urls/usersUrl';
+import {
+    freezeUserUrl,
+    unfreezeUserUrl,
+    verifyArtistUrl,
+    unverifyArtistUrl,
+    verifyPodcasterUrl,
+    unverifyPodcasterUrl,
+} from '~/api/urls/usersUrl';
 import { toast } from 'react-toastify';
 
 const cx = classnames.bind(styles);
@@ -44,6 +51,19 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
         toast.success(data.message);
     };
 
+    const handleVerifyPodcaster = async () => {
+        const { data } = await axiosInstance.post(verifyPodcasterUrl + `${row._id}`, {});
+
+        handleUpdateData();
+        toast.success(data.message);
+    };
+    const handleUnverifyPodcaster = async () => {
+        const { data } = await axiosInstance.post(unverifyPodcasterUrl + `${row._id}`, {});
+
+        handleUpdateData();
+        toast.success(data.message);
+    };
+
     return (
         <div className={cx('menu')}>
             <Button
@@ -55,30 +75,55 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                 {t('Detail')}
             </Button>
             {row.type === 'user' ? (
-                <Button
-                    variant='contained'
-                    color='secondary'
-                    sx={{ minWidth: '100px' }}
-                    onClick={() =>
-                        confirmAlert({
-                            title: t('Confirm to verify this user to artist'),
+                <>
+                    <Button
+                        variant='contained'
+                        color='secondary'
+                        sx={{ minWidth: '100px' }}
+                        onClick={() =>
+                            confirmAlert({
+                                title: t('Confirm to verify this user to artist'),
 
-                            message: t('Are you sure to do this.'),
-                            buttons: [
-                                {
-                                    label: t('Yes'),
-                                    onClick: handleVerifyArtist,
-                                },
-                                {
-                                    label: t('No'),
-                                },
-                            ],
-                        })
-                    }
-                >
-                    {t('Verify Artist')}
-                </Button>
-            ) : (
+                                message: t('Are you sure to do this.'),
+                                buttons: [
+                                    {
+                                        label: t('Yes'),
+                                        onClick: handleVerifyArtist,
+                                    },
+                                    {
+                                        label: t('No'),
+                                    },
+                                ],
+                            })
+                        }
+                    >
+                        {t('Verify Artist')}
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='secondary'
+                        sx={{ minWidth: '100px' }}
+                        onClick={() =>
+                            confirmAlert({
+                                title: t('Confirm to verify this user to podcaster'),
+
+                                message: t('Are you sure to do this.'),
+                                buttons: [
+                                    {
+                                        label: t('Yes'),
+                                        onClick: handleVerifyPodcaster,
+                                    },
+                                    {
+                                        label: t('No'),
+                                    },
+                                ],
+                            })
+                        }
+                    >
+                        {t('Verify Podcaster')}
+                    </Button>
+                </>
+            ) : row.type === 'artist' ? (
                 <Button
                     variant='contained'
                     color='secondary'
@@ -100,6 +145,29 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                     }
                 >
                     {t('Unverify Artist')}
+                </Button>
+            ) : (
+                <Button
+                    variant='contained'
+                    color='secondary'
+                    sx={{ minWidth: '100px' }}
+                    onClick={() =>
+                        confirmAlert({
+                            title: t('Confirm to unverify this podcaster back to user'),
+                            message: t('Are you sure to do this.'),
+                            buttons: [
+                                {
+                                    label: t('Yes'),
+                                    onClick: handleUnverifyPodcaster,
+                                },
+                                {
+                                    label: t('No'),
+                                },
+                            ],
+                        })
+                    }
+                >
+                    {t('Unverify Podcaster')}
                 </Button>
             )}
             {row.status === 'actived' ? (

@@ -66,7 +66,7 @@ const ManageUser = () => {
             field: 'type',
             headerName: t('Type'),
             renderCell: (params) => {
-                if (params.row.type === 'artist')
+                if (params.row.type === 'artist') {
                     return (
                         <Chip
                             color='success'
@@ -75,7 +75,16 @@ const ManageUser = () => {
                             sx={{ fontSize: '1.4rem', backgroundColor: 'var(--primary-color)' }}
                         />
                     );
-                else {
+                } else if (params.row.type === 'podcaster') {
+                    return (
+                        <Chip
+                            color='success'
+                            label='Podcaster'
+                            icon={<VerifiedIcon />}
+                            sx={{ fontSize: '1.4rem', backgroundColor: 'var(--primary-color)' }}
+                        />
+                    );
+                } else {
                     return <p style={{ textTransform: 'capitalize' }}>{params.row.type}</p>;
                 }
             },

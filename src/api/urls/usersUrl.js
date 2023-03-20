@@ -26,3 +26,9 @@ export const verifyArtistUrl = baseApiUrl + '/users/verify-artist/';
 
 // [POST] (admin) + /:id
 export const unverifyArtistUrl = baseApiUrl + '/users/unverify-artist/';
+
+// [POST] (admin) + /:id
+export const verifyPodcasterUrl = baseApiUrl + '/users/verify-podcaster/';
+
+// [POST] (admin) + /:id
+export const unverifyPodcasterUrl = baseApiUrl + '/users/unverify-podcaster/';
