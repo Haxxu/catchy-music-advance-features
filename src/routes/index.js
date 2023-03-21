@@ -9,6 +9,7 @@ const playlistRoutes = require('./playlists');
 const artistRoutes = require('./artists');
 const searchRoutes = require('./search');
 const podcastRoutes = require('./podcasts');
+const episodeRoutes = require('./episodes');
 
 const routes = (app) => {
     // - /api
@@ -50,6 +51,9 @@ const routes = (app) => {
 
     // - /api/podcasts
     app.use('/api/podcasts', podcastRoutes);
+
+    // - /api/episodes
+    app.use('/api/episodes', episodeRoutes);
 };
 
 module.exports = routes;

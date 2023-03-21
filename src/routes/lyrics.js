@@ -14,7 +14,7 @@ router.get('/track/:id', userAuth, lyricController.getAllLyricsOfTrack);
 router.put('/:id', [artistAuth, validateObjectId], lyricController.updateLyric);
 // [DELETE] /api/lyrics/:id => remove lyric by id
 router.delete('/:id', [artistAuth, validateObjectId], lyricController.removeLyric);
-// [DELETE] /api/lyrics/:id => remove lyric by id
+// [GET] /api/lyrics/:id => get lyric by id
 router.get('/:id', [userAuth, validateObjectId], lyricController.getLyricById);
 
 module.exports = router;

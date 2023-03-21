@@ -23,6 +23,9 @@ const trackSchema = new Schema(
         // type: song, episode, audio book
         type: { type: String, default: 'song' },
         videoCanvas: { type: String },
+        date: { type: String },
+        month: { type: String },
+        year: { type: String },
     },
     { timestamps: true },
 );
@@ -40,6 +43,23 @@ const validateTrack = (track) => {
     return schema.validate(track);
 };
 
+const validateEpisode = (track) => {
+    const schema = Joi.object({
+        name: Joi.string().min(1).required(),
+        audio: Joi.string().required(),
+        image: Joi.string().allow(''),
+        duration: Joi.number().required(),
+        genres: Joi.array().items(Joi.string()),
+        artists: Joi.array().items(Joi.object()),
+        date: Joi.string().required(),
+        month: Joi.string().required(),
+        year: Joi.string().required(),
+        videoCanvas: Joi.string().allow(''),
+    });
+
+    return schema.validate(track);
+};
+
 const Track = mongoose.model('Track', trackSchema);
 
-module.exports = { Track, validateTrack };
+module.exports = { Track, validateTrack, validateEpisode };

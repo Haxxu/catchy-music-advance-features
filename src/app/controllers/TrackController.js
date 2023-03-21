@@ -1,12 +1,19 @@
 const moment = require('moment');
 
-const { Track, validateTrack } = require('../models/Track');
+const { Track, validateTrack, validateEpisode } = require('../models/Track');
 const { Album } = require('../models/Album');
 const { Library } = require('../models/Library');
 const { Playlist } = require('../models/Playlist');
 const { Lyric } = require('../models/Lyric');
 const { Comment } = require('../models/Comment');
 const { User } = require('../models/User');
+const ApiError = require('../../utils/ApiError');
+const TrackService = require('../services/TrackService');
+const PodcastService = require('../services/PodcastService');
+const PlaylistService = require('../services/PlaylistService');
+const LibraryService = require('../services/LibraryService');
+const LyricService = require('../services/LyricService');
+const CommentService = require('../services/CommentService');
 class TrackController {
     // Get track by id
     async getTrackById(req, res, next) {
@@ -282,6 +289,90 @@ class TrackController {
             return res.status(200).send({ data: lyrics, message: 'Get lyric successfully' });
         } catch (err) {
             console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Create new episode
+    async createEpisode(req, res, next) {
+        try {
+            const { error } = validateEpisode(req.body);
+            if (error) {
+                return next(new ApiError(400, error.details[0].message));
+            }
+
+            const payload = {
+                ...req.body,
+                owner: req.user._id,
+                type: 'episode',
+            };
+
+            const newTrack = await TrackService.createEpisode(payload);
+
+            return res.status(200).send({ data: newTrack, message: 'Episode created successfully!' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Update episode
+    async updateEpisode(req, res, next) {
+        try {
+            const { error } = validateEpisode(req.body);
+            if (error) {
+                return res.status(400).send({ message: error.details[0].message });
+            }
+
+            // const track = await Track.findOne({ _id: req.params.id });
+            const track = await TrackService.findOne({ _id: req.params.id });
+            if (!track) {
+                return res.status(400).send({ message: 'Episode does not exist' });
+            }
+
+            if (req.user._id !== track.owner.toString()) {
+                return res.status(403).send({ message: "You don't have permission to perform this action" });
+            }
+
+            const trackService = new TrackService(track._id);
+
+            const updatedTrack = await trackService.update(req.body);
+
+            return res.status(200).send({ data: updatedTrack, message: 'Episode updated successfully' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Remove track
+    async deleteEpisode(req, res, next) {
+        try {
+            const track = await TrackService.findOne({ _id: req.params.id });
+            if (!track) {
+                return res.status(400).send({ message: 'Track does not exist' });
+            }
+
+            if (req.user._id !== track.owner.toString() && req.user.type !== 'admin') {
+                return res.status(403).send({ message: "You don't have permission to perform this action" });
+            }
+
+            // Delete episode in podcast
+            await PodcastService.removeEpisodeFromAllPodcasts(track._id, track.owner.toString());
+            // Delete episode in playlist
+            await PlaylistService.removeEpisodeFromAllPlaylists(track._id);
+            // Delete episode in likedEpisodes (Library)
+            await LibraryService.removeEpisodeFromAllLibraries(track._id);
+            // Delete lyric of episode
+            await LyricService.deleteMany({ track: req.params.id });
+            // Delete comment of episode
+            await CommentService.deleteMany({ track: req.params.id });
+            //Delete track
+            await TrackService.findOneAndRemove({ _id: req.params.id });
+
+            return res.status(200).send({ message: 'Delete episode successfully' });
+        } catch (error) {
+            console.log(error);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }

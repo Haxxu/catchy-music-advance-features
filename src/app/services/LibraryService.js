@@ -32,6 +32,10 @@ class LibraryService {
             },
         );
     }
+
+    static async removeEpisodeFromAllLibraries(trackId) {
+        await Library.updateMany({}, { $pull: { likedEpisodes: { track_id: trackId } } });
+    }
 }
 
 module.exports = LibraryService;

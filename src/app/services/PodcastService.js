@@ -5,7 +5,7 @@ class PodcastService {
         this.podcastId = podcastId;
     }
 
-    extractPodcastData(payload) {
+    static extractPodcastData(payload) {
         const podcast = {
             owner: payload.owner,
             name: payload.name,
@@ -41,6 +41,29 @@ class PodcastService {
 
     static async findByIdAndRemove(podcastId) {
         await Podcast.findByIdAndRemove(podcastId);
+    }
+
+    static async removeEpisodeFromAllPodcasts(trackId, trackOwnerId) {
+        await Podcast.updateMany({ owner: trackOwnerId }, { $pull: { episodes: { track: trackId } } });
+    }
+
+    async addEpisode(trackId) {
+        const podcast = await Podcast.findOne({ _id: this.podcastId });
+        podcast.episodes.push({
+            track: trackId,
+            addedAt: Date.now(),
+        });
+        return await podcast.save();
+    }
+
+    async removeEpisode(trackId) {
+        const podcast = await Podcast.findOne({ _id: this.podcastId });
+
+        let index = podcast.episodes.map((obj) => obj.track).indexOf(trackId);
+
+        if (index !== -1) podcast.episodes.splice(index, 1);
+
+        return await podcast.save();
     }
 }
 

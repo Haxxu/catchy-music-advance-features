@@ -1,7 +1,9 @@
+const mongoose = require('mongoose');
+
 const { validatePodcast, Podcast } = require('../models/Podcast');
 const ApiError = require('../../utils/ApiError');
 const PodcastService = require('../services/PodcastService');
-const trackService = require('../services/TrackService');
+const TrackService = require('../services/TrackService');
 const LibraryService = require('../services/LibraryService');
 const PlaylistService = require('../services/PlaylistService');
 
@@ -52,7 +54,7 @@ class PodcastController {
 
             for (let obj of episodes) {
                 // const isExist = await Track.findOne({ _id: obj.track, owner: req.user._id });
-                const isExist = await trackService.findOne({ _id: obj.track, owner: req.user._id });
+                const isExist = await TrackService.findOne({ _id: obj.track, owner: req.user._id });
                 if (!isExist) {
                     const index = req.body.episodes.map((i) => i.track).indexOf(obj.track);
                     if (index > -1) {
@@ -99,6 +101,74 @@ class PodcastController {
         } catch (err) {
             console.log(err);
             return next(new ApiError());
+        }
+    }
+
+    async addEpisodeToPodcast(req, res, next) {
+        try {
+            if (!mongoose.isValidObjectId(req.body.track)) {
+                return res.status(404).send({ message: 'Invalid ID' });
+            }
+
+            let podcast = await PodcastService.findOne({ _id: req.params.id });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            const track = await TrackService.findOne({ _id: req.body.track });
+            if (!track) {
+                return res.status(404).send({ message: 'Episode does not exist' });
+            }
+
+            if (podcast.owner.toString() !== req.user._id || track.owner.toString() !== req.user._id) {
+                return res.status(403).send({ message: "User don't have access to add" });
+            }
+
+            if (podcast.episodes.map((obj) => obj.track).indexOf(req.body.track) !== -1) {
+                return res.status(404).send({ message: 'Episode already in podcast' });
+            } else {
+                const podcastService = new PodcastService(podcast._id);
+
+                podcast = await podcastService.addEpisode(req.body.track);
+            }
+
+            return res.status(200).send({ data: podcast, message: 'Added to podcast' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    async removeEpisodeFromPodcast(req, res, next) {
+        try {
+            if (!mongoose.isValidObjectId(req.body.track)) {
+                return res.status(404).send({ message: 'Invalid ID' });
+            }
+
+            let podcast = await PodcastService.findOne({ _id: req.params.id });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            const track = await TrackService.findOne({ _id: req.body.track });
+            if (!track) {
+                return res.status(404).send({ message: 'Episode does not exist' });
+            }
+
+            if (
+                (podcast.owner.toString() !== req.user._id || track.owner.toString() !== req.user._id) &&
+                req.user.type !== 'admin'
+            ) {
+                return res.status(403).send({ message: "User don't have access to remove" });
+            }
+
+            const podcastService = new PodcastService(podcast._id);
+            podcast = await podcastService.removeEpisode(req.body.track);
+
+            return res.status(200).send({ data: podcast, message: 'Removed from podcast' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
         }
     }
 }
