@@ -13,6 +13,7 @@ const playlistSchema = new mongoose.Schema(
                 album: { type: String, default: '' },
                 podcast: { type: String, default: '' },
                 addedAt: { type: Date, default: Date.now() },
+                trackType: { type: String, default: 'song' },
                 _id: false,
             },
         ],

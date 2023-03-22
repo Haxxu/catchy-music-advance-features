@@ -9,5 +9,9 @@ module.exports = (req, res, next) => {
         return res.status(404).send({ message: 'Invalid ID' });
     }
 
+    // if (mongoose.isValidObjectId(req.params.id)) {
+
+    // }
+
     next();
 };

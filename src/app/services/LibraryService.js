@@ -8,7 +8,7 @@ class LibraryService {
     async savePodcast(podcastId) {
         await Library.updateOne(
             { owner: this.userId },
-            { $push: { podcasts: { podcast_id: podcastId, addedAt: Date.now() } } },
+            { $push: { podcasts: { podcast: podcastId, addedAt: Date.now() } } },
         );
     }
 
@@ -18,7 +18,7 @@ class LibraryService {
             {},
             {
                 $pull: {
-                    podcasts: { podcast_id: podcastId },
+                    podcasts: { podcast: podcastId },
                 },
             },
         );
@@ -27,14 +27,14 @@ class LibraryService {
             {},
             {
                 $pull: {
-                    likedEpisodes: { podcast_id: podcastId },
+                    likedEpisodes: { podcast: podcastId },
                 },
             },
         );
     }
 
     static async removeEpisodeFromAllLibraries(trackId) {
-        await Library.updateMany({}, { $pull: { likedEpisodes: { track_id: trackId } } });
+        await Library.updateMany({}, { $pull: { likedEpisodes: { track: trackId } } });
     }
 }
 

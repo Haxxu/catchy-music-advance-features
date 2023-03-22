@@ -28,7 +28,6 @@ class TrackService {
     }
 
     static async createEpisode(payload) {
-        console.log(payload);
         const episode = this.extractEpisodeData(payload);
         const newEpisode = await new Track(episode).save();
 

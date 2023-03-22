@@ -478,6 +478,7 @@ class MeController {
                 library.likedTracks.unshift({
                     track: req.body.track,
                     album: req.body.album,
+                    trackType: 'song',
                     addedAt: Date.now(),
                 });
                 track.saved = track.saved + 1;

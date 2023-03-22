@@ -9,14 +9,16 @@ const librarySchema = new mongoose.Schema(
                 track: { type: String, required: true },
                 album: { type: String, required: true },
                 addedAt: { type: Date, default: Date.now() },
+                trackType: { type: String, default: 'song' },
                 _id: false,
             },
         ],
         likedEpisodes: [
             {
-                track_id: { type: String, required: true },
-                podcast_id: { type: String, required: true },
+                track: { type: String },
+                podcast: { type: String },
                 addedAt: { type: Date, default: Date.now() },
+                trackType: { type: String, default: 'episode' },
                 _id: false,
             },
         ],
@@ -51,7 +53,7 @@ const librarySchema = new mongoose.Schema(
         // advance
         podcasts: [
             {
-                podcast_id: { type: String, required: true },
+                podcast: { type: String, required: true },
                 addedAt: { type: Date, default: Date.now() },
                 _id: false,
             },
@@ -59,8 +61,8 @@ const librarySchema = new mongoose.Schema(
         // Array which save time info of track (chapter, episode)
         listeningTracks: [
             {
-                track_id: { type: String, required: true },
-                podcast_id: { type: String },
+                track: { type: String, required: true },
+                podcast: { type: String },
                 // type: episode, chapter
                 type: { type: String, default: 'episode' },
                 duration: { type: Number, required: true, default: 0 },
