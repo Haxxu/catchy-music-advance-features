@@ -27,161 +27,230 @@ class AudioPlayerController {
             let trackContextId = albumId;
             if (!trackContextType) trackContextType = 'album';
 
-            if (player.shuffle === 'none') {
-                if (contextType === 'album') {
-                    const album = await Album.findOne({ _id: contextId }).lean();
-                    if (!album) {
-                        return res.status(404).send({ message: 'Album does not exist' });
-                    }
-
-                    const object = {
-                        player,
-                        tracks: album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
-                        contextType,
-                        contextId,
-                        albumId,
-                        trackId,
-                        trackContextId,
-                        trackContextType,
-                        position: req.body.position,
-                        context_uri: req.body.context_uri,
-                    };
-
-                    playWithShuffleOff(object);
-
-                    // playWithShuffleOff(
-                    //     player,
-                    //     album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
-                    //     contextType,
-                    //     contextId,
-                    //     trackId,
-                    //     albumId,
-                    //     req.body.position,
-                    // );
-                } else if (contextType === 'playlist') {
-                    const playlist = await Playlist.findOne({ _id: contextId }).lean();
-                    if (!playlist) {
-                        return res.status(404).send({ message: 'Playlist does not exist' });
-                    }
-
-                    const object = {
-                        player,
-                        tracks: playlist.tracks,
-                        contextType,
-                        contextId,
-                        albumId,
-                        trackId,
-                        trackContextId,
-                        trackContextType,
-                        position: req.body.position,
-                        context_uri: req.body.context_uri,
-                    };
-                    playWithShuffleOff(object);
-
-                    // playWithShuffleOff(
-                    //     player,
-                    //     playlist.tracks,
-                    //     contextType,
-                    //     contextId,
-                    //     trackId,
-                    //     albumId,
-                    //     req.body.position,
-                    // );
-                } else if (contextType === 'liked') {
-                    const library = await Library.findOne({ _id: contextId }).lean();
-                    if (!library) {
-                        return res.status(404).send({ message: 'Library does not exist' });
-                    }
-
-                    const object = {
-                        player,
-                        tracks: library.likedTracks,
-                        contextType,
-                        contextId,
-                        albumId,
-                        trackId,
-                        trackContextId,
-                        trackContextType,
-                        position: req.body.position,
-                        context_uri: req.body.context_uri,
-                    };
-                    playWithShuffleOff(object);
-
-                    // playWithShuffleOff(
-                    //     player,
-                    //     library.likedTracks,
-                    //     contextType,
-                    //     contextId,
-                    //     trackId,
-                    //     albumId,
-                    //     req.body.position,
-                    // );
-                } else if (contextType === 'podcast') {
-                    const podcast = await PodcastService.findOne({ _id: contextId });
-                    if (!podcast) {
-                        return next(new ApiError(404, 'Podcast not found.'));
-                    }
-
-                    const object = {
-                        player,
-                        tracks: podcast.episodes.map((obj) => ({ track: obj.track, podcast: podcast._id })),
-                        contextType,
-                        contextId,
-                        albumId,
-                        trackId,
-                        trackContextId,
-                        trackContextType,
-                        position: req.body.position,
-                        context_uri: req.body.context_uri,
-                    };
-                    playWithShuffleOff(object);
+            if (contextType === 'album') {
+                const album = await Album.findOne({ _id: contextId }).lean();
+                if (!album) {
+                    return res.status(404).send({ message: 'Album does not exist' });
                 }
-            } else {
-                // Che do shuffle
-                if (contextType === 'album') {
-                    const album = await Album.findOne({ _id: contextId }).lean();
-                    if (!album) {
-                        return res.status(404).send({ message: 'Album does not exist' });
-                    }
-                    playWithShuffleOn(
-                        player,
-                        album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
-                        contextType,
-                        contextId,
-                        trackId,
-                        albumId,
-                        req.body.position,
-                    );
-                } else if (contextType === 'playlist') {
-                    const playlist = await Playlist.findOne({ _id: contextId }).lean();
-                    if (!playlist) {
-                        return res.status(404).send({ message: 'Playlist does not exist' });
-                    }
-                    playWithShuffleOn(
-                        player,
-                        playlist.tracks,
-                        contextType,
-                        contextId,
-                        trackId,
-                        albumId,
-                        req.body.position,
-                    );
-                } else if (contextType === 'liked') {
-                    const library = await Library.findOne({ _id: contextId }).lean();
-                    if (!library) {
-                        return res.status(404).send({ message: 'Library does not exist' });
-                    }
-                    playWithShuffleOn(
-                        player,
-                        library.likedTracks,
-                        contextType,
-                        contextId,
-                        trackId,
-                        albumId,
-                        req.body.position,
-                    );
+
+                const object = {
+                    player,
+                    tracks: album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
+                    contextType,
+                    contextId,
+                    albumId,
+                    trackId,
+                    trackContextId,
+                    trackContextType,
+                    position: req.body.position,
+                    context_uri: req.body.context_uri,
+                };
+
+                if (player.shuffle === 'none') {
+                    playWithShuffleOff(object);
+                } else {
+                    playWithShuffleOn(object);
+                }
+            } else if (contextType === 'playlist') {
+                const playlist = await Playlist.findOne({ _id: contextId }).lean();
+                if (!playlist) {
+                    return res.status(404).send({ message: 'Playlist does not exist' });
+                }
+
+                const object = {
+                    player,
+                    tracks: playlist.tracks,
+                    contextType,
+                    contextId,
+                    albumId,
+                    trackId,
+                    trackContextId,
+                    trackContextType,
+                    position: req.body.position,
+                    context_uri: req.body.context_uri,
+                };
+
+                if (player.shuffle === 'none') {
+                    playWithShuffleOff(object);
+                } else {
+                    playWithShuffleOn(object);
+                }
+            } else if (contextType === 'liked') {
+                const library = await Library.findOne({ _id: contextId }).lean();
+                if (!library) {
+                    return res.status(404).send({ message: 'Library does not exist' });
+                }
+
+                const object = {
+                    player,
+                    tracks: library.likedTracks,
+                    contextType,
+                    contextId,
+                    albumId,
+                    trackId,
+                    trackContextId,
+                    trackContextType,
+                    position: req.body.position,
+                    context_uri: req.body.context_uri,
+                };
+
+                if (player.shuffle === 'none') {
+                    playWithShuffleOff(object);
+                } else {
+                    playWithShuffleOn(object);
+                }
+            } else if (contextType === 'podcast') {
+                const podcast = await PodcastService.findOne({ _id: contextId });
+                if (!podcast) {
+                    return next(new ApiError(404, 'Podcast not found.'));
+                }
+
+                const object = {
+                    player,
+                    tracks: podcast.episodes.map((obj) => ({ track: obj.track, podcast: podcast._id })),
+                    contextType,
+                    contextId,
+                    albumId,
+                    trackId,
+                    trackContextId,
+                    trackContextType,
+                    position: req.body.position,
+                    context_uri: req.body.context_uri,
+                };
+
+                if (player.shuffle === 'none') {
+                    playWithShuffleOff(object);
+                } else {
+                    playWithShuffleOn(object);
                 }
             }
+
+            // if (player.shuffle === 'none') {
+            //     if (contextType === 'album') {
+            //         const album = await Album.findOne({ _id: contextId }).lean();
+            //         if (!album) {
+            //             return res.status(404).send({ message: 'Album does not exist' });
+            //         }
+
+            //         const object = {
+            //             player,
+            //             tracks: album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
+            //             contextType,
+            //             contextId,
+            //             albumId,
+            //             trackId,
+            //             trackContextId,
+            //             trackContextType,
+            //             position: req.body.position,
+            //             context_uri: req.body.context_uri,
+            //         };
+
+            //         playWithShuffleOff(object);
+            //     } else if (contextType === 'playlist') {
+            //         const playlist = await Playlist.findOne({ _id: contextId }).lean();
+            //         if (!playlist) {
+            //             return res.status(404).send({ message: 'Playlist does not exist' });
+            //         }
+
+            //         const object = {
+            //             player,
+            //             tracks: playlist.tracks,
+            //             contextType,
+            //             contextId,
+            //             albumId,
+            //             trackId,
+            //             trackContextId,
+            //             trackContextType,
+            //             position: req.body.position,
+            //             context_uri: req.body.context_uri,
+            //         };
+            //         playWithShuffleOff(object);
+            //     } else if (contextType === 'liked') {
+            //         const library = await Library.findOne({ _id: contextId }).lean();
+            //         if (!library) {
+            //             return res.status(404).send({ message: 'Library does not exist' });
+            //         }
+
+            //         const object = {
+            //             player,
+            //             tracks: library.likedTracks,
+            //             contextType,
+            //             contextId,
+            //             albumId,
+            //             trackId,
+            //             trackContextId,
+            //             trackContextType,
+            //             position: req.body.position,
+            //             context_uri: req.body.context_uri,
+            //         };
+            //         playWithShuffleOff(object);
+            //     } else if (contextType === 'podcast') {
+            //         const podcast = await PodcastService.findOne({ _id: contextId });
+            //         if (!podcast) {
+            //             return next(new ApiError(404, 'Podcast not found.'));
+            //         }
+
+            //         const object = {
+            //             player,
+            //             tracks: podcast.episodes.map((obj) => ({ track: obj.track, podcast: podcast._id })),
+            //             contextType,
+            //             contextId,
+            //             albumId,
+            //             trackId,
+            //             trackContextId,
+            //             trackContextType,
+            //             position: req.body.position,
+            //             context_uri: req.body.context_uri,
+            //         };
+            //         playWithShuffleOff(object);
+            //     }
+            // } else {
+            //     // Che do shuffle
+            //     if (contextType === 'album') {
+            //         const album = await Album.findOne({ _id: contextId }).lean();
+            //         if (!album) {
+            //             return res.status(404).send({ message: 'Album does not exist' });
+            //         }
+
+            //         playWithShuffleOn(
+            //             player,
+            //             album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
+            //             contextType,
+            //             contextId,
+            //             trackId,
+            //             albumId,
+            //             req.body.position,
+            //         );
+            //     } else if (contextType === 'playlist') {
+            //         const playlist = await Playlist.findOne({ _id: contextId }).lean();
+            //         if (!playlist) {
+            //             return res.status(404).send({ message: 'Playlist does not exist' });
+            //         }
+            //         playWithShuffleOn(
+            //             player,
+            //             playlist.tracks,
+            //             contextType,
+            //             contextId,
+            //             trackId,
+            //             albumId,
+            //             req.body.position,
+            //         );
+            //     } else if (contextType === 'liked') {
+            //         const library = await Library.findOne({ _id: contextId }).lean();
+            //         if (!library) {
+            //             return res.status(404).send({ message: 'Library does not exist' });
+            //         }
+            //         playWithShuffleOn(
+            //             player,
+            //             library.likedTracks,
+            //             contextType,
+            //             contextId,
+            //             trackId,
+            //             albumId,
+            //             req.body.position,
+            //         );
+            //     }
+            // }
 
             await player.save();
             return res.status(200).send({ message: 'Start track successfuly' });
@@ -1000,46 +1069,67 @@ const playWithShuffleOff = function ({
         //     player.queue.currentTrackWhenQueueActive = index;
         // }
     }
-
-    //  let index;
-    //     if (position && tracks[position]?.track + tracks[position]?.album === trackId + albumId) {
-    //         index = position;
-    //     } else {
-    //         index = tracks.map((obj) => obj.track + obj.album).indexOf(trackId + albumId);
-    //     }
-    //     if (index !== -1) {
-    //         player.currentPlayingTrack.track = tracks[index].track;
-    //         player.currentPlayingTrack.album = tracks[index].album;
-    //         player.currentPlayingTrack.context_uri = req.body.context_uri;
-    //         player.currentPlayingTrack.position = index;
-    //         player.shuffleTracks = [];
-    //         player.shufflePosition = -1;
-
-    //         // if (player.queue.currentTrackWhenQueueActive.track !== '') {
-    //         //     player.queue.currentTrackWhenQueueActive.track = tracks[index].track;
-    //         //     player.queue.currentTrackWhenQueueActive.album = tracks[index].album;
-    //         //     player.queue.currentTrackWhenQueueActive.context_uri = req.body.context_uri;
-    //         //     player.queue.currentTrackWhenQueueActive = index;
-    //         // }
-    //     }
 };
 
-const playWithShuffleOn = function (player, tracks, contextType, contextId, trackId, albumId, position) {
+const playWithShuffleOn = function ({
+    player,
+    tracks,
+    contextType,
+    contextId,
+    trackId,
+    albumId,
+    position,
+    trackContextId,
+    trackContextType,
+    context_uri,
+}) {
     tracks = tracks.map((obj, index) => ({ ...obj, position: index }));
     const shuffleTracks = shuffleArray(tracks);
 
-    let indexInShuffle = shuffleTracks.map((obj) => obj.track + obj.album).indexOf(trackId + albumId);
+    // console.log(shuffleTracks);
+
+    let indexInShuffle = shuffleTracks
+        .map((obj) => {
+            if (obj.trackType === 'song') {
+                return obj.track + obj.album;
+            }
+            return obj.track + obj.podcast;
+        })
+        .indexOf(trackId + trackContextId);
+
     if (indexInShuffle !== -1) {
         player.currentPlayingTrack.track = shuffleTracks[indexInShuffle].track;
         player.currentPlayingTrack.album = shuffleTracks[indexInShuffle].album;
+        player.currentPlayingTrack.podcast = shuffleTracks[indexInShuffle].podcast;
         player.currentPlayingTrack.position = shuffleTracks[indexInShuffle].position;
-        player.currentPlayingTrack.context_uri = req.body.context_uri;
-        player.shuffleTracks = shuffleTracks.map((obj) => ({
-            track: obj.track,
-            album: obj.album,
-            context_uri: contextType + ':' + contextId + ':' + obj.track + ':' + obj.album,
-            position: obj.position,
-        }));
+        let trackType = 'song';
+        if (trackContextType === 'podcast') {
+            trackType = 'episode';
+        }
+        player.currentPlayingTrack.trackType = trackType;
+        player.currentPlayingTrack.context_uri = context_uri;
+        player.shuffleTracks = shuffleTracks.map((obj) => {
+            let trackContextTypeObj = 'album';
+            if (obj.trackType === 'episode') trackContextTypeI = 'podcast';
+
+            return {
+                track: obj.track,
+                album: obj.album,
+                podcast: obj.podcast,
+                trackType: obj.trackType,
+                context_uri:
+                    contextType +
+                    ':' +
+                    contextId +
+                    ':' +
+                    obj.track +
+                    ':' +
+                    obj?.[trackContextType] +
+                    ':' +
+                    trackContextTypeObj,
+                position: obj.position,
+            };
+        });
         player.shufflePosition = indexInShuffle;
 
         // if (player.queue.currentTrackWhenQueueActive.track !== '') {
@@ -1048,6 +1138,7 @@ const playWithShuffleOn = function (player, tracks, contextType, contextId, trac
         //     player.queue.currentTrackWhenQueueActive.position = shuffleTracks[indexInShuffle].position;
         //     player.queue.currentTrackWhenQueueActive.context_uri = req.body.context_uri;
         // }
+    } else {
     }
 };
 
@@ -1099,35 +1190,6 @@ const skipNextWithShuffleOff = function ({
         player.currentPlayingTrack.position = player.currentPlayingTrack.position;
         player.currentPlayingTrack.trackType = player.currentPlayingTrack.trackType;
     }
-
-    // let index = player.currentPlayingTrack.position;
-    // if (!tracks[index] || tracks[index]?.track + tracks[index]?.album !== trackId + albumId) {
-    //     index = tracks.map((obj) => obj.track + obj.album).indexOf(trackId + albumId);
-    // }
-    // if (index !== -1) {
-    //     let nextIndex = index + 1 < tracks.length ? index + 1 : 0;
-    //     player.currentPlayingTrack.track = tracks[nextIndex].track;
-    //     player.currentPlayingTrack.album = tracks[nextIndex].album;
-    //     player.currentPlayingTrack.context_uri =
-    //         contextType + ':' + contextId + ':' + tracks[nextIndex].track + ':' + tracks[nextIndex].album;
-    //     player.currentPlayingTrack.position = nextIndex;
-    // } else {
-    //     // player.currentPlayingTrack.track = '';
-    //     // player.currentPlayingTrack.album = '';
-    //     // player.currentPlayingTrack.context_uri = '';
-    //     // player.currentPlayingTrack.position = -1;
-    //     player.currentPlayingTrack.track = tracks[player.currentPlayingTrack.position].track;
-    //     player.currentPlayingTrack.album = tracks[player.currentPlayingTrack.position].album;
-    //     player.currentPlayingTrack.context_uri =
-    //         contextType +
-    //         ':' +
-    //         contextId +
-    //         ':' +
-    //         tracks[player.currentPlayingTrack.position].track +
-    //         ':' +
-    //         tracks[player.currentPlayingTrack.position].album;
-    //     player.currentPlayingTrack.position = player.currentPlayingTrack.position;
-    // }
 };
 
 const skipNextWithShuffleOn = function (player, tracks, contextType, contextId, trackId, albumId) {
@@ -1256,35 +1318,6 @@ const skipPreviousWithShuffleOff = function ({
         player.currentPlayingTrack.position = player.currentPlayingTrack.position;
         player.currentPlayingTrack.trackType = player.currentPlayingTrack.trackType;
     }
-
-    // let index = player.currentPlayingTrack.position;
-    // if (!tracks[index] || tracks[index]?.track + tracks[index]?.album !== trackId + albumId) {
-    //     index = tracks.map((obj) => obj.track + obj.album).indexOf(trackId + albumId);
-    // }
-    // if (index !== -1) {
-    //     let nextIndex = index - 1 >= 0 ? index - 1 : 0;
-    //     player.currentPlayingTrack.track = tracks[nextIndex].track;
-    //     player.currentPlayingTrack.album = tracks[nextIndex].album;
-    //     player.currentPlayingTrack.context_uri =
-    //         contextType + ':' + contextId + ':' + tracks[nextIndex].track + ':' + tracks[nextIndex].album;
-    //     player.currentPlayingTrack.position = nextIndex;
-    // } else {
-    //     // player.currentPlayingTrack.track = '';
-    //     // player.currentPlayingTrack.album = '';
-    //     // player.currentPlayingTrack.context_uri = '';
-    //     // player.currentPlayingTrack.position = -1;
-    //     player.currentPlayingTrack.track = tracks[player.currentPlayingTrack.position].track;
-    //     player.currentPlayingTrack.album = tracks[player.currentPlayingTrack.position].album;
-    //     player.currentPlayingTrack.context_uri =
-    //         contextType +
-    //         ':' +
-    //         contextId +
-    //         ':' +
-    //         tracks[player.currentPlayingTrack.position].track +
-    //         ':' +
-    //         tracks[player.currentPlayingTrack.position].album;
-    //     player.currentPlayingTrack.position = player.currentPlayingTrack.position;
-    // }
 };
 
 const skipPreviousWithShuffleOn = function (player, tracks, contextType, contextId, trackId, albumId) {
