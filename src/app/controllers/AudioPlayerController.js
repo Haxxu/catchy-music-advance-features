@@ -3,6 +3,7 @@ const { Album } = require('../models/Album');
 const { AudioPlayer } = require('../models/AudioPlayer');
 const { Library } = require('../models/Library');
 const { Playlist } = require('../models/Playlist');
+const { Podcast } = require('../models/Podcast');
 const { Track } = require('../models/Track');
 const AudioPlayerService = require('../services/AudioPlayerService');
 const PodcastService = require('../services/PodcastService');
@@ -84,6 +85,30 @@ class AudioPlayerController {
                 const object = {
                     player,
                     tracks: library.likedTracks,
+                    contextType,
+                    contextId,
+                    albumId,
+                    trackId,
+                    trackContextId,
+                    trackContextType,
+                    position: req.body.position,
+                    context_uri: req.body.context_uri,
+                };
+
+                if (player.shuffle === 'none') {
+                    playWithShuffleOff(object);
+                } else {
+                    playWithShuffleOn(object);
+                }
+            } else if (contextType === 'likedEpisodes') {
+                const library = await Library.findOne({ _id: contextId }).lean();
+                if (!library) {
+                    return res.status(404).send({ message: 'Library does not exist' });
+                }
+
+                const object = {
+                    player,
+                    tracks: library.likedEpisodes,
                     contextType,
                     contextId,
                     albumId,
@@ -256,6 +281,28 @@ class AudioPlayerController {
                     } else {
                         skipNextWithShuffleOn(object);
                     }
+                } else if (contextType === 'likedEpisodes') {
+                    const library = await Library.findOne({ _id: contextId }).lean();
+                    if (!library) {
+                        return res.status(404).send({ message: 'Library not found' });
+                    }
+
+                    const object = {
+                        player,
+                        tracks: library.likedEpisodes,
+                        contextType,
+                        contextId,
+                        albumId,
+                        trackId,
+                        trackContextId,
+                        trackContextType,
+                    };
+
+                    if (player.shuffle === 'none') {
+                        skipNextWithShuffleOff(object);
+                    } else {
+                        skipNextWithShuffleOn(object);
+                    }
                 } else if (contextType === 'podcast') {
                     const podcast = await PodcastService.findOne({ _id: contextId });
                     if (!podcast) {
@@ -384,6 +431,27 @@ class AudioPlayerController {
                     } else {
                         skipPreviousWithShuffleOn(object);
                     }
+                } else if (contextType === 'likedEpisodes') {
+                    const library = await Library.findOne({ _id: contextId });
+                    if (!library) {
+                        return res.status(404).send({ message: 'Library not found' });
+                    }
+                    const object = {
+                        player,
+                        tracks: library.likedEpisodes,
+                        contextType,
+                        contextId,
+                        albumId,
+                        trackId,
+                        trackContextId,
+                        trackContextType,
+                    };
+
+                    if (player.shuffle == 'none') {
+                        skipPreviousWithShuffleOff(object);
+                    } else {
+                        skipPreviousWithShuffleOn(object);
+                    }
                 } else if (contextType === 'podcast') {
                     const podcast = await PodcastService.findOne({ _id: contextId });
                     if (!podcast) {
@@ -434,9 +502,14 @@ class AudioPlayerController {
                 player.shuffleTracks = [];
                 player.shufflePosition = -1;
             } else if (req.query.type === 'shuffle') {
-                if (player.currentPlayingTrack.track !== '' && player.currentPlayingTrack.album !== '') {
-                    const [contextType, contextId, trackId, albumId] =
+                if (
+                    (player.currentPlayingTrack.track !== '' && player.currentPlayingTrack.album !== '') ||
+                    (player.currentPlayingTrack.track !== '' && player.currentPlayingTrack.podcast !== '')
+                ) {
+                    let [contextType, contextId, trackId, albumId, trackContextType] =
                         player.currentPlayingTrack.context_uri.split(':');
+                    let trackContextId = albumId;
+                    if (!trackContextType) trackContextType = 'album';
                     let tracks;
 
                     if (contextType === 'album') {
@@ -446,21 +519,40 @@ class AudioPlayerController {
                         }
                         tracks = album.tracks.map((obj, index) => ({
                             track: obj.track,
-                            album: albumId,
+                            album: obj.album,
+                            podcast: obj.podcast,
+                            trackType: obj.trackType,
                             position: index,
-                            context_uri: contextType + ':' + contextId + ':' + obj.track + albumId,
+                            context_uri: contextType + ':' + contextId + ':' + obj.track + ':' + obj.album + ':album',
                         }));
                     } else if (contextType === 'playlist') {
                         const playlist = await Playlist.findOne({ _id: contextId });
                         if (!playlist) {
                             return res.status(404).send({ message: 'Playlist not found' });
                         }
-                        tracks = playlist.tracks.map((obj, index) => ({
-                            track: obj.track,
-                            album: obj.album,
-                            position: index,
-                            context_uri: contextType + ':' + contextId + ':' + obj.track + obj.album,
-                        }));
+                        tracks = playlist.tracks.map((obj, index) => {
+                            let objTrackContextType = 'album';
+                            if (obj.trackType === 'episode') {
+                                objTrackContextType = 'podcast';
+                            }
+                            return {
+                                track: obj.track,
+                                album: obj.album,
+                                podcast: obj.podcast,
+                                trackType: obj.trackType,
+                                position: index,
+                                context_uri:
+                                    contextType +
+                                    ':' +
+                                    contextId +
+                                    ':' +
+                                    obj.track +
+                                    ':' +
+                                    obj?.[objTrackContextType] +
+                                    ':' +
+                                    objTrackContextType,
+                            };
+                        });
                     } else if (contextType === 'liked') {
                         const library = await Library.findOne({ _id: contextId });
                         if (!library) {
@@ -469,10 +561,41 @@ class AudioPlayerController {
                         tracks = library.likedTracks.map((obj, index) => ({
                             track: obj.track,
                             album: obj.album,
+                            podcast: obj.podcast,
+                            trackType: obj.trackType,
                             position: index,
-                            context_uri: contextType + ':' + contextId + ':' + obj.track + obj.album,
+                            context_uri: contextType + ':' + contextId + ':' + obj.track + ':' + obj.album + ':album',
+                        }));
+                    } else if (contextType === 'likedEpisodes') {
+                        const library = await Library.findOne({ _id: contextId });
+                        if (!library) {
+                            return res.status(404).send({ message: 'Library not found' });
+                        }
+                        tracks = library.likedEpisodes.map((obj, index) => ({
+                            track: obj.track,
+                            album: obj.album,
+                            podcast: obj.podcast,
+                            trackType: obj.trackType,
+                            position: index,
+                            context_uri:
+                                contextType + ':' + contextId + ':' + obj.track + ':' + obj.podcast + ':podcast',
+                        }));
+                    } else if (contextType === 'podcast') {
+                        const podcast = await PodcastService.findOne({ _id: contextId });
+                        if (!podcast) {
+                            return res.status(404).send({ message: 'Podcast not found' });
+                        }
+                        tracks = podcast.episodes.map((obj, index) => ({
+                            track: obj.track,
+                            album: obj.album,
+                            podcast: obj.podcast,
+                            trackType: obj.trackType,
+                            position: index,
+                            context_uri:
+                                contextType + ':' + contextId + ':' + obj.track + ':' + obj.podcast + ':podcast',
                         }));
                     }
+
                     player.shuffle = 'shuffle';
                     player.shuffleTracks = shuffleArray(tracks);
                     player.shufflePosition = player.shuffleTracks
@@ -620,11 +743,17 @@ class AudioPlayerController {
 
             const context = {};
             if (player.currentPlayingTrack.context_uri !== '') {
-                const [contextType, contextId, trackId, albumId] = player.currentPlayingTrack.context_uri.split(':');
+                let [contextType, contextId, trackId, albumId, trackContextType] =
+                    player.currentPlayingTrack.context_uri.split(':');
+                let trackContextId = albumId;
+                if (!trackContextType) trackContextType = 'album';
+
                 context.type = contextType;
                 context._id = contextId;
                 context.trackId = trackId;
                 context.albumId = albumId;
+                context.trackContextId = trackContextId;
+                context.trackContextType = trackContextType;
             }
 
             return res
@@ -642,26 +771,34 @@ class AudioPlayerController {
                 return res.status(404).send({ message: 'Audio Player not found' });
             }
 
-            const [contextType, contextId, trackId, albumId] = player.currentPlayingTrack.context_uri.split(':');
+            let [contextType, contextId, trackId, albumId, trackContextType] =
+                player.currentPlayingTrack.context_uri.split(':');
+            let trackContextId = albumId;
+            if (!trackContextType) trackContextType = 'album';
 
             let currentTrack;
 
             const t = await Track.findOne({ _id: trackId });
             const a = await Album.findOne({ _id: albumId });
+            const p = await PodcastService.findOne({ _id: trackContextId });
 
             currentTrack = {
                 track: t,
                 album: a,
+                podcast: p,
                 context_uri: player.currentPlayingTrack.context_uri,
                 position: player.currentPlayingTrack.position,
             };
 
             async function getTracksInQueue(item) {
                 const track = await Track.findOne({ _id: item.track });
-                const album = await Album.findOne({ _id: item.album });
+                const album = item.album ? await Album.findOne({ _id: item.album }) : '';
+                const podcast = item.podcast ? await PodcastService.findOne({ _id: item.podcast }) : '';
                 return {
                     track: track,
                     album: album,
+                    podcast: podcast,
+                    trackType: item.trackType,
                     addedAt: item.addedAt,
                     context_uri: item.context_uri,
                     position: item.position,
@@ -676,10 +813,13 @@ class AudioPlayerController {
             if (player.shuffle !== 'none') {
                 async function getTracksInShuffle(item) {
                     const track = await Track.findOne({ _id: item.track });
-                    const album = await Album.findOne({ _id: item.album });
+                    const album = item.album ? await Album.findOne({ _id: item.album }) : '';
+                    const podcast = item.podcast ? await PodcastService.findOne({ _id: item.podcast }) : '';
                     return {
                         track: track,
                         album: album,
+                        podcast: podcast,
+                        trackType: item.trackType,
                         context_uri: item.context_uri,
                         position: item.position,
                     };
@@ -708,7 +848,9 @@ class AudioPlayerController {
                         return {
                             track: track,
                             album: album,
-                            context_uri: `liked:${libraryId}:${track._id}:${album._id}`,
+                            podcast: '',
+                            trackType: 'song',
+                            context_uri: `liked:${libraryId}:${track._id}:${album._id}:album`,
                             position: index,
                         };
                     }
@@ -727,14 +869,47 @@ class AudioPlayerController {
                     }
 
                     nextTracks = nextTrs.slice(index + 1);
+                } else if (contextType === 'likedEpisodes') {
+                    async function getTracksInLikedEpisodes(item, index, libraryId) {
+                        const track = await Track.findOne({ _id: item.track });
+                        const podcast = await Podcast.findOne({ _id: item.podcast });
+                        return {
+                            track: track,
+                            album: '',
+                            podcast: podcast,
+                            trackType: 'episode',
+                            context_uri: `likedEpisodes:${libraryId}:${track._id}:${podcast._id}:podcast`,
+                            position: index,
+                        };
+                    }
+
+                    const library = await Library.findOne({ owner: req.user._id }).lean();
+
+                    let nextTrs = await Promise.all(
+                        library.likedEpisodes.map((item, index) => getTracksInLikedEpisodes(item, index, library._id)),
+                    );
+
+                    let index;
+                    if (player.queue.currentTrackWhenQueueActive) {
+                        index = player.queue.currentTrackWhenQueueActive?.position;
+                    } else {
+                        index = player.currentPlayingTrack.position;
+                    }
+
+                    nextTracks = nextTrs.slice(index + 1);
                 } else if (contextType === 'playlist') {
                     async function getTracksInPlaylist(item, index, playlistId) {
                         const track = await Track.findOne({ _id: item.track });
-                        const album = await Album.findOne({ _id: item.album });
+                        const album = item.album ? await Album.findOne({ _id: item.album }) : '';
+                        const podcast = item.podcast ? await PodcastService.findOne({ _id: item.podcast }) : '';
                         return {
                             track: track,
                             album: album,
-                            context_uri: `playlist:${playlistId}:${track._id}:${album._id}`,
+                            podcast: podcast,
+                            context_uri: `playlist:${playlistId}:${track._id}:${album._id}:${
+                                album ? 'album' : 'podcast'
+                            }`,
+                            trackType: album ? 'song' : 'episode',
                             position: index,
                         };
                     }
@@ -758,13 +933,14 @@ class AudioPlayerController {
                     );
 
                     nextTracks = nextTrs.slice(index + 1);
-                } else {
+                } else if (contextType === 'album') {
                     async function getTracksInAlbum(item, index, albumId, album) {
                         const track = await Track.findOne({ _id: item.track });
                         return {
                             track: track,
                             album: album,
-                            context_uri: `album:${albumId}:${track._id}:${albumId}`,
+                            trackType: 'song',
+                            context_uri: `album:${albumId}:${track._id}:${albumId}:album`,
                             position: index,
                         };
                     }
@@ -784,6 +960,37 @@ class AudioPlayerController {
 
                     let nextTrs = await Promise.all(
                         album?.tracks?.map((item, index) => getTracksInAlbum(item, index, albumId, album)),
+                    );
+
+                    nextTracks = nextTrs.slice(index + 1);
+                } else if (contextType === 'podcast') {
+                    async function getTracksInPodcast(item, index, podcastId, podcast) {
+                        const track = await Track.findOne({ _id: item.track });
+                        return {
+                            track: track,
+                            album: '',
+                            podcast: podcast,
+                            trackType: 'episode',
+                            context_uri: `podcast:${podcastId}:${track._id}:${podcastId}:podcast`,
+                            position: index,
+                        };
+                    }
+
+                    let index;
+                    let podcastId;
+                    if (player.queue.currentTrackWhenQueueActive) {
+                        index = player.queue.currentTrackWhenQueueActive?.position;
+                        podcastId = player.queue.currentTrackWhenQueueActive?.context_uri.split(':')[1];
+                    } else {
+                        index = player.currentPlayingTrack.position;
+                        podcastId = contextId;
+                    }
+                    const podcast = await Podcast.findOne({ _id: podcastId }).lean();
+
+                    // console.log(album);
+
+                    let nextTrs = await Promise.all(
+                        podcast?.episodes?.map((item, index) => getTracksInPodcast(item, index, podcastId, podcast)),
                     );
 
                     nextTracks = nextTrs.slice(index + 1);
@@ -819,11 +1026,14 @@ class AudioPlayerController {
                 context.albumId = trackContextType === 'album' ? albumId : '';
                 context.podcastId = trackContextType === 'podcast' ? trackContextId : '';
                 context.context_uri = player.currentPlayingTrack.context_uri;
+                context.trackType = trackContextType === 'album' ? 'song' : 'episode';
 
                 const track = await Track.findOne({ _id: trackId }).lean();
                 const album = await Album.findOne({ _id: albumId }).lean();
+                const podcast = await Podcast.findOne({ _id: trackContextId }).lean();
                 player.currentPlayingTrack.detailTrack = track;
                 player.currentPlayingTrack.detailAlbum = album;
+                player.currentPlayingTrack.detailPodcast = podcast;
             }
 
             return res

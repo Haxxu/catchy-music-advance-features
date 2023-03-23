@@ -12,6 +12,10 @@ class LibraryService {
         );
     }
 
+    static async findOne(condition) {
+        return await Library.findOne(condition);
+    }
+
     static async removePodcastFromAllLibraries(podcastId) {
         // Delete podcast in Library
         await Library.updateMany(

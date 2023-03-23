@@ -3,6 +3,9 @@ const { Library } = require('../models/Library');
 const { Album } = require('../models/Album');
 const { Playlist } = require('../models/Playlist');
 const { Track } = require('../models/Track');
+const TrackService = require('../services/TrackService');
+const PodcastService = require('../services/PodcastService');
+const LibraryService = require('../services/LibraryService');
 
 class MeController {
     // Get current user profile
@@ -321,6 +324,74 @@ class MeController {
         }
     }
 
+    // Save podcast to user library
+    async savePodcast(req, res, next) {
+        try {
+            const podcast = await PodcastService.findOne({ _id: req.body.podcast });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Cannot find user library' });
+            }
+
+            const index = library.podcasts.map((item) => item.podcast).indexOf(req.body.podcast);
+            if (index === -1) {
+                library.podcasts.push({
+                    podcast: req.body.podcast,
+                    addedAt: Date.now(),
+                });
+                podcast.saved = podcast.saved + 1;
+            }
+
+            await library.save();
+            await podcast.save();
+
+            return res.status(200).send({ message: 'Saved podcast to library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Remove album from user library
+    async removeSavedPodcast(req, res, next) {
+        try {
+            const podcast = await PodcastService.findOne({ _id: req.body.podcast });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            if (podcast.owner.toString() === req.user._id) {
+                return res.status(403).send({ message: 'You should not remove your podcast from your library' });
+            }
+
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Cannot find user library' });
+            }
+
+            const index = library.podcasts.map((item) => item.podcast).indexOf(req.body.podcast);
+            if (index !== -1) {
+                library.podcasts.splice(index, 1);
+                podcast.saved = podcast.saved - 1;
+                if (podcast.saved < 0) {
+                    podcast.saved = 0;
+                }
+            }
+
+            await library.save();
+            await podcast.save();
+
+            return res.status(200).send({ message: 'Removed podcast from library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
     // Check saved playlist
     async checkSavedPlaylist(req, res, next) {
         try {
@@ -517,6 +588,91 @@ class MeController {
                 .indexOf(req.body.track + req.body.album);
             if (index !== -1) {
                 library.likedTracks.splice(index, 1);
+                track.saved = track.saved - 1;
+                if (track.saved < 0) {
+                    track.saved = 0;
+                }
+            }
+
+            await library.save();
+            await track.save();
+
+            return res.status(200).send({ message: 'Removed from library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Save episode to user library
+    async saveEpisode(req, res, next) {
+        try {
+            const track = await TrackService.findOne({ _id: req.body.track });
+            if (!track) {
+                return res.status(404).send({ message: 'Episode does not exist' });
+            }
+            const podcast = await PodcastService.findOne({ _id: req.body.podcast });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            // Check track in album
+            const indexOfTrackInPodcast = podcast.episodes.map((obj) => obj.track).indexOf(req.body.track);
+            if (indexOfTrackInPodcast === -1) {
+                return res.status(404).send({ message: 'Track does not in podcast' });
+            }
+
+            const library = await LibraryService.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Cannot find user library' });
+            }
+
+            const index = library.likedEpisodes
+                .map((item) => item.track + item.podcast)
+                .indexOf(req.body.track + req.body.podcast);
+            if (index === -1) {
+                library.likedEpisodes.unshift({
+                    track: req.body.track,
+                    podcast: req.body.podcast,
+                    trackType: 'episode',
+                    addedAt: Date.now(),
+                });
+                track.saved = track.saved + 1;
+            }
+
+            await library.save();
+            await track.save();
+
+            return res.status(200).send({ message: 'Saved to library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Remove episode from user library
+    async removeLikedEpisode(req, res, next) {
+        try {
+            const track = await TrackService.findOne({ _id: req.body.track });
+            if (!track) {
+                return res.status(404).send({ message: 'Episode does not exist' });
+            }
+
+            const podcast = await PodcastService.findOne({ _id: req.body.podcast });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            const library = await LibraryService.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Cannot find user library' });
+            }
+
+            const index = library.likedEpisodes
+                .map((item) => item.track + item.podcast)
+                .indexOf(req.body.track + req.body.podcast);
+            if (index !== -1) {
+                library.likedEpisodes.splice(index, 1);
                 track.saved = track.saved - 1;
                 if (track.saved < 0) {
                     track.saved = 0;

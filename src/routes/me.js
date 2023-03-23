@@ -24,6 +24,10 @@ router.get('/albums', userAuth, meController.getSavedAlbums);
 router.put('/albums', userAuth, meController.saveAblum);
 // [DELETE] /api/me/albums => remove saved album from library
 router.delete('/albums', userAuth, meController.removeSavedAlbum);
+// [PUT] /api/me/podcasts => save podcast to library
+router.put('/podcasts', userAuth, meController.savePodcast);
+// [DELETE] /api/me/podcasts => remove saved podcast from library
+router.delete('/podcasts', userAuth, meController.removeSavedPodcast);
 // [GET] /api/me/playlists/contains => check saved playlists
 router.get('/playlists/contains', userAuth, meController.checkSavedPlaylist);
 // [GET] /api/me/playlists => get saved playlists
@@ -40,6 +44,10 @@ router.get('/tracks', userAuth, meController.getLikedTracks);
 router.put('/tracks', userAuth, meController.saveTrack);
 // [DELETE] /api/me/tracks => remove liked track from library
 router.delete('/tracks', userAuth, meController.removeLikedTrack);
+// [PUT] /api/me/episodes => save liked episode to library
+router.put('/episodes', userAuth, meController.saveEpisode);
+// [DELETE] /api/me/episodes => remove liked episode from library
+router.delete('/episodes', userAuth, meController.removeLikedEpisode);
 // [PUT] /api/me/audio-player/plays/increase => increase plays of current Track
 router.put('/audio-player/currently-playing/increase', userAuth, audioPlayerController.increasePlay);
 // [GET] /api/me/audio-player => get audio player state

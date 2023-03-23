@@ -20,6 +20,7 @@ const audioPlayerSchema = new mongoose.Schema(
                 {
                     track: { type: String, default: '' },
                     album: { type: String, default: '' },
+                    podcast: { type: String, default: '' },
                     context_uri: { type: String, default: '' },
                     position: { type: Number, default: 0 },
                     addedAt: { type: Date, default: Date.now() },
