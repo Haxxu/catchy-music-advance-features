@@ -6,6 +6,7 @@ const { Track } = require('../models/Track');
 const TrackService = require('../services/TrackService');
 const PodcastService = require('../services/PodcastService');
 const LibraryService = require('../services/LibraryService');
+const { Podcast } = require('../models/Podcast');
 
 class MeController {
     // Get current user profile
@@ -60,8 +61,11 @@ class MeController {
                 return {
                     track: track,
                     album: album,
+                    podcast: '',
+                    trackType: 'song',
                     addedAt: item.addedAt,
-                    context_uri: 'liked' + ':' + library._id.toString() + ':' + item.track + ':' + item.album,
+                    context_uri:
+                        'liked' + ':' + library._id.toString() + ':' + item.track + ':' + item.album + ':album',
                     position: index,
                 };
             }
@@ -318,6 +322,70 @@ class MeController {
             await album.save();
 
             return res.status(200).send({ message: 'Removed from library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Check saved podcast
+    async checkSavedPodcast(req, res, next) {
+        try {
+            let saved = false;
+            if (req.query.podcastId) {
+                const library = await Library.findOne({ owner: req.user._id }).select('podcasts');
+                if (!library) {
+                    return res.status(404).send({ message: 'Library not found' });
+                }
+
+                if (library.podcasts.find((item) => item.podcast === req.query.podcastId)) {
+                    saved = true;
+                }
+            }
+
+            return res.status(200).send({ data: saved, message: 'Check saved podcast' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Get saved podcast
+    async getSavedPodcasts(req, res, next) {
+        try {
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Library not found' });
+            }
+
+            const podcasts = [...library.podcasts];
+            // Sort newest addedAt first
+            podcasts.sort((a, b) => {
+                return new Date(b.addedAt) - new Date(a.addedAt);
+            });
+            // Get saved podcasts ( array of podcasts obj)
+            const p = await Podcast.find({ _id: { $in: podcasts.map((item) => item.podcast) } })
+                .populate({ path: 'owner', select: '_id name' })
+                .lean();
+            // array of album id
+            const pClean = p.map((item) => item._id.toString());
+
+            // Add album detail to savedPodcasts
+            const detailSavedPodcasts = podcasts.map((obj) => {
+                let index = pClean.indexOf(obj.podcast);
+                return {
+                    podcast: {
+                        ...p[index],
+                        firstTrack: {
+                            context_uri: `podcast:${p[index]._id}:${p[index].episodes[0]?.track}:${p[index]._id}:podcast`,
+                            position: 0,
+                        },
+                    },
+                    addedAt: obj.addedAt,
+                };
+            });
+
+            return res.status(200).send({ data: detailSavedPodcasts, message: 'Get saved podcasts successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
@@ -598,6 +666,71 @@ class MeController {
             await track.save();
 
             return res.status(200).send({ message: 'Removed from library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Check saved playlist
+    async checkSavedEpisode(req, res, next) {
+        try {
+            let saved = false;
+            if (req.query.trackId && req.query.podcastId) {
+                const library = await Library.findOne({ owner: req.user._id }).select('likedEpisodes');
+                if (!library) {
+                    return res.status(404).send({ message: 'Library not found' });
+                }
+
+                if (
+                    library.likedEpisodes.find(
+                        (item) => item.track === req.query.trackId && item.podcast === req.query.podcastId,
+                    )
+                ) {
+                    saved = true;
+                }
+            }
+
+            return res.status(200).send({ data: saved, message: 'Check saved episode' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Get liked episodes
+    async getLikedEpisodes(req, res, next) {
+        try {
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).send({ message: 'Library not found' });
+            }
+
+            async function getLikedEpisode(item, index) {
+                const track = await Track.findOne({ _id: item.track });
+                const podcast = await Podcast.findOne({ _id: item.podcast });
+                return {
+                    track: track,
+                    podcast: podcast,
+                    album: '',
+                    trackType: 'episode',
+                    addedAt: item.addedAt,
+                    context_uri:
+                        'likedEpisodes' +
+                        ':' +
+                        library._id.toString() +
+                        ':' +
+                        item.track +
+                        ':' +
+                        item.podcast +
+                        ':podcast',
+                    position: index,
+                };
+            }
+
+            const likedEpisodes = await Promise.all(library.likedEpisodes.map(getLikedEpisode));
+
+            return res.status(200).send({ data: likedEpisodes, message: 'Get liked tracks successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });

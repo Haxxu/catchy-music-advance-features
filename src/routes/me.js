@@ -24,6 +24,10 @@ router.get('/albums', userAuth, meController.getSavedAlbums);
 router.put('/albums', userAuth, meController.saveAblum);
 // [DELETE] /api/me/albums => remove saved album from library
 router.delete('/albums', userAuth, meController.removeSavedAlbum);
+// [GET] /api/me/albums/contains => check saved albums
+router.get('/podcasts/contains', userAuth, meController.checkSavedPodcast);
+// [GET] /api/me/podcasts => get saved podcasts
+router.get('/podcasts', userAuth, meController.getSavedPodcasts);
 // [PUT] /api/me/podcasts => save podcast to library
 router.put('/podcasts', userAuth, meController.savePodcast);
 // [DELETE] /api/me/podcasts => remove saved podcast from library
@@ -44,6 +48,10 @@ router.get('/tracks', userAuth, meController.getLikedTracks);
 router.put('/tracks', userAuth, meController.saveTrack);
 // [DELETE] /api/me/tracks => remove liked track from library
 router.delete('/tracks', userAuth, meController.removeLikedTrack);
+// [GET] /api/me/episodes/contains => check liked episodes
+router.get('/episodes/contains', userAuth, meController.checkSavedEpisode);
+// [GET] /api/me/episodes => get liked episodes
+router.get('/episodes', userAuth, meController.getLikedEpisodes);
 // [PUT] /api/me/episodes => save liked episode to library
 router.put('/episodes', userAuth, meController.saveEpisode);
 // [DELETE] /api/me/episodes => remove liked episode from library
