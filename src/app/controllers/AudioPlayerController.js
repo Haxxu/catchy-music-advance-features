@@ -1077,23 +1077,23 @@ class AudioPlayerController {
             if (!library) {
                 return next(new ApiError(404, 'Libary not found'));
             }
-            const player = await AudioPlayerService.findOne({ owner: req.user._id });
-            if (!player) {
-                return next(new ApiError(404, 'Audio Player not found.'));
-            }
+            // const player = await AudioPlayerService.findOne({ owner: req.user._id });
+            // if (!player) {
+            //     return next(new ApiError(404, 'Audio Player not found.'));
+            // }
 
             let track, podcast, album, trackContextType, trackContextId;
-            if (!player.currentPlayingTrack.track) {
+            if (!req.body.track) {
                 return next(new ApiError(404, 'Set listening track failure.'));
             }
 
-            track = await TrackService.findOne({ _id: player.currentPlayingTrack.track });
+            track = await TrackService.findOne({ _id: req.body.track });
             if (!track) {
                 return next(new ApiError(404, 'Track not found'));
             }
 
-            if (player.currentPlayingTrack.trackType === 'episode') {
-                podcast = await PodcastService.findOne({ _id: player.currentPlayingTrack.podcast });
+            if (track.type === 'episode') {
+                podcast = await PodcastService.findOne({ _id: req.body.podcast });
                 if (!podcast) {
                     return next(new ApiError(404, 'Podcast not found'));
                 }
@@ -1105,7 +1105,7 @@ class AudioPlayerController {
                 //     return next(new ApiError(404, 'Podcast not found'));
                 // }
             } else {
-                album = await AlbumService.findOne({ _id: player.currentPlayingTrack.album });
+                album = await AlbumService.findOne({ _id: req.body.album });
                 if (!album) {
                     return next(new ApiError(404, 'Album not found'));
                 }
@@ -1121,7 +1121,7 @@ class AudioPlayerController {
             });
 
             if (index !== -1) {
-                let offset = req.query.offset || 0;
+                let offset = req.body.offset || 0;
                 if (offset <= 0) {
                     library.listeningTracks[index].currentListeningTime = 0;
                 } else if (offset >= track.duration) {
@@ -1135,7 +1135,7 @@ class AudioPlayerController {
                 library.listeningTracks.unshift({
                     track: track._id,
                     [trackContextType]: trackContextId,
-                    trackType: player.currentPlayingTrack.trackType,
+                    trackType: track.type,
                     duration: track.duration,
                     currentListeningTime: 0,
                     played: false,
@@ -1144,7 +1144,7 @@ class AudioPlayerController {
 
             await library.save();
 
-            return res.status(200).json({ msg: 'Set listenig track successfully' });
+            return res.status(200).json({ msg: 'Set listening track successfully' });
         } catch (error) {
             console.log(error);
             return next(new ApiError());
