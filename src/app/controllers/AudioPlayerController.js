@@ -5,8 +5,11 @@ const { Library } = require('../models/Library');
 const { Playlist } = require('../models/Playlist');
 const { Podcast } = require('../models/Podcast');
 const { Track } = require('../models/Track');
+const AlbumService = require('../services/AlbumService');
 const AudioPlayerService = require('../services/AudioPlayerService');
+const LibraryService = require('../services/LibraryService');
 const PodcastService = require('../services/PodcastService');
+const TrackService = require('../services/TrackService');
 
 class AudioPlayerController {
     async play(req, res, next) {
@@ -1065,6 +1068,86 @@ class AudioPlayerController {
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    async setListeningTrack(req, res, next) {
+        try {
+            const library = await LibraryService.findOne({ owner: req.user._id });
+            if (!library) {
+                return next(new ApiError(404, 'Libary not found'));
+            }
+            const player = await AudioPlayerService.findOne({ owner: req.user._id });
+            if (!player) {
+                return next(new ApiError(404, 'Audio Player not found.'));
+            }
+
+            let track, podcast, album, trackContextType, trackContextId;
+            if (!player.currentPlayingTrack.track) {
+                return next(new ApiError(404, 'Set listening track failure.'));
+            }
+
+            track = await TrackService.findOne({ _id: player.currentPlayingTrack.track });
+            if (!track) {
+                return next(new ApiError(404, 'Track not found'));
+            }
+
+            if (player.currentPlayingTrack.trackType === 'episode') {
+                podcast = await PodcastService.findOne({ _id: player.currentPlayingTrack.podcast });
+                if (!podcast) {
+                    return next(new ApiError(404, 'Podcast not found'));
+                }
+                trackContextType = 'podcast';
+                trackContextId = podcast._id;
+            } else if (player.currentPlayingTrack.trackType === 'chapter') {
+                // podcast = await PodcastService.findOne({ _id: player.currentPlayingTrack.podcast });
+                // if (!podcast) {
+                //     return next(new ApiError(404, 'Podcast not found'));
+                // }
+            } else {
+                album = await AlbumService.findOne({ _id: player.currentPlayingTrack.album });
+                if (!album) {
+                    return next(new ApiError(404, 'Album not found'));
+                }
+                trackContextType = 'album';
+                trackContextId = album._id;
+            }
+
+            let index = library.listeningTracks.findIndex((item) => {
+                let trackContextTypeItem = 'album';
+                if (item.trackType === 'episode') trackContextTypeItem = 'podcast';
+
+                return item.track + item?.[trackContextTypeItem] === track._id + trackContextId;
+            });
+
+            if (index !== -1) {
+                let offset = req.query.offset || 0;
+                if (offset <= 0) {
+                    library.listeningTracks[index].currentListeningTime = 0;
+                } else if (offset >= track.duration) {
+                    library.listeningTracks[index].currentListeningTime = 0;
+                    library.listeningTracks[index].duration = track.duration;
+                    library.listeningTracks[index].played = true;
+                } else {
+                    library.listeningTracks[index].currentListeningTime = offset;
+                }
+            } else {
+                library.listeningTracks.unshift({
+                    track: track._id,
+                    [trackContextType]: trackContextId,
+                    trackType: player.currentPlayingTrack.trackType,
+                    duration: track.duration,
+                    currentListeningTime: 0,
+                    played: false,
+                });
+            }
+
+            await library.save();
+
+            return res.status(200).json({ msg: 'Set listenig track successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
         }
     }
 }

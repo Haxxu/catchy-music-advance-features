@@ -64,7 +64,7 @@ const librarySchema = new mongoose.Schema(
                 track: { type: String, required: true },
                 podcast: { type: String },
                 // type: episode, chapter
-                type: { type: String, default: 'episode' },
+                trackType: { type: String, default: 'episode' },
                 duration: { type: Number, required: true, default: 0 },
                 currentListeningTime: { type: Number, required: true, default: 0 },
                 played: { type: Boolean, default: false },
