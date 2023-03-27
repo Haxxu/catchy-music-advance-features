@@ -15,6 +15,7 @@ import LoadingMarkup from '~/components/LoadingMarkup';
 
 // Change languages
 import './i18n';
+// test
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
