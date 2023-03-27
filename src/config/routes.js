@@ -54,6 +54,22 @@ const routes = {
     artist_manageAlbum_specifiedAlbum: '/artist-dashboard/albums/:id/*',
     artist_manageAlbum_specifiedAlbum_nested_edit: '',
     artist_manageAlbum_specifiedAlbum_nested_tracksOfAlbum: 'tracks',
+
+    // podcaster routes
+    podcaster_dashboard: '/podcaster-dashboard/home',
+
+    podcaster_manageEpisode: '/podcaster-dashboard/episodes',
+    podcaster_manageEpisode_newEpisode: '/podcaster-dashboard/episodes/new-episode',
+    podcaster_manageEpisode_specifiedEpisode: '/podcaster-dashboard/episodes/:id/*',
+    podcaster_manageEpisode_specifiedEpisode_nested_edit: '',
+    podcaster_manageEpisode_specifiedEpisode_nested_podcastsOfEpisode: 'podcasts',
+    podcaster_manageEpisode_specifiedEpisode_nested_lyricsOfEpisode: 'lyrics',
+
+    podcaster_managePodcast: '/podcaster-dashboard/podcasts',
+    podcaster_managePodcast_newPodcast: '/podcaster-dashboard/podcasts/new-podcast',
+    podcaster_managePodcast_specifiedPodcast: '/podcaster-dashboard/podcasts/:id/*',
+    podcaster_managePodcast_specifiedPodcast_nested_edit: '',
+    podcaster_managePodcast_specifiedPodcast_nested_episodesOfPodcast: 'episodes',
 };
 
 export default routes;

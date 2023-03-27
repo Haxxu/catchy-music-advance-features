@@ -6,6 +6,8 @@ import AlbumIcon from '@mui/icons-material/Album';
 import ListIcon from '@mui/icons-material/List';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import PodcastsIcon from '@mui/icons-material/Podcasts';
+import RadioIcon from '@mui/icons-material/Radio';
 
 const adminSidebarConfig = [
     {
@@ -63,4 +65,22 @@ const artistSidebarConfig = [
     },
 ];
 
-export { adminSidebarConfig, artistSidebarConfig };
+const podcasterSidebarConfig = [
+    {
+        title: 'Dashboard',
+        path: routes.podcaster_dashboard,
+        icon: <DashboardIcon fontSize='large' />,
+    },
+    {
+        title: 'Episode',
+        path: routes.podcaster_manageEpisode,
+        icon: <PodcastsIcon fontSize='large' />,
+    },
+    {
+        title: 'Podcast',
+        path: routes.podcaster_managePodcast,
+        icon: <RadioIcon fontSize='large' />,
+    },
+];
+
+export { adminSidebarConfig, artistSidebarConfig, podcasterSidebarConfig };

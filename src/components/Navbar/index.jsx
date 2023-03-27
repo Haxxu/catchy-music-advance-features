@@ -40,13 +40,13 @@ const Navbar = () => {
             title: t('Home'),
             path: routes.home,
             icon: <HomeIcon fontSize='large' />,
-            roles: ['admin', 'artist', 'user'],
+            roles: ['admin', 'artist', 'user', 'podcaster'],
         },
         {
             title: t('Profile'),
             path: routes.profile,
             icon: <AccountBoxIcon fontSize='large' />,
-            roles: ['admin', 'artist', 'user'],
+            roles: ['admin', 'artist', 'user', 'podcaster'],
         },
         {
             title: t('Dashboard'),
@@ -61,10 +61,16 @@ const Navbar = () => {
             roles: ['artist'],
         },
         {
+            title: t('Dashboard'),
+            path: routes.podcaster_dashboard,
+            icon: <DashboardCustomizeOutlinedIcon fontSize='large' />,
+            roles: ['podcaster'],
+        },
+        {
             title: t('Settings'),
             path: routes.settings,
             icon: <SettingsIcon fontSize='large' />,
-            roles: ['admin', 'artist', 'user'],
+            roles: ['admin', 'artist', 'user', 'podcaster'],
         },
     ];
 

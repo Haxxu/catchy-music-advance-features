@@ -23,98 +23,98 @@ const privateRoutes = [
         path: routes.home,
         component: Home,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Search
     {
         path: routes.search,
         component: Search,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Library
     {
         path: routes.library,
         component: Library,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Liked Tracks
     {
         path: routes.likedTracks,
         component: LikedTracks,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Playlist
     {
         path: routes.playlist,
         component: Playlist,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Album
     {
         path: routes.album,
         component: Album,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Artist
     {
         path: routes.artist,
         component: Artist,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // User
     {
         path: routes.user,
         component: User,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Genre
     {
         path: routes.genre,
         component: Genre,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Track
     {
         path: routes.track,
         component: Track,
         layout: MainLayout,
-        roles: [roles.user, roles.admin, roles.artist],
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
     // Settings
     {
         path: routes.settings,
         component: Settings,
         layout: MainLayout,
-        roles: [roles.admin, roles.artist, roles.user],
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },
     // Profile
     {
         path: routes.profile,
         component: Profile,
         layout: MainLayout,
-        roles: [roles.admin, roles.artist, roles.user],
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },
     // Lyric
     {
         path: routes.lyrics,
         component: Lyrics,
         layout: MainLayout,
-        roles: [roles.admin, roles.artist, roles.user],
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },
     // Queue
     {
         path: routes.queue,
         component: Queue,
         layout: MainLayout,
-        roles: [roles.admin, roles.artist, roles.user],
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },
 ];
 

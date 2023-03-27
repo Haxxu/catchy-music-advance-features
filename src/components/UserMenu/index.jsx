@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import classNames from 'classnames/bind';
 import { ClickAwayListener, IconButton, Paper, Popper } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
-import styles from './styles.module.scss';
-import { routes } from '~/config';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import { routes } from '~/config';
+import styles from './styles.module.scss';
 
 const cx = classNames.bind(styles);
 
