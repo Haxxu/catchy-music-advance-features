@@ -20,4 +20,7 @@ router.post('/:id/episodes', [podcasterAuth, validateObjectId], podcastControlle
 // [DELETE] /api/podcasts/:id/episodes => remove track from album {track} (:id => album_id)
 router.delete('/:id/episodes', [podcasterAuth, validateObjectId], podcastController.removeEpisodeFromPodcast);
 
+// [PUT] /api/albums/:id/release => toggle release date of album
+router.put('/:id/release', [podcasterAuth, validateObjectId], podcastController.toggleReleasePodcast);
+
 module.exports = router;

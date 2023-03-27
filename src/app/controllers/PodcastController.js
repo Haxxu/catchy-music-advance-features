@@ -171,6 +171,32 @@ class PodcastController {
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }
+
+    async toggleReleasePodcast(req, res, next) {
+        try {
+            const podcast = await PodcastService.findOne({ _id: req.params.id });
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+            if (podcast.owner.toString() !== req.user._id && req.user.type !== 'admin') {
+                return res.status(403).send({ message: "You don't have permision to toggle release this podcast" });
+            }
+
+            var flag = await podcast.isReleased;
+            var message = '';
+            if (flag) {
+                message = 'Unreleased podcast successfully';
+            } else {
+                message = 'Released podcast successfully';
+            }
+            await podcast.updateOne({ isReleased: !flag, releaseDate: Date.now() });
+
+            return res.status(200).send({ message: message });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
 }
 
 module.exports = new PodcastController();

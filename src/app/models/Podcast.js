@@ -21,6 +21,7 @@ const podcastSchema = new mongoose.Schema(
         date: { type: String, required: true },
         month: { type: String, required: true },
         year: { type: String, required: true },
+        isReleased: { type: Boolean, default: false },
     },
     { timestamps: true },
 );
