@@ -20,3 +20,15 @@ export const createTrackUrl = baseApiUrl + '/tracks';
 
 // [PUT] update track
 export const updateTrackUrl = (id) => baseApiUrl + `/tracks/${id}`;
+
+// [DELETE]
+export const deleteEpisodeUrl = (id) => baseApiUrl + `/episodes/${id}`;
+
+// [POST] create episode
+export const createEpisodeUrl = baseApiUrl + '/episodes';
+
+// [PUT] update episode
+export const updateEpisodeUrl = (id) => baseApiUrl + `/episodes/${id}`;
+
+// [GET] get episode by id
+export const getEpisodeByIdUrl = (id) => baseApiUrl + `/episodes/${id}`;

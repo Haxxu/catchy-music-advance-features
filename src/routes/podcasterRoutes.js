@@ -2,11 +2,11 @@ import { routes, roles } from '~/config';
 // Layouts
 import PodcasterDashboardLayout from '~/layouts/PodcasterDashboardLayout';
 // Pages
-import Dashboard from '~/pages/artistdashboard/Dashboard';
-import ManageTrack from '~/pages/artistdashboard/ManageTrack';
-import SpecifiedTrack from '~/pages/artistdashboard/SpecifiedTrack';
-import ManageAlbum from '~/pages/artistdashboard/ManageAlbum';
-import SpecifiedAlbum from '~/pages/artistdashboard/SpecifiedAlbum';
+import Dashboard from '~/pages/podcasterdashboard/Dashboard';
+import ManageEpisode from '~/pages/podcasterdashboard/ManageEpisode';
+import SpecifiedTrack from '~/pages/podcasterdashboard/SpecifiedTrack';
+import ManageAlbum from '~/pages/podcasterdashboard/ManageAlbum';
+import SpecifiedAlbum from '~/pages/podcasterdashboard/SpecifiedAlbum';
 
 const podcasterRoutes = [
     // dashboard
@@ -18,7 +18,7 @@ const podcasterRoutes = [
     },
     {
         path: routes.podcaster_manageEpisode,
-        component: ManageTrack,
+        component: ManageEpisode,
         layout: PodcasterDashboardLayout,
         roles: [roles.podcaster],
     },
