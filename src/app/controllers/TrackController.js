@@ -14,6 +14,7 @@ const PlaylistService = require('../services/PlaylistService');
 const LibraryService = require('../services/LibraryService');
 const LyricService = require('../services/LyricService');
 const CommentService = require('../services/CommentService');
+const { Podcast } = require('../models/Podcast');
 class TrackController {
     // Get track by id
     async getTrackById(req, res, next) {
@@ -64,6 +65,61 @@ class TrackController {
             }
 
             res.status(200).send({ data: track, message: 'Get track successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Get episode by id
+    async getEpisodeById(req, res, next) {
+        try {
+            const track = await Track.findOne({ _id: req.params.id, type: 'episode' }).lean();
+            if (!track) {
+                return res.status(400).send({ message: 'Episode does not exist' });
+            }
+
+            if (req.query.detail || req.query.detail === true) {
+                let artistsLength = track.artists.length;
+                for (let i = 0; i < artistsLength; ++i) {
+                    const user = await User.findOne({ _id: track.artists[i].id }).select('image name type').lean();
+                    const podcasts = await Podcast.find({ owner: track.artists[i].id, isReleased: true })
+                        .populate({
+                            path: 'owner',
+                            select: '_id name type image',
+                        })
+                        .sort({ saved: 'desc' })
+                        .limit(10)
+                        .lean();
+
+                    const popularPodcasts = podcasts.map((podcast) => {
+                        if (podcast.tracks.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+                    track.artists[i].popularPodcasts = popularPodcasts;
+                    track.artists[i].image = user.image;
+                    track.artists[i].type = user.type;
+                }
+
+                const lyrics = await Lyric.find({ track: track._id })
+                    .populate({
+                        path: 'owner',
+                        select: '_id name',
+                    })
+                    .lean();
+                track.lyrics = lyrics;
+            }
+
+            res.status(200).send({ data: track, message: 'Get episode successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
