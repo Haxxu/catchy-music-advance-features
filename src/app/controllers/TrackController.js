@@ -128,7 +128,12 @@ class TrackController {
 
     async getTracksInfo(req, res, next) {
         try {
-            const totalTracks = await Track.find().count('_id');
+            const condition = {};
+            if (req.query.type) {
+                condition.type = req.query.type;
+            }
+
+            const totalTracks = await Track.find({ ...condition }).count('_id');
 
             const today = moment().startOf('day');
 
@@ -137,6 +142,7 @@ class TrackController {
                     $gte: today.toDate(),
                     $lte: moment(today).endOf('day').toDate(),
                 },
+                ...condition,
             }).count('_id');
 
             const newTracksThisMonth = await Track.find({
@@ -144,6 +150,7 @@ class TrackController {
                     $gte: moment(today).startOf('month').toDate(),
                     $lte: moment(today).endOf('month').toDate(),
                 },
+                ...condition,
             }).count('_id');
 
             const newTracksLastMonth = await Track.find({
@@ -151,11 +158,12 @@ class TrackController {
                     $gte: moment(today).subtract(1, 'months').startOf('month').toDate(),
                     $lte: moment(today).subtract(1, 'months').endOf('month').toDate(),
                 },
+                ...condition,
             }).count('_id');
 
             return res.status(200).send({
                 data: { totalTracks, newTracksToday, newTracksThisMonth, newTracksLastMonth },
-                message: 'Get tracks info successfuly',
+                message: `Get ${req.query.type || 'track'}s info successfuly`,
             });
         } catch (error) {
             return res.status(404).send({ message: error });
@@ -313,6 +321,25 @@ class TrackController {
                 }
 
                 return res.status(200).send({ data: tracks, message: 'Get tracks successfully' });
+            } else if (req.query.type && req.query.type === 'podcast' && req.query.id) {
+                const podcast = await Podcast.findOne({ _id: req.query.id }).lean();
+                if (!podcast) {
+                    return res.status(404).send({ message: 'Podcast not found' });
+                }
+
+                const episodes = [];
+
+                let length = podcast.episodes.length;
+                for (let i = 0; i < length; ++i) {
+                    const track = await Track.findOne({ _id: podcast.episodes[i].track }).lean();
+
+                    episodes.push({
+                        ...track,
+                        addedAt: podcast.episodes[i].addedAt,
+                    });
+                }
+
+                return res.status(200).send({ data: episodes, message: 'Get episodes successfully' });
             }
 
             return res.status(404).send({ message: 'Tracks not found' });

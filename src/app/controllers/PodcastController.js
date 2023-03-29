@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const { validatePodcast, Podcast } = require('../models/Podcast');
+const { User } = require('../models/User');
 const ApiError = require('../../utils/ApiError');
 const PodcastService = require('../services/PodcastService');
 const TrackService = require('../services/TrackService');
@@ -233,6 +235,78 @@ class PodcastController {
             return res.status(200).send({ message: message });
         } catch (err) {
             console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    async getPodcastsByContext(req, res, next) {
+        try {
+            let message = '';
+            let searchCondition = {};
+            if (req.query.search && req.query.search.trim() !== '') {
+                let search = req.query.search.trim();
+
+                const podcasters = await User.find({
+                    type: 'podcaster',
+                    $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
+                }).select('_id');
+
+                const podcastersId = podcasters.map((podcaster) => podcaster._id.toString());
+
+                searchCondition = {
+                    $or: [
+                        {
+                            name: { $regex: search, $options: 'i' },
+                        },
+                        {
+                            owner: { $in: podcastersId },
+                        },
+                    ],
+                };
+            }
+
+            const podcasts = await Podcast.find({ ...searchCondition }).populate('owner', '_id name');
+            return res.status(200).send({ data: podcasts, message: 'Get podcasts successfully' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // get podcasts info for admin
+    async getPodcastsInfo(req, res, next) {
+        try {
+            const totalPodcasts = await Podcast.count('_id');
+
+            const today = moment().startOf('day');
+
+            const newPodcastsToday = await Podcast.find({
+                createdAt: {
+                    $gte: today.toDate(),
+                    $lte: moment(today).endOf('day').toDate(),
+                },
+            }).count('_id');
+
+            const newPodcastsThisMonth = await Podcast.find({
+                createdAt: {
+                    $gte: moment(today).startOf('month').toDate(),
+                    $lte: moment(today).endOf('month').toDate(),
+                },
+            }).count('_id');
+
+            const newPodcastsLastMonth = await Podcast.find({
+                createdAt: {
+                    $gte: moment(today).subtract(1, 'months').startOf('month').toDate(),
+                    $lte: moment(today).subtract(1, 'months').endOf('month').toDate(),
+                },
+            }).count('_id');
+
+            return res.status(200).send({
+                data: { totalPodcasts, newPodcastsToday, newPodcastsThisMonth, newPodcastsLastMonth },
+                message: 'Get podcasts info successfuly',
+            });
+        } catch (error) {
+            console.log(error);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }

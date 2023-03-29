@@ -8,22 +8,22 @@ const { Album } = require('../models/Album');
 const { Podcast } = require('../models/Podcast');
 
 class PodcasterController {
-    async getArtistById(req, res, next) {
+    async getPodcasterById(req, res, next) {
         try {
-            const artist = await User.findOne({ _id: req.params.id, type: 'artist' })
+            const podcaster = await User.findOne({ _id: req.params.id, type: 'podcaster' })
                 .select('-email -password -createdAt -updatedAt -status -__v')
                 .lean();
-            if (!artist) {
-                return res.status(404).send({ message: 'Artist not found' });
+            if (!podcaster) {
+                return res.status(404).send({ message: 'Podcaster not found' });
             }
 
-            const library = await Library.findOne({ owner: artist._id });
+            const library = await Library.findOne({ owner: podcaster._id });
             if (!library) {
                 return res.status(404).send({ message: 'Library not found' });
             }
 
             const detailGenres = [];
-            for (let genre of artist.genres) {
+            for (let genre of podcaster.genres) {
                 const g = await Genre.findOne({ _id: genre });
                 detailGenres.push({
                     _id: genre,
@@ -36,25 +36,25 @@ class PodcasterController {
                 followers: { total: library.followers.length },
                 followings: { total: library.followings.length },
             };
-            if (req.user._id === artist._id.toString() && req.query.context === 'detail') {
-                const albums = await Album.find({ owner: req.user._id }).lean();
-                const tracks = await Track.find({ owner: req.user._id }).lean();
+            if (req.user._id === podcaster._id.toString() && req.query.context === 'detail') {
+                const podcasts = await Podcast.find({ owner: req.user._id }).lean();
+                const episodes = await Track.find({ owner: req.user._id }).lean();
 
-                const [totalPlays, totalSaved] = tracks.reduce(
+                const [totalPlays, totalSaved] = episodes.reduce(
                     (prev, track) => [prev[0] + track.plays, prev[1] + track.saved],
                     [0, 0],
                 );
-                moreInfo.tracks = {
-                    total: tracks.length,
-                    items: tracks,
+                moreInfo.episodes = {
+                    total: episodes.length,
+                    items: episodes,
                     totalPlays,
                     totalSaved,
                 };
-                moreInfo.albums = {
-                    total: albums.length,
-                    totalReleasedAlbums: albums.filter((album) => album.isReleased).length,
-                    items: albums,
-                    totalSaved: albums.reduce((prev, album) => prev + album.saved, 0),
+                moreInfo.podcasts = {
+                    total: podcasts.length,
+                    totalReleasedPodcasts: podcasts.filter((podcast) => podcast.isReleased).length,
+                    items: podcasts,
+                    totalSaved: podcasts.reduce((prev, podcast) => prev + podcast.saved, 0),
                 };
 
                 const today = moment().startOf('day');
@@ -74,56 +74,58 @@ class PodcasterController {
                         follower.addedAt <= moment(today).subtract(1, 'months').endOf('month').toDate(),
                 ).length;
             } else {
-                const albums = await Album.find({ owner: req.user._id, isReleased: true }).lean();
-                const tracks = await Track.find({ owner: req.user._id }).lean();
-                moreInfo.tracks = {
-                    total: tracks.length,
-                    items: tracks,
+                const podcasts = await Podcast.find({ owner: req.user._id, isReleased: true }).lean();
+                const episodes = await Track.find({ owner: req.user._id }).lean();
+                moreInfo.episodes = {
+                    total: episodes.length,
+                    items: episodes,
                 };
-                moreInfo.albums = {
-                    total: albums.length,
-                    items: albums,
+                moreInfo.podcasts = {
+                    total: podcasts.length,
+                    items: podcasts,
                 };
             }
 
-            const artistDetail = {
-                ...artist,
+            const podcasterDetail = {
+                ...podcaster,
                 genres: detailGenres,
                 ...moreInfo,
             };
 
-            return res.status(200).send({ data: artistDetail, message: 'Get artist successfully' });
+            return res.status(200).send({ data: podcasterDetail, message: 'Get podcaster successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }
 
-    // Get artist info (for admin)
-    async getArtistsInfo(req, res, next) {
+    // Get podcasters info (for admin)
+    async getPodcastersInfo(req, res, next) {
         try {
-            const totalArtists = await User.find({ type: 'artist' }).count('_id');
+            const totalPodcasters = await User.find({ type: 'podcaster' }).count('_id');
 
-            return res.status(200).send({ data: { totalArtists }, message: 'Get artist info successfully' });
+            return res.status(200).send({ data: { totalPodcasters }, message: 'Get podcasters info successfully' });
         } catch (error) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }
 
-    // Get artist by context (admin)
-    async getArtistsByContext(req, res, next) {
+    // Get podcaster by context (admin)
+    async getPodcastersByContext(req, res, next) {
         try {
             let message = '';
             let searchCondition = {};
             if (req.query.search && req.query.search.trim() !== '') {
                 let search = req.query.search.trim();
 
-                const tracks = await Track.find({ name: { $regex: search, $options: 'i' } }).select('owner');
-                const albums = await Album.find({ name: { $regex: search, $options: 'i' } }).select('owner');
+                const tracks = await Track.find({ name: { $regex: search, $options: 'i' }, type: 'episode' }).select(
+                    'owner',
+                );
+                const podcasts = await Podcast.find({ name: { $regex: search, $options: 'i' } }).select('owner');
 
-                let artistIdsList = tracks.map((track) => track.owner.toString());
-                artistIdsList = artistIdsList.concat(albums.map((album) => album.owner.toString()));
+                let podcasterIdsList = tracks.map((track) => track.owner.toString());
+                podcasterIdsList = podcasterIdsList.concat(podcasts.map((podcast) => podcast.owner.toString()));
 
                 searchCondition = {
                     $or: [
@@ -140,13 +142,13 @@ class PodcasterController {
                             },
                         },
                         {
-                            _id: { $in: artistIdsList },
+                            _id: { $in: podcasterIdsList },
                         },
                     ],
                 };
             }
 
-            const users = await User.find({ ...searchCondition, type: 'artist' })
+            const users = await User.find({ ...searchCondition, type: 'podcaster' })
                 .select('-password -__v')
                 .lean();
 
@@ -155,8 +157,8 @@ class PodcasterController {
                 let id = users[i]._id;
                 const library = await Library.findOne({ owner: id });
                 users[i].totalFollowers = library.followers.length;
-                users[i].totalTracks = await Track.find({ owner: id }).count();
-                users[i].totalAlbums = await Album.find({ owner: id }).count();
+                users[i].totalEpisodes = await Track.find({ owner: id }).count();
+                users[i].totalPodcasts = await Podcast.find({ owner: id }).count();
             }
 
             return res.status(200).send({ data: users, message });

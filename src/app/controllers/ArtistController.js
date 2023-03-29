@@ -118,7 +118,9 @@ class ArtistController {
             if (req.query.search && req.query.search.trim() !== '') {
                 let search = req.query.search.trim();
 
-                const tracks = await Track.find({ name: { $regex: search, $options: 'i' } }).select('owner');
+                const tracks = await Track.find({ name: { $regex: search, $options: 'i' }, type: 'song' }).select(
+                    'owner',
+                );
                 const albums = await Album.find({ name: { $regex: search, $options: 'i' } }).select('owner');
 
                 let artistIdsList = tracks.map((track) => track.owner.toString());
