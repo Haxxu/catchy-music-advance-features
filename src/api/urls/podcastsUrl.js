@@ -1,10 +1,10 @@
 const baseApiUrl = process.env.REACT_APP_API_URL;
 
 // [GET] (admin)
-export const getAlbumsInfoUrl = baseApiUrl + '/albums/info';
+export const getPodcastsInfoUrl = baseApiUrl + '/podcasts/info';
 
 // [GET] (admin)
-export const getAlbumsByContextUrl = baseApiUrl + '/albums/context';
+export const getPodcastsByContextUrl = baseApiUrl + '/podcasts/context';
 
 // [GET] get albums by tags
 export const getAlbumsByTagsUrl = baseApiUrl + '/albums/tags';

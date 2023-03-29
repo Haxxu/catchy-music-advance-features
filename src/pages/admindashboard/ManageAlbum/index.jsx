@@ -105,7 +105,7 @@ const ManageAlbum = () => {
 
     return (
         <div className={cx('container')}>
-            <div className={cx('header')}>{t('Tracks')}</div>
+            <div className={cx('header')}>{t('Albums')}</div>
             <div className={cx('input-container')}>
                 <IconButton>
                     <SearchIcon />

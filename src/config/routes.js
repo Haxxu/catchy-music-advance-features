@@ -33,8 +33,10 @@ const routes = {
 
     admin_manageUser: '/admin-dashboard/users',
     admin_manageArtist: '/admin-dashboard/artists',
+    admin_managePodcaster: '/admin-dashboard/podcasters',
     admin_manageTrack: '/admin-dashboard/tracks',
     admin_manageAlbum: '/admin-dashboard/albums',
+    admin_managePodcast: '/admin-dashboard/podcasts',
     admin_managePlaylist: '/admin-dashboard/playlists',
     admin_manageGenre: '/admin-dashboard/genres',
     admin_manageGenre_genreForm: '/admin-dashboard/genres/:id',

@@ -1,16 +1,16 @@
 const baseApiUrl = process.env.REACT_APP_API_URL;
 
 // [GET]
-export const getArtistsInfoUrl = baseApiUrl + '/artists/info';
+export const getPodcastersInfoUrl = baseApiUrl + '/podcasters/info';
 
 // [GET]
-export const getArtistsByContextUrl = baseApiUrl + '/artists/context';
+export const getPodcastersByContextUrl = baseApiUrl + '/podcasters/context';
 
 // [GET]
 export const getPodcastersUrl = baseApiUrl + '/podcasters/all';
 
 // [GET]
-export const getArtistByIdUrl = (id) => baseApiUrl + `/artists/${id}`;
+export const getPodcasterByIdUrl = (id) => baseApiUrl + `/podcasters/${id}`;
 
 // [GET]
 export const getPodcasterEpisodesUrl = (id) => baseApiUrl + `/podcasters/${id}/episodes`;

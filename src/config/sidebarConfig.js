@@ -8,6 +8,7 @@ import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import RadioIcon from '@mui/icons-material/Radio';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 
 const adminSidebarConfig = [
     {
@@ -26,6 +27,11 @@ const adminSidebarConfig = [
         icon: <SpatialAudioOffIcon fontSize='large' />,
     },
     {
+        title: 'Podcaster',
+        path: routes.admin_managePodcaster,
+        icon: <RecordVoiceOverIcon fontSize='large' />,
+    },
+    {
         title: 'Track',
         path: routes.admin_manageTrack,
         icon: <MusicNoteIcon fontSize='large' />,
@@ -34,6 +40,11 @@ const adminSidebarConfig = [
         title: 'Album',
         path: routes.admin_manageAlbum,
         icon: <AlbumIcon fontSize='large' />,
+    },
+    {
+        title: 'Podcast',
+        path: routes.admin_managePodcast,
+        icon: <PodcastsIcon fontSize='large' />,
     },
     {
         title: 'Playlist',

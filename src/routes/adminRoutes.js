@@ -5,8 +5,10 @@ import AdminDashboardLayout from '~/layouts/AdminDashboardLayout';
 import Dashboard from '~/pages/admindashboard/Dashboard';
 import ManageUser from '~/pages/admindashboard/ManageUser';
 import ManageArtist from '~/pages/admindashboard/ManageArtist';
+import ManagePodcaster from '~/pages/admindashboard/ManagePodcaster';
 import ManageTrack from '~/pages/admindashboard/ManageTrack';
 import ManageAlbum from '~/pages/admindashboard/ManageAlbum';
+import ManagePodcast from '~/pages/admindashboard/ManagePodcast';
 import ManagePlaylist from '~/pages/admindashboard/ManagePlaylist';
 import ManageGenre from '~/pages/admindashboard/ManageGenre';
 import GenreForm from '~/components/Forms/GenreForm';
@@ -39,6 +41,12 @@ const adminRoutes = [
         roles: [roles.admin],
     },
     {
+        path: routes.admin_managePodcaster,
+        component: ManagePodcaster,
+        layout: AdminDashboardLayout,
+        roles: [roles.admin],
+    },
+    {
         path: routes.admin_manageTrack,
         component: ManageTrack,
         layout: AdminDashboardLayout,
@@ -47,6 +55,12 @@ const adminRoutes = [
     {
         path: routes.admin_manageAlbum,
         component: ManageAlbum,
+        layout: AdminDashboardLayout,
+        roles: [roles.admin],
+    },
+    {
+        path: routes.admin_managePodcast,
+        component: ManagePodcast,
         layout: AdminDashboardLayout,
         roles: [roles.admin],
     },

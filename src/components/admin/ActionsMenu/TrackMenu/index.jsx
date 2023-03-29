@@ -8,7 +8,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 
 import Detail from '~/components/admin/Detail';
 import axiosInstance from '~/api/axiosInstance';
-import { deleteTrackUrl } from '~/api/urls/tracksUrls';
+import { deleteTrackUrl, deleteEpisodeUrl } from '~/api/urls/tracksUrls';
 import styles from './styles.scoped.scss';
 
 const cx = classnames.bind(styles);
@@ -19,10 +19,15 @@ const TrackActionsMenu = ({ handleUpdateData, row }) => {
     const { t } = useTranslation();
 
     const handleDeleteTrack = async () => {
-        const { data } = await axiosInstance.delete(deleteTrackUrl(row._id));
+        let data;
+        if (row === 'episode') {
+            data = await axiosInstance.delete(deleteEpisodeUrl(row._id));
+        } else {
+            data = await axiosInstance.delete(deleteTrackUrl(row._id));
+        }
 
         handleUpdateData();
-        toast.success(data.message);
+        toast.success(data.data.message);
     };
 
     return (
@@ -41,7 +46,7 @@ const TrackActionsMenu = ({ handleUpdateData, row }) => {
                 sx={{ minWidth: '100px' }}
                 onClick={() =>
                     confirmAlert({
-                        title: t('Confirm to delete this track'),
+                        title: t(`Confirm to delete this ${row.type}`),
 
                         message: t('Are you sure to do this.'),
                         buttons: [

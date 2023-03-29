@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { getTracksByContextUrl } from '~/api/urls/tracksUrls';
 import { removeTrackFromAlbumUrl } from '~/api/urls/albumsUrl';
 import { removeTrackFromPlaylistUrl } from '~/api/urls/playlistsUrl';
+import { removeEpisodeFromPodcastUrl } from '~/api/urls/podcastsUrl';
 import { fancyTimeFormat, dateFormat } from '~/utils/Format';
 import styles from './styles.scoped.scss';
 import axiosInstance from '~/api/axiosInstance';
@@ -43,6 +44,17 @@ const ManageTrackTable = ({ type, id, handleUpdateData }) => {
     const handleRemoveTrackFromAlbum = async (trackId) => {
         try {
             const { data } = await axiosInstance.delete(removeTrackFromAlbumUrl(id), { data: { track: trackId } });
+            handleUpdateData();
+
+            toast.success(data.data.message);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleRemoveEpisodeFromPodcast = async (trackId) => {
+        try {
+            const { data } = await axiosInstance.delete(removeEpisodeFromPodcastUrl(id), { data: { track: trackId } });
             handleUpdateData();
 
             toast.success(data.data.message);
@@ -108,7 +120,12 @@ const ManageTrackTable = ({ type, id, handleUpdateData }) => {
                                         color='error'
                                         onClick={() =>
                                             confirmAlert({
-                                                title: t('Confirm to remove this song from ') + type,
+                                                title:
+                                                    t(
+                                                        `Confirm to remove this ${
+                                                            type === 'podcast' ? 'episode' : 'song'
+                                                        } from `,
+                                                    ) + type,
 
                                                 message: t('Are you sure to do this.'),
                                                 buttons: [
@@ -119,6 +136,8 @@ const ManageTrackTable = ({ type, id, handleUpdateData }) => {
                                                                 handleRemoveTrackFromAlbum(item._id);
                                                             } else if (type === 'playlist') {
                                                                 handleRemoveTrackFromPlaylist(item._id, item.albumId);
+                                                            } else if (type === 'podcast') {
+                                                                handleRemoveEpisodeFromPodcast(item._id);
                                                             }
                                                         },
                                                     },
