@@ -3,31 +3,31 @@ import { NavLink, Route, Routes, useParams } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { useTranslation } from 'react-i18next';
 
-import AlbumForm from '~/components/Forms/AlbumForm';
-import TracksOfAlbum from '~/pages/artistdashboard/TracksOfAlbum';
+import PodcastForm from '~/components/Forms/PodcastForm';
+import EpisodesOfPodcast from '~/pages/podcasterdashboard/EpisodesOfPodcast';
 import { routes } from '~/config';
 import styles from './styles.scoped.scss';
 
 const cx = classNames.bind(styles);
 
-const SpecifiedAlbum = () => {
+const SpecifiedPodcast = () => {
     const { id } = useParams();
     const { t } = useTranslation();
 
     return (
         <div className={cx('container')}>
-            {id !== 'new-episode' && (
+            {id !== 'new-podcast' && (
                 <div className={cx('subnav')}>
                     <NavLink
                         end
                         className={cx('subnav-item')}
-                        to={routes.artist_manageAlbum_specifiedAlbum_nested_edit}
+                        to={routes.podcaster_managePodcast_specifiedPodcast_nested_edit}
                     >
                         {t('Edit')}
                     </NavLink>
                     <NavLink
                         className={cx('subnav-item')}
-                        to={routes.artist_manageAlbum_specifiedAlbum_nested_tracksOfAlbum}
+                        to={routes.podcaster_managePodcast_specifiedPodcast_nested_episodesOfPodcast}
                     >
                         {t('Episodes')}
                     </NavLink>
@@ -35,12 +35,12 @@ const SpecifiedAlbum = () => {
             )}
             <div className={cx('main')}>
                 <Routes>
-                    <Route path='' element={<AlbumForm />} />
-                    {id !== 'new-episode' && <Route path='tracks' element={<TracksOfAlbum />} />}
+                    <Route path='' element={<PodcastForm />} />
+                    {id !== 'new-podcast' && <Route path='episodes' element={<EpisodesOfPodcast />} />}
                 </Routes>
             </div>
         </div>
     );
 };
 
-export default SpecifiedAlbum;
+export default SpecifiedPodcast;

@@ -14,42 +14,45 @@ import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import { useTranslation } from 'react-i18next';
 import Moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert';
+import { toast } from 'react-toastify';
 
 import styles from './styles.scoped.scss';
 import { routes } from '~/config';
 import { useAuth, useDebounce } from '~/hooks';
 import axiosInstance from '~/api/axiosInstance';
-import { getArtistAlbumsUrl } from '~/api/urls/artistsUrl';
-import { toggleReleaseAlbumUrl, deleteAlbumUrl } from '~/api/urls/albumsUrl';
-import { toast } from 'react-toastify';
+// import { getArtistAlbumsUrl } from '~/api/urls/artistsUrl';
+import { getPodcasterPodcastsUrl } from '~/api/urls/podcastersUrl';
+// import { toggleReleaseAlbumUrl, deleteAlbumUrl } from '~/api/urls/albumsUrl';
+import { toggleReleasePodcastUrl, deletePodcastUrl } from '~/api/urls/podcastsUrl';
 
 const cx = classNames.bind(styles);
 
-const ManageAlbum = () => {
-    const [searchAlbum, setSearchAlbum] = useState('');
+const ManagePodcast = () => {
+    const [searchPodcast, setSearchPodcast] = useState('');
     const [rows, setRows] = useState([]);
     const [update, setUpdate] = useState(false);
 
-    const searchAlbumInputRef = useRef();
-    const debouncedValue = useDebounce(searchAlbum, 500);
+    const searchPodcastInputRef = useRef();
+    const debouncedValue = useDebounce(searchPodcast, 500);
     const { userId } = useAuth();
     const { t } = useTranslation();
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await axiosInstance(getArtistAlbumsUrl(userId), {
-                params: { search: searchAlbum, context: 'detail' },
+            const { data } = await axiosInstance(getPodcasterPodcastsUrl(userId), {
+                params: { search: searchPodcast, context: 'detail' },
             });
             setRows(data.data);
+            console.log(data.data);
         };
 
         fetchData().catch(console.error);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedValue, userId, update]);
 
-    const handleDeleteAlbum = async (id) => {
+    const handleDeletePodcast = async (id) => {
         try {
-            const { data } = await axiosInstance.delete(deleteAlbumUrl(id));
+            const { data } = await axiosInstance.delete(deletePodcastUrl(id));
             setUpdate((prev) => !prev);
             toast.success(data.message);
         } catch (error) {
@@ -57,9 +60,9 @@ const ManageAlbum = () => {
         }
     };
 
-    const handleToggleReleaseAlbum = async (id) => {
+    const handleToggleReleasePodcast = async (id) => {
         try {
-            const { data } = await axiosInstance.put(toggleReleaseAlbumUrl(id), {});
+            const { data } = await axiosInstance.put(toggleReleasePodcastUrl(id), {});
             setUpdate((prev) => !prev);
             toast.success(data.message);
         } catch (error) {
@@ -82,16 +85,16 @@ const ManageAlbum = () => {
             flex: 1,
         },
         {
-            field: 'tracks',
-            headerName: t('Tracks'),
+            field: 'episodes',
+            headerName: t('Episodes'),
             flex: 1,
-            valueGetter: (params) => params.row.tracks.length,
+            valueGetter: (params) => params.row.episodes.length,
         },
-        {
-            field: 'type',
-            headerName: t('Type'),
-            flex: 1,
-        },
+        // {
+        //     field: 'type',
+        //     headerName: t('Type'),
+        //     flex: 1,
+        // },
         {
             field: 'saved',
             headerName: t('Saved'),
@@ -127,7 +130,7 @@ const ManageAlbum = () => {
             sortable: false,
             renderCell: (params) => (
                 <div>
-                    <Link to={routes.artist_manageAlbum + `/${params.row._id}`}>
+                    <Link to={routes.podcaster_managePodcast + `/${params.row._id}`}>
                         <IconButton>
                             <EditIcon fontSize='large' />
                         </IconButton>
@@ -137,13 +140,13 @@ const ManageAlbum = () => {
                             color='error'
                             onClick={() =>
                                 confirmAlert({
-                                    title: t('Confirm to unrelease this album'),
+                                    title: t('Confirm to unrelease this podcast'),
 
                                     message: t('Are you sure to do this.'),
                                     buttons: [
                                         {
                                             label: t('Yes'),
-                                            onClick: () => handleToggleReleaseAlbum(params.row._id),
+                                            onClick: () => handleToggleReleasePodcast(params.row._id),
                                         },
                                         {
                                             label: t('No'),
@@ -159,13 +162,13 @@ const ManageAlbum = () => {
                             color='success'
                             onClick={() =>
                                 confirmAlert({
-                                    title: t('Confirm to release this album'),
+                                    title: t('Confirm to release this podcast'),
 
                                     message: t('Are you sure to do this.'),
                                     buttons: [
                                         {
                                             label: t('Yes'),
-                                            onClick: () => handleToggleReleaseAlbum(params.row._id),
+                                            onClick: () => handleToggleReleasePodcast(params.row._id),
                                         },
                                         {
                                             label: t('No'),
@@ -183,13 +186,13 @@ const ManageAlbum = () => {
                         color='error'
                         onClick={() =>
                             confirmAlert({
-                                title: t('Confirm to delete this album'),
+                                title: t('Confirm to delete this podcast'),
 
                                 message: t('Are you sure to do this.'),
                                 buttons: [
                                     {
                                         label: t('Yes'),
-                                        onClick: () => handleDeleteAlbum(params.row._id),
+                                        onClick: () => handleDeletePodcast(params.row._id),
                                     },
                                     {
                                         label: t('No'),
@@ -208,8 +211,8 @@ const ManageAlbum = () => {
     return (
         <div className={cx('container')}>
             <div className={cx('header')}>
-                <h1>{t('My Albums')}</h1>
-                <Link to={routes.artist_manageAlbum + '/new-album'}>
+                <h1>{t('My Podcasts')}</h1>
+                <Link to={routes.podcaster_managePodcast + '/new-podcast'}>
                     <Button
                         size='large'
                         color='secondary'
@@ -220,7 +223,7 @@ const ManageAlbum = () => {
                             fontWeight: '600',
                         }}
                     >
-                        {t('Add new album')}
+                        {t('Add new podcast')}
                     </Button>
                 </Link>
             </div>
@@ -230,12 +233,12 @@ const ManageAlbum = () => {
                 </IconButton>
                 <input
                     type='text'
-                    placeholder={t('Search for my album')}
-                    value={searchAlbum}
-                    ref={searchAlbumInputRef}
-                    onChange={() => setSearchAlbum(searchAlbumInputRef.current.value)}
+                    placeholder={t('Search for my podcast')}
+                    value={searchPodcast}
+                    ref={searchPodcastInputRef}
+                    onChange={() => setSearchPodcast(searchPodcastInputRef.current.value)}
                 />
-                <IconButton onClick={() => setSearchAlbum('')}>
+                <IconButton onClick={() => setSearchPodcast('')}>
                     <ClearIcon />
                 </IconButton>
             </div>
@@ -256,4 +259,4 @@ const ManageAlbum = () => {
     );
 };
 
-export default ManageAlbum;
+export default ManagePodcast;

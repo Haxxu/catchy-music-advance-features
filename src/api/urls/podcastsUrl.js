@@ -10,22 +10,22 @@ export const getAlbumsByContextUrl = baseApiUrl + '/albums/context';
 export const getAlbumsByTagsUrl = baseApiUrl + '/albums/tags';
 
 // [GEt] (userauth)
-export const getAlbumByIdUrl = (id) => baseApiUrl + `/albums/${id}`;
+export const getPodcastByIdUrl = (id) => baseApiUrl + `/podcasts/${id}`;
 
 // [POST]
-export const createAlbumUrl = baseApiUrl + `/albums`;
+export const createPodcastUrl = baseApiUrl + `/podcasts`;
 
 // [PUT] update album
-export const updateAlbumUrl = (id) => `/albums/${id}`;
+export const updatePodcastUrl = (id) => `/podcasts/${id}`;
 
-// [DELETE] (admin, artist owner)
-export const deleteAlbumUrl = (id) => baseApiUrl + `/albums/${id}`;
+// [DELETE] (admin, podcaster owner)
+export const deletePodcastUrl = (id) => baseApiUrl + `/podcasts/${id}`;
 
-// [PUT] (admin, artist owner)
-export const toggleReleaseAlbumUrl = (id) => baseApiUrl + `/albums/${id}/release`;
+// [PUT] (admin, podcaster owner)
+export const toggleReleasePodcastUrl = (id) => baseApiUrl + `/podcasts/${id}/release`;
 
 // [DELETE] remove episode from podcast
 export const removeEpisodeFromPodcastUrl = (id) => baseApiUrl + `/podcasts/${id}/episodes`;
 
-// [POST] add track from album
+// [POST] add episode from podcast
 export const addEpisodeToPodcastUrl = (id) => baseApiUrl + `/podcasts/${id}/episodes`;

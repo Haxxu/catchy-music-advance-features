@@ -5,8 +5,8 @@ import PodcasterDashboardLayout from '~/layouts/PodcasterDashboardLayout';
 import Dashboard from '~/pages/podcasterdashboard/Dashboard';
 import ManageEpisode from '~/pages/podcasterdashboard/ManageEpisode';
 import SpecifiedTrack from '~/pages/podcasterdashboard/SpecifiedTrack';
-import ManageAlbum from '~/pages/podcasterdashboard/ManageAlbum';
-import SpecifiedAlbum from '~/pages/podcasterdashboard/SpecifiedAlbum';
+import ManagePodcast from '~/pages/podcasterdashboard/ManagePodcast';
+import SpecifiedPodcast from '~/pages/podcasterdashboard/SpecifiedPodcast';
 
 const podcasterRoutes = [
     // dashboard
@@ -30,13 +30,13 @@ const podcasterRoutes = [
     },
     {
         path: routes.podcaster_managePodcast,
-        component: ManageAlbum,
+        component: ManagePodcast,
         layout: PodcasterDashboardLayout,
         roles: [roles.podcaster],
     },
     {
         path: routes.podcaster_managePodcast_specifiedPodcast,
-        component: SpecifiedAlbum,
+        component: SpecifiedPodcast,
         layout: PodcasterDashboardLayout,
         roles: [roles.podcaster],
     },

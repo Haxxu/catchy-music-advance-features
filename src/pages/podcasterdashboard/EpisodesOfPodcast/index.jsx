@@ -14,14 +14,14 @@ import { toast } from 'react-toastify';
 
 import { useAuth, useDebounce } from '~/hooks';
 import axiosInstance from '~/api/axiosInstance';
-import { getArtistTracksUrl } from '~/api/urls/artistsUrl';
+import { getPodcasterEpisodesUrl } from '~/api/urls/podcastersUrl';
 import { fancyTimeFormat } from '~/utils/Format';
 import styles from './styles.scoped.scss';
-import { getAlbumByIdUrl, addTrackToAlbumUrl, removeTrackFromAlbumUrl } from '~/api/urls/albumsUrl';
+import { getPodcastByIdUrl, addEpisodeToPodcastUrl, removeEpisodeFromPodcastUrl } from '~/api/urls/podcastsUrl';
 
 const cx = classNames.bind(styles);
 
-const TracksOfAlbums = () => {
+const EpisodesOfPodcast = () => {
     const [searchTrack, setSearchTrack] = useState('');
     const [rows, setRows] = useState([]);
     const [tracks, setTracks] = useState([]);
@@ -29,18 +29,20 @@ const TracksOfAlbums = () => {
 
     const searchTrackInputRef = useRef();
     const debouncedValue = useDebounce(searchTrack, 500);
-    const { id: albumId } = useParams();
+    const { id: podcastId } = useParams();
     const { userId } = useAuth();
     const { t } = useTranslation();
 
-    const handleAddTrackToAlbum = async (albumId, trackId) => {
-        const { data } = await axiosInstance.post(addTrackToAlbumUrl(albumId), { track: trackId });
+    const handleAddEpisodeToPodcast = async (podcastId, trackId) => {
+        const { data } = await axiosInstance.post(addEpisodeToPodcastUrl(podcastId), { track: trackId });
         setUpdate((prev) => !prev);
         toast.success(data.message);
     };
 
-    const handleRemoveTrackFromAlbum = async (albumId, trackId) => {
-        const { data } = await axiosInstance.delete(removeTrackFromAlbumUrl(albumId), { data: { track: trackId } });
+    const handleRemoveEpisodeFromPodcast = async (podcastId, trackId) => {
+        const { data } = await axiosInstance.delete(removeEpisodeFromPodcastUrl(podcastId), {
+            data: { track: trackId },
+        });
         setUpdate((prev) => !prev);
         toast.success(data.message);
     };
@@ -61,7 +63,7 @@ const TracksOfAlbums = () => {
         },
         {
             field: 'artists',
-            headerName: t('Artists'),
+            headerName: t('Podcasters'),
             flex: 1,
             renderCell: (params) => {
                 return (
@@ -86,8 +88,8 @@ const TracksOfAlbums = () => {
             valueGetter: (params) => Moment(params.row.createdAt).format('DD-MM-YYYY'),
         },
         {
-            field: 'alreadyInAlbum',
-            headerName: t('Already in album'),
+            field: 'alreadyInPodcast',
+            headerName: t('Already in podcast'),
             flex: 1,
             renderCell: (params) => {
                 let flag = tracks.find((item) => item.track._id === params.row._id);
@@ -113,13 +115,14 @@ const TracksOfAlbums = () => {
                                 variant='contained'
                                 onClick={() =>
                                     confirmAlert({
-                                        title: t('Confirm to remove this track from album'),
+                                        title: t('Confirm to remove this episode from podcast'),
 
                                         message: t('Are you sure to do this.'),
                                         buttons: [
                                             {
                                                 label: t('Yes'),
-                                                onClick: () => handleRemoveTrackFromAlbum(albumId, params.row._id),
+                                                onClick: () =>
+                                                    handleRemoveEpisodeFromPodcast(podcastId, params.row._id),
                                             },
                                             {
                                                 label: t('No'),
@@ -128,7 +131,7 @@ const TracksOfAlbums = () => {
                                     })
                                 }
                             >
-                                {t('Remove track')}
+                                {t('Remove episode')}
                             </Button>
                         </div>
                     );
@@ -140,12 +143,12 @@ const TracksOfAlbums = () => {
                                 variant='contained'
                                 onClick={() =>
                                     confirmAlert({
-                                        title: t('Confirm to add this track to album'),
+                                        title: t('Confirm to add this episode to podcast'),
                                         message: t('Are you sure to do this.'),
                                         buttons: [
                                             {
                                                 label: t('Yes'),
-                                                onClick: () => handleAddTrackToAlbum(albumId, params.row._id),
+                                                onClick: () => handleAddEpisodeToPodcast(podcastId, params.row._id),
                                             },
                                             {
                                                 label: t('No'),
@@ -154,7 +157,7 @@ const TracksOfAlbums = () => {
                                     })
                                 }
                             >
-                                {t('Add track')}
+                                {t('Add episode')}
                             </Button>
                         </div>
                     );
@@ -165,13 +168,13 @@ const TracksOfAlbums = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await axiosInstance.get(getArtistTracksUrl(userId), {
+            const { data } = await axiosInstance.get(getPodcasterEpisodesUrl(userId), {
                 params: { search: searchTrack },
             });
-            const { data: album } = await axiosInstance.get(getAlbumByIdUrl(albumId));
-
+            const { data: podcast } = await axiosInstance.get(getPodcastByIdUrl(podcastId));
+            console.log(data.data);
             setRows(data.data);
-            setTracks(album.data.tracks);
+            setTracks(podcast.data.episodes);
         };
 
         fetchData().catch(console.error);
@@ -181,7 +184,7 @@ const TracksOfAlbums = () => {
     return (
         <div className={cx('container')}>
             <div className={cx('header')}>
-                <h1>{t('My Tracks')}</h1>
+                <h1>{t('My Episodes')}</h1>
             </div>
             <div className={cx('input-container')}>
                 <IconButton>
@@ -189,7 +192,7 @@ const TracksOfAlbums = () => {
                 </IconButton>
                 <input
                     type='text'
-                    placeholder={t('Search for my track')}
+                    placeholder={t('Search for my episode')}
                     value={searchTrack}
                     ref={searchTrackInputRef}
                     onChange={() => setSearchTrack(searchTrackInputRef.current.value)}
@@ -215,4 +218,4 @@ const TracksOfAlbums = () => {
     );
 };
 
-export default TracksOfAlbums;
+export default EpisodesOfPodcast;

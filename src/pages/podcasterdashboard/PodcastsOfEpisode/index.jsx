@@ -84,7 +84,7 @@ const PodcastsOfEpisode = () => {
             valueGetter: (params) => params.row.episodes.length,
         },
         {
-            field: 'alreayhavetrack',
+            field: 'alreayhaveepisode',
             headerName: t('Already have episode'),
             flex: 1,
             renderCell: (params) => {

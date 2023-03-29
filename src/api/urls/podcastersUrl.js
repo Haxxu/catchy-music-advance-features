@@ -15,5 +15,5 @@ export const getArtistByIdUrl = (id) => baseApiUrl + `/artists/${id}`;
 // [GET]
 export const getPodcasterEpisodesUrl = (id) => baseApiUrl + `/podcasters/${id}/episodes`;
 
-// [GET] get artist albums
+// [GET] get podcaster podcasts
 export const getPodcasterPodcastsUrl = (id) => baseApiUrl + `/podcasters/${id}/podcasts`;
