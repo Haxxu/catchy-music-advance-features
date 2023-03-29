@@ -12,10 +12,12 @@ class PodcastService {
             description: payload.description,
             episodes: [...payload.episodes],
             images: [...payload.images],
+            image: payload.image,
             categories: [...payload.categories],
             date: payload.date,
             month: payload.month,
             year: payload.year,
+            isReleased: payload.isReleased,
         };
         return podcast;
     }

@@ -16,6 +16,7 @@ const podcastSchema = new mongoose.Schema(
             },
         ],
         images: [{ type: String }],
+        image: { type: String, default: '' },
         saved: { type: Number, default: 0 },
         categories: [{ type: String }],
         date: { type: String, required: true },
@@ -31,11 +32,13 @@ const validatePodcast = (podcast) => {
         name: Joi.string().required(),
         description: Joi.string().allow(''),
         episodes: Joi.array().items(Joi.object()),
+        image: Joi.string().allow(''),
         images: Joi.array().items(Joi.string()),
         categories: Joi.array().items(Joi.string()),
         date: Joi.string().required(),
         month: Joi.string().required(),
         year: Joi.string().required(),
+        isReleased: Joi.boolean(),
     });
 
     return schema.validate(podcast);

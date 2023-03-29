@@ -8,6 +8,44 @@ const LibraryService = require('../services/LibraryService');
 const PlaylistService = require('../services/PlaylistService');
 
 class PodcastController {
+    // get podcast by id (get released podcast or podcast podcaster own)
+    async getPodcastById(req, res, next) {
+        try {
+            const podcast = await Podcast.findById(req.params.id)
+                .populate({ path: 'owner', select: '_id name' })
+                .lean();
+            if (!podcast) {
+                return res.status(404).send({ message: 'Podcast does not exist' });
+            }
+
+            if (podcast.isReleased || podcast.owner._id.toString() === req.user._id) {
+                const detailTracks = [];
+                let position = 0;
+                for (let track of podcast.episodes) {
+                    const t = await TrackService.findOne({ _id: track.track });
+                    detailTracks.push({
+                        ...track,
+                        track: t,
+                        trackType: t.type,
+                        context_uri: 'podcast' + ':' + podcast._id + ':' + t._id + ':' + podcast._id + ':podcast',
+                        position: position,
+                    });
+                    position++;
+                }
+
+                return res.status(200).send({
+                    data: { ...podcast, episodes: detailTracks },
+                    message: 'Get podcast successfully',
+                });
+            } else {
+                return res.status(403).send({ message: 'Podcast does not release' });
+            }
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
     async createPodcast(req, res, next) {
         try {
             const { error } = validatePodcast(req.body);
@@ -16,6 +54,7 @@ class PodcastController {
             }
 
             const payload = {
+                categories: [],
                 ...req.body,
                 owner: req.user._id,
             };
