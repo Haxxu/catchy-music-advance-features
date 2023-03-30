@@ -48,6 +48,95 @@ class PodcastController {
         }
     }
 
+    async getPodcastsByTags(req, res, next) {
+        try {
+            if (req.query.tags) {
+                const tags = req.query.tags;
+
+                let popularPodcasts;
+                let newReleasePodcasts;
+                let randomPodcasts;
+
+                if (tags.includes('popular')) {
+                    const podcasts = await Podcast.find({ isReleased: true })
+                        .sort({ saved: 'desc' })
+                        .populate({ path: 'owner', select: '_id name' })
+                        .limit(8)
+                        .lean();
+
+                    popularPodcasts = podcasts.map((podcast) => {
+                        if (podcast.episodes.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+                }
+
+                if (tags.includes('new-release')) {
+                    const podcasts = await Podcast.find({ isReleased: true })
+                        .sort({ releaseDate: 'desc' })
+                        .populate({ path: 'owner', select: '_id name' })
+                        .limit(8)
+                        .lean();
+
+                    newReleasePodcasts = podcasts.map((podcast) => {
+                        if (podcast.episodes.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+                }
+
+                if (tags.includes('random')) {
+                    const result = await Podcast.aggregate([
+                        { $match: { isReleased: true } },
+                        { $sample: { size: 8 } },
+                    ]);
+
+                    const podcasts = await Podcast.populate(result, { path: 'owner', select: '_id name' });
+
+                    randomPodcasts = podcasts.map((podcast) => {
+                        if (podcast.episodes.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0].track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+                }
+
+                return res.status(200).send({
+                    data: { popularPodcasts, newReleasePodcasts, randomPodcasts },
+                    message: 'Get podcasts by tags successfully',
+                });
+            }
+
+            return res.status(200).send({ data: [], message: 'Nothing to send' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
     async createPodcast(req, res, next) {
         try {
             const { error } = validatePodcast(req.body);

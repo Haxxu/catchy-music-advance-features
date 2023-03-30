@@ -21,7 +21,7 @@ class PlaylistController {
                 return res.status(404).send({ message: 'Playlist does not exist' });
             }
 
-            if (playlist.owner.type !== 'artist') {
+            if (playlist.owner.type === 'admin') {
                 playlist.owner.type = 'user';
             }
 
@@ -57,6 +57,7 @@ class PlaylistController {
                             ':' +
                             trackContextType,
                         position: position,
+                        trackType: t.type,
                     });
                     position++;
                 }
@@ -203,10 +204,18 @@ class PlaylistController {
                         if (playlist.tracks.length === 0) {
                             return playlist;
                         } else {
+                            let trackContextType, trackContextId;
+                            if (playlist.tracks[0].trackType === 'episode') {
+                                trackContextType = 'podcast';
+                                trackContextId = playlist.tracks[0].podcast;
+                            } else {
+                                trackContextType = 'album';
+                                trackContextId = playlist.tracks[0].album;
+                            }
                             return {
                                 ...playlist,
                                 firstTrack: {
-                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${trackContextId}:${trackContextType}`,
                                     position: 0,
                                 },
                             };
@@ -232,10 +241,18 @@ class PlaylistController {
                         if (playlist.tracks.length === 0) {
                             return playlist;
                         } else {
+                            let trackContextType, trackContextId;
+                            if (playlist.tracks[0].trackType === 'episode') {
+                                trackContextType = 'podcast';
+                                trackContextId = playlist.tracks[0].podcast;
+                            } else {
+                                trackContextType = 'album';
+                                trackContextId = playlist.tracks[0].album;
+                            }
                             return {
                                 ...playlist,
                                 firstTrack: {
-                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${trackContextId}:${trackContextType}`,
                                     position: 0,
                                 },
                             };
@@ -250,10 +267,18 @@ class PlaylistController {
                         if (playlist.tracks.length === 0) {
                             return playlist;
                         } else {
+                            let trackContextType, trackContextId;
+                            if (playlist.tracks[0].trackType === 'episode') {
+                                trackContextType = 'podcast';
+                                trackContextId = playlist.tracks[0].podcast;
+                            } else {
+                                trackContextType = 'album';
+                                trackContextId = playlist.tracks[0].album;
+                            }
                             return {
                                 ...playlist,
                                 firstTrack: {
-                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${trackContextId}:${trackContextType}`,
                                     position: 0,
                                 },
                             };
@@ -586,13 +611,33 @@ class PlaylistController {
                 let position = 0;
                 for (let track of tracks) {
                     const t = await Track.findOne({ _id: track.track });
-                    const a = await Album.findOne({ _id: track.album });
+                    let a, p, trackContextId, trackContextType;
+                    if (t.type === 'episode') {
+                        p = await Podcast.findOne({ _id: track.podcast });
+                        trackContextId = p._id;
+                        trackContextType = 'podcast';
+                    } else {
+                        a = await Album.findOne({ _id: track.album });
+                        trackContextId = a._id;
+                        trackContextType = 'album';
+                    }
                     detailTracks.push({
                         ...track.toObject(),
                         track: t,
                         album: a,
-                        context_uri: 'playlist' + ':' + playlist._id + ':' + t._id + ':' + a._id,
+                        podcast: p,
+                        context_uri:
+                            'playlist' +
+                            ':' +
+                            playlist._id +
+                            ':' +
+                            t._id +
+                            ':' +
+                            trackContextId +
+                            ':' +
+                            trackContextType,
                         position: position,
+                        trackType: t.type,
                     });
                     position++;
                 }

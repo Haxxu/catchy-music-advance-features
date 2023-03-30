@@ -10,7 +10,7 @@ const podcasterAuth = require('../app/middlewares/podcasterAuth');
 router.post('/', podcasterAuth, trackController.createEpisode);
 
 // [GET] /api/episodes/:id => get episode by id
-router.get('/:id', [userAuth, validateObjectId], trackController.getTrackById);
+router.get('/:id', [userAuth, validateObjectId], trackController.getEpisodeById);
 
 // [PUT] /api/episodes/:id => update episode by id
 router.put('/:id', [podcasterAuth, validateObjectId], trackController.updateEpisode);

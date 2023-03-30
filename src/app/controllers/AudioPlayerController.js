@@ -31,6 +31,8 @@ class AudioPlayerController {
             let trackContextId = albumId;
             if (!trackContextType) trackContextType = 'album';
 
+            // console.log(req.body.context_uri);
+
             if (contextType === 'album') {
                 const album = await Album.findOne({ _id: contextId }).lean();
                 if (!album) {
@@ -39,7 +41,7 @@ class AudioPlayerController {
 
                 const object = {
                     player,
-                    tracks: album.tracks.map((obj) => ({ track: obj.track, album: albumId })),
+                    tracks: album.tracks.map((obj) => ({ track: obj.track, album: albumId, trackType: 'song' })),
                     contextType,
                     contextId,
                     albumId,
@@ -135,7 +137,11 @@ class AudioPlayerController {
 
                 const object = {
                     player,
-                    tracks: podcast.episodes.map((obj) => ({ track: obj.track, podcast: podcast._id })),
+                    tracks: podcast.episodes.map((obj) => ({
+                        track: obj.track,
+                        podcast: trackContextId,
+                        trackType: 'episode',
+                    })),
                     contextType,
                     contextId,
                     albumId,
@@ -145,6 +151,7 @@ class AudioPlayerController {
                     position: req.body.position,
                     context_uri: req.body.context_uri,
                 };
+                // console.log(podcast);
 
                 if (player.shuffle === 'none') {
                     playWithShuffleOff(object);
@@ -154,6 +161,7 @@ class AudioPlayerController {
             }
 
             await player.save();
+            // console.log(player);
             return res.status(200).send({ message: 'Start track successfuly' });
         } catch (err) {
             console.log(err);
@@ -1191,6 +1199,15 @@ const playWithShuffleOff = function ({
             })
             .indexOf(trackId + trackContextId);
     }
+    // console.log({
+    //     test: trackId + trackContextId,
+    //     tracks: tracks.map((obj) => {
+    //         if (obj.trackType === 'episode') return obj.track + obj.podcast;
+    //         return obj.track + obj.album;
+    //     }),
+    // });
+
+    // console.log(index);
     if (index !== -1) {
         player.currentPlayingTrack.track = tracks[index].track;
         player.currentPlayingTrack.album = tracks[index].album;
@@ -1204,6 +1221,8 @@ const playWithShuffleOff = function ({
         player.currentPlayingTrack.position = index;
         player.shuffleTracks = [];
         player.shufflePosition = -1;
+
+        // console.log(player);
 
         // if (player.queue.currentTrackWhenQueueActive.track !== '') {
         //     player.queue.currentTrackWhenQueueActive.track = tracks[index].track;

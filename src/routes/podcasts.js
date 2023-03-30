@@ -12,6 +12,9 @@ router.get('/info', adminAuth, podcastController.getPodcastsInfo);
 // [GET] /api/podcasts/context?search => get podcasts by context
 router.get('/context', adminAuth, podcastController.getPodcastsByContext);
 
+// [GET] /api/podcasts/tags => get podcasts by tags
+router.get('/tags', userAuth, podcastController.getPodcastsByTags);
+
 // [POST] /api/podcasts/:id/episodes => add track to album {track} (:id => album_id)
 router.post('/:id/episodes', [podcasterAuth, validateObjectId], podcastController.addEpisodeToPodcast);
 

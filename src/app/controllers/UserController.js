@@ -7,6 +7,7 @@ const { Playlist } = require('../models/Playlist');
 const { Album } = require('../models/Album');
 const { AudioPlayer } = require('../models/AudioPlayer');
 const { Track } = require('../models/Track');
+const { Podcast } = require('../models/Podcast');
 
 class UserController {
     // Get user by id
@@ -34,10 +35,18 @@ class UserController {
                     if (playlist.tracks.length === 0) {
                         return playlist;
                     } else {
+                        let trackContextType, trackContextId;
+                        if (playlist.tracks[0].trackType === 'episode') {
+                            trackContextType = 'podcast';
+                            trackContextId = playlist.tracks[0].podcast;
+                        } else {
+                            trackContextType = 'album';
+                            trackContextId = playlist.tracks[0].album;
+                        }
                         return {
                             ...playlist,
                             firstTrack: {
-                                context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                                context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${trackContextId}:${trackContextType}`,
                                 position: 0,
                             },
                         };
@@ -81,7 +90,7 @@ class UserController {
                             return {
                                 ...album,
                                 firstTrack: {
-                                    context_uri: `album:${album._id}:${album.tracks[0]?.track}:${album._id}`,
+                                    context_uri: `album:${album._id}:${album.tracks[0]?.track}:${album._id}:album`,
                                     position: 0,
                                 },
                             };
@@ -117,12 +126,68 @@ class UserController {
                         popularTracks.push({
                             track: tracks[i],
                             album: album,
-                            context_uri: 'album' + ':' + album._id + ':' + tracks[i]._id + ':' + album._id,
+                            context_uri: 'album' + ':' + album._id + ':' + tracks[i]._id + ':' + album._id + ':album',
                             position: position,
                         });
                     }
 
                     user.popularTracks = popularTracks;
+                } else if (user.type === 'podcaster') {
+                    const podcasts = await Podcast.find({ isReleased: true, owner: req.params.id })
+                        .populate({ path: 'owner', select: '_id name' })
+                        .sort({ releaseDate: 'desc' })
+                        .lean();
+
+                    const releasedPodcasts = podcasts.map((podcast) => {
+                        if (podcast.episodes.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+
+                    user.releasedPodcasts = releasedPodcasts;
+
+                    const tracks = await Track.find({ owner: req.params.id })
+                        .populate({
+                            path: 'owner',
+                            select: '_id name',
+                        })
+                        .sort({ plays: 'desc' })
+                        .limit(10)
+                        .lean();
+
+                    let trackLenght = tracks.length;
+                    const popularEpisodes = [];
+
+                    for (let i = 0; i < trackLenght; ++i) {
+                        const podcast = await Podcast.findOne({
+                            isReleased: true,
+                            episodes: { $elemMatch: { track: tracks[i]._id } },
+                        }).lean();
+
+                        if (!podcast) {
+                            continue;
+                        }
+
+                        let position = podcast.episodes.map((item) => item.track).indexOf(tracks[i]._id.toString());
+
+                        popularEpisodes.push({
+                            track: tracks[i],
+                            podcast: podcast,
+                            context_uri:
+                                'podcast' + ':' + podcast._id + ':' + tracks[i]._id + ':' + podcast._id + ':podcast',
+                            position: position,
+                        });
+                    }
+
+                    user.popularEpisodes = popularEpisodes;
                 }
             }
 

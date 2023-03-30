@@ -93,7 +93,7 @@ class TrackController {
                         .lean();
 
                     const popularPodcasts = podcasts.map((podcast) => {
-                        if (podcast.tracks.length === 0) {
+                        if (podcast.episodes.length === 0) {
                             return podcast;
                         } else {
                             return {
