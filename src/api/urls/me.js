@@ -63,6 +63,9 @@ export const checkSavedAlbumUrl = baseApiUrl + '/me/albums/contains';
 // [GET] check saved playlist
 export const checkSavedPlaylistUrl = baseApiUrl + '/me/playlists/contains';
 
+// [GET] check liked episode
+export const checkLikedEpisodeUrl = baseApiUrl + '/me/episodes/contains';
+
 // [GET] check following user
 export const checkFollowingUserUrl = baseApiUrl + '/me/following/contains';
 
@@ -89,3 +92,9 @@ export const followUserUrl = baseApiUrl + '/me/following';
 
 // [PUT] save playlist to library
 export const unfollowUserUrl = baseApiUrl + '/me/following';
+
+// [DELETE] remove liked episode from library
+export const removeLikedEpisodeFromLibraryUrl = baseApiUrl + '/me/episodes';
+
+// [PUT] save episode to library
+export const saveEpisodeToLibraryUrl = baseApiUrl + '/me/episodes';

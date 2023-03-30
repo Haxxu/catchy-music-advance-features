@@ -167,7 +167,7 @@ const Playlist = () => {
                                 <TableRow>
                                     <TableCell align='center'>#</TableCell>
                                     <TableCell align='left'>{t('Track')}</TableCell>
-                                    <TableCell align='left'>{t('Album')}</TableCell>
+                                    <TableCell align='left'>{t('Album or podcast')}</TableCell>
                                     <TableCell align='left'>{t('Added Date')}</TableCell>
                                     <TableCell align='left' />
                                     <TableCell align='left'>
@@ -254,26 +254,48 @@ const Playlist = () => {
                                                         </div>
                                                         <div className={cx('right')}>
                                                             <div className={cx('name')}>
-                                                                <Link
-                                                                    to={`/track/${item?.track?._id}/album/${
-                                                                        item?.album?._id
-                                                                    }/`}
-                                                                    className={cx('name-link', {
-                                                                        active:
-                                                                            context.context_uri === item.context_uri,
-                                                                    })}
-                                                                >
-                                                                    {item?.track.name}
-                                                                </Link>
+                                                                {item.trackType === 'episode' ? (
+                                                                    <Link
+                                                                        to={`/episode/${item?.track?._id}/podcast/${
+                                                                            item?.podcast?._id
+                                                                        }/`}
+                                                                        className={cx('name-link', {
+                                                                            active:
+                                                                                context.context_uri ===
+                                                                                item.context_uri,
+                                                                        })}
+                                                                    >
+                                                                        {item?.track.name}
+                                                                    </Link>
+                                                                ) : (
+                                                                    <Link
+                                                                        to={`/track/${item?.track?._id}/album/${
+                                                                            item?.album?._id
+                                                                        }/`}
+                                                                        className={cx('name-link', {
+                                                                            active:
+                                                                                context.context_uri ===
+                                                                                item.context_uri,
+                                                                        })}
+                                                                    >
+                                                                        {item?.track.name}
+                                                                    </Link>
+                                                                )}
                                                             </div>
                                                             <div className={cx('artists')}>
                                                                 {item?.track?.artists.map((artist, index) => {
                                                                     return (
                                                                         <span key={index}>
                                                                             {index !== 0 ? ', ' : ''}
-                                                                            <Link to={`/artist/${artist.id}`}>
-                                                                                {artist.name}
-                                                                            </Link>
+                                                                            {item.trackType === 'episode' ? (
+                                                                                <Link to={`/podcaster/${artist.id}`}>
+                                                                                    {artist.name}
+                                                                                </Link>
+                                                                            ) : (
+                                                                                <Link to={`/artist/${artist.id}`}>
+                                                                                    {artist.name}
+                                                                                </Link>
+                                                                            )}
                                                                         </span>
                                                                     );
                                                                 })}
@@ -283,12 +305,21 @@ const Playlist = () => {
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     <div className={cx('album-name')}>
-                                                        <Link
-                                                            className={cx('album-name-link')}
-                                                            to={`/album/${item?.album._id}`}
-                                                        >
-                                                            {item?.album.name}
-                                                        </Link>
+                                                        {item.trackType === 'episode' ? (
+                                                            <Link
+                                                                className={cx('album-name-link')}
+                                                                to={`/podcast/${item?.podcast._id}`}
+                                                            >
+                                                                {item?.podcast.name}
+                                                            </Link>
+                                                        ) : (
+                                                            <Link
+                                                                className={cx('album-name-link')}
+                                                                to={`/album/${item?.album._id}`}
+                                                            >
+                                                                {item?.album.name}
+                                                            </Link>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
@@ -297,11 +328,19 @@ const Playlist = () => {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    <Like
-                                                        type='track'
-                                                        trackId={item?.track._id}
-                                                        albumId={item?.album._id}
-                                                    />
+                                                    {item.trackType === 'episode' ? (
+                                                        <Like
+                                                            type='episode'
+                                                            trackId={item?.track._id}
+                                                            podcastId={item?.podcast._id}
+                                                        />
+                                                    ) : (
+                                                        <Like
+                                                            type='track'
+                                                            trackId={item?.track._id}
+                                                            albumId={item?.album._id}
+                                                        />
+                                                    )}
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     <div className={cx('duration')}>
@@ -312,12 +351,14 @@ const Playlist = () => {
                                                     <div className={cx('track-menu')}>
                                                         <TrackMenu
                                                             trackId={item?.track._id}
-                                                            albumId={item?.album._id}
+                                                            albumId={item?.album?._id}
+                                                            podcastId={item?.podcast?._id}
                                                             playlistId={playlist?._id}
                                                             artists={item?.track.artists}
                                                             context_uri={item?.context_uri}
                                                             position={item?.position}
                                                             inPage='playlist'
+                                                            trackType={item.trackType}
                                                             playlistOwnerId={playlist?.owner?._id}
                                                         />
                                                     </div>

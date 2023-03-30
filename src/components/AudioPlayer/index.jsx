@@ -178,6 +178,11 @@ const AudioPlayer = () => {
                 </div>
                 <div className={cx('info')}>
                     <div className={cx('name')}>
+                        {currentTrack?.trackType === 'episode' ? (
+                            <Link to={`/podcast/${currentTrack?.podcast}`}>{currentTrack?.detailTrack?.name}</Link>
+                        ) : (
+                            <Link to={`/album/${currentTrack?.album}`}>{currentTrack?.detailTrack?.name}</Link>
+                        )}
                         <Link to={`/album/${currentTrack?.album}`}>{currentTrack?.detailTrack?.name}</Link>
                     </div>
                     <div className={cx('artists')}>
@@ -185,19 +190,33 @@ const AudioPlayer = () => {
                             return (
                                 <span key={index}>
                                     {index !== 0 ? ', ' : ''}
-                                    <Link to={`/artist/${artist.id}`}>{artist.name}</Link>
+
+                                    {currentTrack?.trackType === 'episode' ? (
+                                        <Link to={`/podcaster/${artist.id}`}>{artist.name}</Link>
+                                    ) : (
+                                        <Link to={`/artist/${artist.id}`}>{artist.name}</Link>
+                                    )}
                                 </span>
                             );
                         })}
                     </div>
                 </div>
                 <div className={cx('like')}>
-                    <Like
-                        type='track'
-                        size='normal'
-                        trackId={currentTrack?.detailTrack?._id}
-                        albumId={currentTrack?.detailAlbum?._id}
-                    />
+                    {currentTrack?.trackType === 'episode' ? (
+                        <Like
+                            type='episode'
+                            size='normal'
+                            trackId={currentTrack?.detailTrack?._id}
+                            podcastId={currentTrack?.detailPodcast?._id}
+                        />
+                    ) : (
+                        <Like
+                            type='track'
+                            size='normal'
+                            trackId={currentTrack?.detailTrack?._id}
+                            albumId={currentTrack?.detailAlbum?._id}
+                        />
+                    )}
                 </div>
             </div>
             <div className={cx('center')}>

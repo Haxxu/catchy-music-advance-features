@@ -11,7 +11,7 @@ import styles from './styles.module.scss';
 import axiosInstance from '~/api/axiosInstance';
 import { addItemsToQueueUrl, removeItemsFromQueueUrl } from '~/api/urls/me';
 import AddToPlaylistMenu from '~/components/AddToPlaylistMenu';
-import { removeLikedTrackFromLibraryUrl } from '~/api/urls/me';
+import { removeLikedTrackFromLibraryUrl, removeLikedEpisodeFromLibraryUrl } from '~/api/urls/me';
 import { updateLikeTrackState, updatePlaylistState, updateQueueState } from '~/redux/updateStateSlice';
 import { removeTrackFromPlaylistUrl } from '~/api/urls/playlistsUrl';
 import { useAuth } from '~/hooks';
@@ -23,12 +23,16 @@ const TrackMenu = ({
     trackId,
     albumId,
     playlistId,
+    podcastId,
+    trackType = 'song',
     artists,
     context_uri,
     position,
     inPage = 'playlist',
     order,
     playlistOwnerId,
+    albumOwnerId,
+    podcastOwnerId,
 }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -47,6 +51,7 @@ const TrackMenu = ({
 
     const addTrackToQueue = async () => {
         try {
+            console.log({ context_uri, position });
             const { data } = await axiosInstance.post(addItemsToQueueUrl, { items: [{ context_uri, position }] });
             toast.success(data.message);
             setAnchorEl(null);
@@ -83,6 +88,18 @@ const TrackMenu = ({
         try {
             const { data } = await axiosInstance.delete(removeLikedTrackFromLibraryUrl, {
                 data: { track: trackId, album: albumId },
+            });
+            dispatch(updateLikeTrackState());
+            toast.success(data.message);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const removeEpisodeFromLikedEpisodes = async (trackId, podcastId) => {
+        try {
+            const { data } = await axiosInstance.delete(removeLikedEpisodeFromLibraryUrl, {
+                data: { track: trackId, podcast: podcastId },
             });
             dispatch(updateLikeTrackState());
             toast.success(data.message);
@@ -141,6 +158,14 @@ const TrackMenu = ({
                                     onClick={() => removeTrackFromLikedTracks(trackId, albumId)}
                                 >
                                     {t('Remove from your liked tracks')}
+                                </div>
+                            )}
+                            {inPage === 'liked-episodes' && (
+                                <div
+                                    className={cx('menu-item')}
+                                    onClick={() => removeEpisodeFromLikedEpisodes(trackId, podcastId)}
+                                >
+                                    {t('Remove from your liked episodes')}
                                 </div>
                             )}
                             {inPage === 'playlist' && playlistOwnerId === userId && (

@@ -41,7 +41,6 @@ const Queue = () => {
     const { queueState } = useSelector((state) => state.updateState);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const handlePlayTrack = async (payload) => {
         playTrack(dispatch, payload).catch(console.error);
     };
@@ -73,16 +72,20 @@ const Queue = () => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const { data } = await axiosInstance.get(getQueueUrl);
-            setCurrentTrack(data.data.currentTrack);
-            setTracksInQueue(data.data.tracksInQueue);
-            setNextTracks(data.data.nextTracks);
+        try {
+            const fetchData = async () => {
+                const { data } = await axiosInstance.get(getQueueUrl);
+                setCurrentTrack(data.data.currentTrack);
+                setTracksInQueue(data.data.tracksInQueue);
+                setNextTracks(data.data.nextTracks);
 
-            // console.log(data.data);
-        };
+                // console.log(data.data);
+            };
 
-        fetchData().catch(console.error);
+            fetchData().catch(console.error);
+        } catch (err) {
+            console.log(err);
+        }
     }, [queueState]);
 
     return (
@@ -181,18 +184,33 @@ const Queue = () => {
                                                     </div>
                                                     <div className={cx('right')}>
                                                         <div className={cx('name')}>
-                                                            <Link
-                                                                to={`/track/${currentTrack?.track?._id}/album/${
-                                                                    currentTrack?.album?._id
-                                                                }`}
-                                                                className={cx('name-link', {
-                                                                    active:
-                                                                        context.context_uri ===
-                                                                        currentTrack?.context_uri,
-                                                                })}
-                                                            >
-                                                                {currentTrack?.track?.name}
-                                                            </Link>
+                                                            {context.trackType === 'episode' ? (
+                                                                <Link
+                                                                    to={`/episode/${currentTrack?.track?._id}/podcast/${
+                                                                        currentTrack?.podcast?._id
+                                                                    }`}
+                                                                    className={cx('name-link', {
+                                                                        active:
+                                                                            context.context_uri ===
+                                                                            currentTrack?.context_uri,
+                                                                    })}
+                                                                >
+                                                                    {currentTrack?.track?.name}
+                                                                </Link>
+                                                            ) : (
+                                                                <Link
+                                                                    to={`/track/${currentTrack?.track?._id}/album/${
+                                                                        currentTrack?.album?._id
+                                                                    }`}
+                                                                    className={cx('name-link', {
+                                                                        active:
+                                                                            context.context_uri ===
+                                                                            currentTrack?.context_uri,
+                                                                    })}
+                                                                >
+                                                                    {currentTrack?.track?.name}
+                                                                </Link>
+                                                            )}
                                                         </div>
                                                         <div className={cx('artists')}>
                                                             {currentTrack?.track?.artists.map((artist, index) => {
@@ -211,20 +229,37 @@ const Queue = () => {
                                             </TableCell>
                                             <TableCell align='left'>
                                                 <div className={cx('album-name')}>
-                                                    <Link
-                                                        className={cx('album-name-link')}
-                                                        to={`/album/${currentTrack?.album._id}`}
-                                                    >
-                                                        {currentTrack?.album.name}
-                                                    </Link>
+                                                    {currentTrack?.trackType === 'episode' ? (
+                                                        <Link
+                                                            className={cx('album-name-link')}
+                                                            to={`/podcast/${currentTrack?.podcast._id}`}
+                                                        >
+                                                            {currentTrack?.podcast.name}
+                                                        </Link>
+                                                    ) : (
+                                                        <Link
+                                                            className={cx('album-name-link')}
+                                                            to={`/album/${currentTrack?.album._id}`}
+                                                        >
+                                                            {currentTrack?.album.name}
+                                                        </Link>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell align='left'>
-                                                <Like
-                                                    type='track'
-                                                    trackId={currentTrack?.track._id}
-                                                    albumId={currentTrack?.album._id}
-                                                />
+                                                {currentTrack?.trackType === 'episode' ? (
+                                                    <Like
+                                                        type='episode'
+                                                        trackId={currentTrack?.track._id}
+                                                        podcastId={currentTrack?.podcast._id}
+                                                    />
+                                                ) : (
+                                                    <Like
+                                                        type='track'
+                                                        trackId={currentTrack?.track._id}
+                                                        albumId={currentTrack?.album._id}
+                                                    />
+                                                )}
                                             </TableCell>
                                             <TableCell align='left'>
                                                 <div className={cx('duration')}>
@@ -233,15 +268,27 @@ const Queue = () => {
                                             </TableCell>
                                             <TableCell align='left' sx={{ padding: 0 }}>
                                                 <div className={cx('track-menu')}>
-                                                    <TrackMenu
-                                                        trackId={currentTrack?.track._id}
-                                                        albumId={currentTrack?.album._id}
-                                                        artists={currentTrack?.track.artists}
-                                                        context_uri={currentTrack?.context_uri}
-                                                        position={currentTrack?.position}
-                                                        inPage='album'
-                                                        albumOwnerId={currentTrack?.album?.owner?._id}
-                                                    />
+                                                    {currentTrack.trackType === 'episode' ? (
+                                                        <TrackMenu
+                                                            trackId={currentTrack?.track?._id}
+                                                            podcastId={currentTrack?.podcast?._id}
+                                                            artists={currentTrack?.track.artists}
+                                                            context_uri={currentTrack?.context_uri}
+                                                            position={currentTrack?.position}
+                                                            inPage='podcast'
+                                                            podcastOwnerId={currentTrack?.podcast?.owner?._id}
+                                                        />
+                                                    ) : (
+                                                        <TrackMenu
+                                                            trackId={currentTrack?.track?._id}
+                                                            albumId={currentTrack?.album?._id}
+                                                            artists={currentTrack?.track.artists}
+                                                            context_uri={currentTrack?.context_uri}
+                                                            position={currentTrack?.position}
+                                                            inPage='album'
+                                                            albumOwnerId={currentTrack?.album?.owner?._id}
+                                                        />
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -328,26 +375,47 @@ const Queue = () => {
                                                         </div>
                                                         <div className={cx('right')}>
                                                             <div className={cx('name')}>
-                                                                <Link
-                                                                    to={`/track/${item?.track?._id}/album/${
-                                                                        item?.album?._id
-                                                                    }`}
-                                                                    className={cx('name-link', {
-                                                                        // active:
-                                                                        //     context.context_uri === item?.context_uri,
-                                                                    })}
-                                                                >
-                                                                    {item?.track?.name}
-                                                                </Link>
+                                                                {item.trackType === 'episode' ? (
+                                                                    <Link
+                                                                        to={`/episode/${item?.track?._id}/podcast/${
+                                                                            item?.podcast?._id
+                                                                        }`}
+                                                                        className={cx('name-link', {
+                                                                            // active:
+                                                                            //     context.context_uri === item?.context_uri,
+                                                                        })}
+                                                                    >
+                                                                        {item?.track?.name}
+                                                                    </Link>
+                                                                ) : (
+                                                                    <Link
+                                                                        to={`/track/${item?.track?._id}/album/${
+                                                                            item?.album?._id
+                                                                        }`}
+                                                                        className={cx('name-link', {
+                                                                            // active:
+                                                                            //     context.context_uri === item?.context_uri,
+                                                                        })}
+                                                                    >
+                                                                        {item?.track?.name}
+                                                                    </Link>
+                                                                )}
                                                             </div>
                                                             <div className={cx('artists')}>
                                                                 {item?.track?.artists.map((artist, index) => {
+                                                                    console.log(item.track);
                                                                     return (
                                                                         <span key={index}>
                                                                             {index !== 0 ? ', ' : ''}
-                                                                            <Link to={`/artist/${artist.id}`}>
-                                                                                {artist.name}
-                                                                            </Link>
+                                                                            {item.trackType === 'episode' ? (
+                                                                                <Link to={`/podcaster/${artist.id}`}>
+                                                                                    {artist.name}
+                                                                                </Link>
+                                                                            ) : (
+                                                                                <Link to={`/artist/${artist.id}`}>
+                                                                                    {artist.name}
+                                                                                </Link>
+                                                                            )}
                                                                         </span>
                                                                     );
                                                                 })}
@@ -366,11 +434,19 @@ const Queue = () => {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    <Like
-                                                        type='track'
-                                                        trackId={item?.track._id}
-                                                        albumId={item?.album._id}
-                                                    />
+                                                    {item.trackType === 'episode' ? (
+                                                        <Like
+                                                            type='episode'
+                                                            trackId={item?.track._id}
+                                                            podcastId={item?.podcast._id}
+                                                        />
+                                                    ) : (
+                                                        <Like
+                                                            type='track'
+                                                            trackId={item?.track._id}
+                                                            albumId={item?.album._id}
+                                                        />
+                                                    )}
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     <div className={cx('duration')}>
@@ -379,15 +455,27 @@ const Queue = () => {
                                                 </TableCell>
                                                 <TableCell align='left' sx={{ padding: 0 }}>
                                                     <div className={cx('track-menu')}>
-                                                        <TrackMenu
-                                                            trackId={item?.track._id}
-                                                            albumId={item?.album._id}
-                                                            artists={item?.track.artists}
-                                                            context_uri={item?.context_uri}
-                                                            position={item?.position}
-                                                            inPage='queue'
-                                                            order={item?.order}
-                                                        />
+                                                        {item.trackType === 'episode' ? (
+                                                            <TrackMenu
+                                                                trackId={item?.track._id}
+                                                                podcastId={item?.podcast._id}
+                                                                artists={item?.track.artists}
+                                                                context_uri={item?.context_uri}
+                                                                position={item?.position}
+                                                                inPage='queue'
+                                                                order={item?.order}
+                                                            />
+                                                        ) : (
+                                                            <TrackMenu
+                                                                trackId={item?.track._id}
+                                                                albumId={item?.album._id}
+                                                                artists={item?.track.artists}
+                                                                context_uri={item?.context_uri}
+                                                                position={item?.position}
+                                                                inPage='queue'
+                                                                order={item?.order}
+                                                            />
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -497,11 +585,19 @@ const Queue = () => {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    <Like
-                                                        type='track'
-                                                        trackId={item?.track._id}
-                                                        albumId={item?.album._id}
-                                                    />
+                                                    {item.trackType === 'episode' ? (
+                                                        <Like
+                                                            type='episode'
+                                                            trackId={item?.track._id}
+                                                            podcastId={item?.podcast._id}
+                                                        />
+                                                    ) : (
+                                                        <Like
+                                                            type='track'
+                                                            trackId={item?.track._id}
+                                                            albumId={item?.album._id}
+                                                        />
+                                                    )}
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     <div className={cx('duration')}>

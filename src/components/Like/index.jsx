@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IconButton } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import classNames from 'classnames/bind';
 
 import styles from './styles.scoped.scss';
 import axiosInstance from '~/api/axiosInstance';
 import {
     checkLikedTrackUrl,
+    checkLikedEpisodeUrl,
     checkSavedAlbumUrl,
     checkSavedPlaylistUrl,
     saveTrackToLibraryUrl,
@@ -17,6 +20,8 @@ import {
     removeAlbumFromLibraryUrl,
     savePlaylistToLibraryUrl,
     removePlaylistFromLibraryUrl,
+    saveEpisodeToLibraryUrl,
+    removeLikedEpisodeFromLibraryUrl,
 } from '~/api/urls/me';
 import {
     updateLikeTrackState,
@@ -29,7 +34,7 @@ import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
-const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId }) => {
+const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId }) => {
     const [liked, setLiked] = useState(false);
 
     const { likeTrackState, playlistInSidebarState } = useSelector((state) => state.updateState);
@@ -54,6 +59,14 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId })
                     setLiked(data.data);
                     dispatch(updateAlbumState());
                     toast.success(data.message);
+                } else if (type === 'episode') {
+                    const { data } = await axiosInstance.delete(removeLikedEpisodeFromLibraryUrl, {
+                        data: { track: trackId, podcast: podcastId },
+                    });
+                    setLiked(data.data);
+                    dispatch(updateLikeTrackState());
+                    dispatch(updateQueueState());
+                    toast.success(data.message);
                 } else {
                     const { data } = await axiosInstance.delete(removePlaylistFromLibraryUrl, {
                         data: { playlist: playlistId },
@@ -74,6 +87,15 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId })
                     const { data } = await axiosInstance.put(saveAlbumToLibraryUrl, { album: albumId });
                     setLiked(data.data);
                     dispatch(updateAlbumState());
+                    toast.success(data.message);
+                } else if (type === 'episode') {
+                    const { data } = await axiosInstance.put(saveEpisodeToLibraryUrl, {
+                        track: trackId,
+                        podcast: podcastId,
+                    });
+                    setLiked(data.data);
+                    dispatch(updateLikeTrackState());
+                    dispatch(updateQueueState());
                     toast.success(data.message);
                 } else {
                     const { data } = await axiosInstance.put(savePlaylistToLibraryUrl, { playlist: playlistId });
@@ -96,6 +118,9 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId })
             } else if (type === 'album') {
                 const { data } = await axiosInstance.get(checkSavedAlbumUrl, { params: { albumId } });
                 setLiked(data.data);
+            } else if (type === 'episode') {
+                const { data } = await axiosInstance.get(checkLikedEpisodeUrl, { params: { trackId, podcastId } });
+                setLiked(data.data);
             } else {
                 const { data } = await axiosInstance.get(checkSavedPlaylistUrl, { params: { playlistId } });
                 setLiked(data.data);
@@ -104,12 +129,18 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId })
 
         fetchData().catch(console.error);
         // eslint-disable-next-line
-    }, [liked, trackId, albumId, playlistId, likeTrackState, playlistInSidebarState]);
+    }, [liked, trackId, albumId, playlistId, podcastId, likeTrackState, playlistInSidebarState]);
 
     return (
         <IconButton className={cx('like-btn')} onClick={handleLike} disableRipple>
             {liked ? (
-                <FavoriteIcon className={cx('like-filled', { large: size === 'large' })} />
+                type === 'episode' ? (
+                    <CheckCircleIcon className={cx('like-filled', { large: size === 'large' })} />
+                ) : (
+                    <FavoriteIcon className={cx('like-filled', { large: size === 'large' })} />
+                )
+            ) : type === 'episode' ? (
+                <AddCircleOutlineIcon className={cx('like-outlined', { large: size === 'large' })} />
             ) : (
                 <FavoriteBorderIcon className={cx('like-outlined', { large: size === 'large' })} />
             )}
