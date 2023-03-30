@@ -24,7 +24,7 @@ class AlbumController {
                     detailTracks.push({
                         ...track,
                         track: t,
-                        context_uri: 'album' + ':' + album._id + ':' + t._id + ':' + album._id,
+                        context_uri: 'album' + ':' + album._id + ':' + t._id + ':' + album._id + ':album',
                         position: position,
                     });
                     position++;

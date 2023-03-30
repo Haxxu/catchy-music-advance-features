@@ -7,6 +7,7 @@ const { Album } = require('../models/Album');
 const { Library } = require('../models/Library');
 const { User } = require('../models/User');
 const PodcastService = require('../services/PodcastService');
+const { Podcast } = require('../models/Podcast');
 
 class PlaylistController {
     // get playlist public or playlist (user own)
@@ -30,12 +31,31 @@ class PlaylistController {
 
                 for (let track of playlist.tracks) {
                     const t = await Track.findOne({ _id: track.track });
-                    const a = await Album.findOne({ _id: track.album });
+                    let a, p, trackContextType, trackContextId;
+                    if (t.type === 'episode') {
+                        p = await Podcast.findOne({ _id: track.podcast });
+                        trackContextId = p._id;
+                        trackContextType = 'podcast';
+                    } else {
+                        a = await Album.findOne({ _id: track.album });
+                        trackContextId = a._id;
+                        trackContextType = 'album';
+                    }
                     detailTracks.push({
                         ...track.toObject(),
                         track: t,
                         album: a,
-                        context_uri: 'playlist' + ':' + playlist._id + ':' + t._id + ':' + a._id,
+                        podcast: p,
+                        context_uri:
+                            'playlist' +
+                            ':' +
+                            playlist._id +
+                            ':' +
+                            t._id +
+                            ':' +
+                            trackContextId +
+                            ':' +
+                            trackContextType,
                         position: position,
                     });
                     position++;
@@ -122,7 +142,7 @@ class PlaylistController {
 
             let length = playlists.length;
             for (let i = 0; i < length; ++i) {
-                if (playlists[i]?.owner?.type === 'admin' || playlists[i].owner.type === 'user') {
+                if (playlists[i].owner.type === 'admin' || playlists[i].owner.type === 'user') {
                     playlists[i].owner.type = 'user';
                 }
             }
@@ -142,10 +162,18 @@ class PlaylistController {
                 if (playlist.tracks.length === 0) {
                     return playlist;
                 } else {
+                    let trackContextType, trackContextId;
+                    if (playlist.tracks[0].trackType === 'episode') {
+                        trackContextType = 'podcast';
+                        trackContextId = playlist.tracks[0].podcast;
+                    } else {
+                        trackContextType = 'album';
+                        trackContextId = playlist.tracks[0].album;
+                    }
                     return {
                         ...playlist,
                         firstTrack: {
-                            context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                            context_uri: `playlist:${playlist._id}:${playlist.tracks[0].track}:${trackContextId}:${trackContextType}`,
                             position: 0,
                         },
                     };

@@ -51,8 +51,8 @@ class TrackController {
                         }
                     });
                     track.artists[i].popularAlbums = popularAlbums;
-                    track.artists[i].image = user.image;
-                    track.artists[i].type = user.type;
+                    track.artists[i].image = user?.image;
+                    track.artists[i].type = user?.type;
                 }
 
                 const lyrics = await Lyric.find({ track: track._id })

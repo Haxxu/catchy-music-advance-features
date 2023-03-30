@@ -791,6 +791,7 @@ class AudioPlayerController {
                 podcast: p,
                 context_uri: player.currentPlayingTrack.context_uri,
                 position: player.currentPlayingTrack.position,
+                trackType: t.type,
             };
 
             async function getTracksInQueue(item) {
@@ -909,10 +910,10 @@ class AudioPlayerController {
                             track: track,
                             album: album,
                             podcast: podcast,
-                            context_uri: `playlist:${playlistId}:${track._id}:${album._id}:${
+                            context_uri: `playlist:${playlistId}:${track._id}:${album ? album._id : podcast._id}:${
                                 album ? 'album' : 'podcast'
                             }`,
-                            trackType: album ? 'song' : 'episode',
+                            trackType: track.type,
                             position: index,
                         };
                     }
