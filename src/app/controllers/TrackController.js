@@ -44,7 +44,7 @@ class TrackController {
                             return {
                                 ...album,
                                 firstTrack: {
-                                    context_uri: `album:${album._id}:${album.tracks[0]?.track}:${album._id}`,
+                                    context_uri: `album:${album._id}:${album.tracks[0].track}:${album._id}:album`,
                                     position: 0,
                                 },
                             };
@@ -99,7 +99,7 @@ class TrackController {
                             return {
                                 ...podcast,
                                 firstTrack: {
-                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0].track}:${podcast._id}:podcast`,
                                     position: 0,
                                 },
                             };
@@ -310,14 +310,24 @@ class TrackController {
                 let length = playlist.tracks.length;
                 for (let i = 0; i < length; ++i) {
                     const track = await Track.findOne({ _id: playlist.tracks[i].track }).lean();
-                    const album = await Album.findOne({ _id: playlist.tracks[i].album }).select('name');
-
-                    tracks.push({
-                        ...track,
-                        album: album.name,
-                        albumId: playlist.tracks[i].album,
-                        addedAt: playlist.tracks[i].addedAt,
-                    });
+                    let album, podcast;
+                    if (track.type === 'song') {
+                        album = await Album.findOne({ _id: playlist.tracks[i].album }).select('name');
+                        tracks.push({
+                            ...track,
+                            album: album.name,
+                            albumId: playlist.tracks[i].album,
+                            addedAt: playlist.tracks[i].addedAt,
+                        });
+                    } else if ((track.type = 'episode')) {
+                        podcast = await Podcast.findOne({ _id: playlist.tracks[i].podcast }).select('name');
+                        tracks.push({
+                            ...track,
+                            podcast: podcast.name,
+                            podcastId: playlist.tracks[i].podcast,
+                            addedAt: playlist.tracks[i].addedAt,
+                        });
+                    }
                 }
 
                 return res.status(200).send({ data: tracks, message: 'Get tracks successfully' });
@@ -344,6 +354,7 @@ class TrackController {
 
             return res.status(404).send({ message: 'Tracks not found' });
         } catch (error) {
+            console.log(error);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }

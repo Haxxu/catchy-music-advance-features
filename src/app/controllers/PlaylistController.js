@@ -122,13 +122,14 @@ class PlaylistController {
 
             let length = playlists.length;
             for (let i = 0; i < length; ++i) {
-                if (playlists[i].owner.type !== 'artist') {
+                if (playlists[i]?.owner?.type === 'admin' || playlists[i].owner.type === 'user') {
                     playlists[i].owner.type = 'user';
                 }
             }
 
             return res.status(200).send({ data: playlists, message: 'Get playlists successfully' });
         } catch (error) {
+            console.log(error);
             return res.status(500).send({ message: 'Something went wrong' });
         }
     }
