@@ -22,12 +22,17 @@ import {
     removePlaylistFromLibraryUrl,
     saveEpisodeToLibraryUrl,
     removeLikedEpisodeFromLibraryUrl,
+    removePodcastFromLibraryUrl,
+    savePodcastToLibraryUrl,
+    checkSavedPodcastUrl,
 } from '~/api/urls/me';
 import {
     updateLikeTrackState,
+    updateLikeEpisodeState,
     updatePlaylistInSidebarState,
     updatePlaylistState,
     updateAlbumState,
+    updatePodcastState,
     updateQueueState,
 } from '~/redux/updateStateSlice';
 import { toast } from 'react-toastify';
@@ -37,7 +42,7 @@ const cx = classNames.bind(styles);
 const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId }) => {
     const [liked, setLiked] = useState(false);
 
-    const { likeTrackState, playlistInSidebarState } = useSelector((state) => state.updateState);
+    const { likeTrackState, playlistInSidebarState, likeEpisodeState } = useSelector((state) => state.updateState);
 
     const dispatch = useDispatch();
 
@@ -64,8 +69,15 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                         data: { track: trackId, podcast: podcastId },
                     });
                     setLiked(data.data);
-                    dispatch(updateLikeTrackState());
+                    dispatch(updateLikeEpisodeState());
                     dispatch(updateQueueState());
+                    toast.success(data.message);
+                } else if (type === 'podcast') {
+                    const { data } = await axiosInstance.delete(removePodcastFromLibraryUrl, {
+                        data: { podcast: podcastId },
+                    });
+                    setLiked(data.data);
+                    dispatch(updatePodcastState());
                     toast.success(data.message);
                 } else {
                     const { data } = await axiosInstance.delete(removePlaylistFromLibraryUrl, {
@@ -94,8 +106,13 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                         podcast: podcastId,
                     });
                     setLiked(data.data);
-                    dispatch(updateLikeTrackState());
+                    dispatch(updateLikeEpisodeState());
                     dispatch(updateQueueState());
+                    toast.success(data.message);
+                } else if (type === 'podcast') {
+                    const { data } = await axiosInstance.put(savePodcastToLibraryUrl, { podcast: podcastId });
+                    setLiked(data.data);
+                    dispatch(updatePodcastState());
                     toast.success(data.message);
                 } else {
                     const { data } = await axiosInstance.put(savePlaylistToLibraryUrl, { playlist: playlistId });
@@ -118,6 +135,9 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
             } else if (type === 'album') {
                 const { data } = await axiosInstance.get(checkSavedAlbumUrl, { params: { albumId } });
                 setLiked(data.data);
+            } else if (type === 'podcast') {
+                const { data } = await axiosInstance.get(checkSavedPodcastUrl, { params: { podcastId } });
+                setLiked(data.data);
             } else if (type === 'episode') {
                 const { data } = await axiosInstance.get(checkLikedEpisodeUrl, { params: { trackId, podcastId } });
                 setLiked(data.data);
@@ -129,7 +149,7 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
 
         fetchData().catch(console.error);
         // eslint-disable-next-line
-    }, [liked, trackId, albumId, playlistId, podcastId, likeTrackState, playlistInSidebarState]);
+    }, [liked, trackId, albumId, playlistId, podcastId, likeTrackState, likeEpisodeState, playlistInSidebarState]);
 
     return (
         <IconButton className={cx('like-btn')} onClick={handleLike} disableRipple>

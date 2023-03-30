@@ -61,8 +61,20 @@
         }
 
         .link {
+            display: flex;
+            justify-items: center;
             span {
-                margin-left: 15px;
+                margin-left: 10px;
+            }
+
+            .icon {
+                svg,
+                img {
+                    width: 17px;
+                    height: 17px;
+                    object-fit: contain;
+                    color: var(--dark-green);
+                }
             }
         }
     }

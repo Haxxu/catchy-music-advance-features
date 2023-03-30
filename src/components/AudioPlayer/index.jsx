@@ -183,7 +183,6 @@ const AudioPlayer = () => {
                         ) : (
                             <Link to={`/album/${currentTrack?.album}`}>{currentTrack?.detailTrack?.name}</Link>
                         )}
-                        <Link to={`/album/${currentTrack?.album}`}>{currentTrack?.detailTrack?.name}</Link>
                     </div>
                     <div className={cx('artists')}>
                         {currentTrack?.detailTrack?.artists.map((artist, index) => {

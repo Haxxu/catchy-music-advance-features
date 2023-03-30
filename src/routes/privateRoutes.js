@@ -6,9 +6,12 @@ import Home from '~/pages/Home';
 import Search from '~/pages/Search';
 import Library from '~/pages/Library';
 import LikedTracks from '~/pages/LikedTracks';
+import LikedEpisodes from '~/pages/LikedEpisodes';
 import Playlist from '~/pages/Playlist';
 import Album from '~/pages/Album';
+import Podcast from '~/pages/Podcast';
 import Artist from '~/pages/Artist';
+import Podcaster from '~/pages/Podcaster';
 import Settings from '~/pages/Settings';
 import Profile from '~/pages/Profile';
 import Lyrics from '~/pages/Lyrics';
@@ -16,6 +19,7 @@ import Queue from '~/pages/Queue';
 import Track from '~/pages/Track';
 import User from '~/pages/User';
 import Genre from '~/pages/Genre';
+import Episode from '~/pages/Episode';
 
 const privateRoutes = [
     // Home
@@ -46,6 +50,13 @@ const privateRoutes = [
         layout: MainLayout,
         roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
+    // Liked Episodes
+    {
+        path: routes.likedEpisodes,
+        component: LikedEpisodes,
+        layout: MainLayout,
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
+    },
     // Playlist
     {
         path: routes.playlist,
@@ -60,10 +71,24 @@ const privateRoutes = [
         layout: MainLayout,
         roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
+    // Podcast
+    {
+        path: routes.podcast,
+        component: Podcast,
+        layout: MainLayout,
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
+    },
     // Artist
     {
         path: routes.artist,
         component: Artist,
+        layout: MainLayout,
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
+    },
+    // Podcaster
+    {
+        path: routes.podcaster,
+        component: Podcaster,
         layout: MainLayout,
         roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },
@@ -85,6 +110,13 @@ const privateRoutes = [
     {
         path: routes.track,
         component: Track,
+        layout: MainLayout,
+        roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
+    },
+    // Episode
+    {
+        path: routes.episode,
+        component: Episode,
         layout: MainLayout,
         roles: [roles.user, roles.admin, roles.artist, roles.podcaster],
     },

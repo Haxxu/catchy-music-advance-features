@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import {
     Table,
@@ -13,38 +13,33 @@ import {
     TableBody,
     Avatar,
     CircularProgress,
-    Grid,
 } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 
-import AlbumItem from '~/components/AlbumItem';
 import styles from './styles.scoped.scss';
 import { useAuth } from '~/hooks';
 import { playTrack, pauseTrack } from '~/api/audioPlayer';
 import axiosInstance from '~/api/axiosInstance';
+import { getLikedEpisodessUrl } from '~/api/urls/me';
 import { updateTrack } from '~/redux/audioPlayerSlice';
 import Like from '~/components/Like';
 import { timeAgoFormat, fancyTimeFormat } from '~/utils/Format';
 import TrackMenu from '~/components/TrackMenu';
-import unknownPlaylistImg from '~/assets/images/playlist_unknown.jpg';
-import { getAlbumByIdUrl } from '~/api/urls/albumsUrl';
-import { getArtistAlbumsUrl } from '~/api/urls/artistsUrl';
-import AlbumMenu from '~/components/AlbumMenu';
 import { useTranslation } from 'react-i18next';
 
 const cx = classNames.bind(styles);
 
-const Album = () => {
-    const [album, setAlbum] = useState(null);
-    const [moreAlbums, setMoreAlbums] = useState([]);
+const LikedEpisodes = () => {
+    const [likedEpisodes, setLikedEpisodes] = useState(null);
     const { context, isPlaying } = useSelector((state) => state.audioPlayer);
-    const { albumState } = useSelector((state) => state.updateState);
-    const { id } = useParams();
-    const { userId } = useAuth();
+    const { likeEpisodeState } = useSelector((state) => state.updateState);
+
+    const { userId, name } = useAuth();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -57,10 +52,10 @@ const Album = () => {
     };
 
     const playFirstTrack = async () => {
-        playTrack(dispatch, {
-            context_uri: album?.tracks[0]?.context_uri,
-            position: album?.tracks[0]?.position,
-        }).catch(console.error);
+        playTrack(dispatch, { context_uri: likedEpisodes[0]?.context_uri, position: likedEpisodes[0]?.position }).catch(
+            console.error,
+        );
+
         dispatch(updateTrack());
     };
 
@@ -69,62 +64,47 @@ const Album = () => {
     };
 
     useEffect(() => {
-        const fetchAlbum = async () => {
-            const { data } = await axiosInstance.get(getAlbumByIdUrl(id));
-            setAlbum(data.data);
-            // console.log(data.data);
-            return data.data?.owner?._id;
+        const fetchData = async () => {
+            const { data } = await axiosInstance.get(getLikedEpisodessUrl);
+            setLikedEpisodes(data.data);
+            console.log(data.data);
         };
 
-        const fetchMoreAlbums = async (id) => {
-            const { data } = await axiosInstance.get(getArtistAlbumsUrl(id));
-            setMoreAlbums(data.data);
-            // console.log(data.data);
-        };
-
-        fetchAlbum()
-            .catch(console.error)
-            .then((id) => fetchMoreAlbums(id));
-    }, [id, albumState]);
+        fetchData().catch(console.error);
+    }, [likeEpisodeState]);
 
     return (
         <div className={cx('container')}>
             <div className={cx('header')}>
                 <div className={cx('image')}>
-                    <Avatar
-                        className={cx('image')}
-                        variant='square'
-                        src={album?.image.trim() === '' ? unknownPlaylistImg : album?.image}
-                        alt={album?.name}
-                        sx={{ width: '240px', height: '240px' }}
-                    />
+                    <FavoriteIcon sx={{ width: '80px', height: '80px' }} />
                 </div>
                 <div className={cx('info')}>
-                    <h2 className={cx('type')}>{album?.type === 'single' ? t('SINGLE') : t('ALBUM')}</h2>
-                    <span className={cx('name')}>{album?.name}</span>
-                    {/* <div className='description'>{album?.description}</div> */}
+                    <h2 className={cx('type')}>{t('PLAYLIST')}</h2>
+                    <span className={cx('name')}>{t('Liked Episodes')}</span>
+                    {/* <div className='description'>
+                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam quis eos ipsam dicta veritatis
+                        rem porro odit eligendi molestiae pariatur, blanditiis numquam adipisci voluptatibus velit quos
+                        quo quod sed voluptas!
+                    </div> */}
                     <div className={cx('detail')}>
-                        <Link to={`/artist/${album?.owner?._id}`} className={cx('owner-name')}>
-                            {album?.owner?.name}
+                        <Link to={`/user/${userId}`} className={cx('owner-name')}>
+                            {name}
                         </Link>
-                        <span className={cx('year')}>{album?.year}</span>
-                        <span className={cx('total-saved')}>
-                            {album?.saved} {t('likes')}
-                        </span>
                         <span className={cx('total-tracks')}>
-                            {album?.tracks?.length} {t('tracks')}.{' '}
+                            {likedEpisodes?.length} {t('episodes')}
                         </span>
                         <span className={cx('total-time')}>
                             {t('Total time')}:{' '}
-                            {fancyTimeFormat(album?.tracks?.reduce((sum, item) => sum + item.track.duration, 0))}
+                            {fancyTimeFormat(likedEpisodes?.reduce((sum, item) => sum + item.track.duration, 0))}
                         </span>
                     </div>
                 </div>
             </div>
             <div className={cx('actions')}>
-                {album?.tracks?.length !== 0 && (
-                    <div className={cx('action')}>
-                        {context.contextType === 'album' && context.contextId === id ? (
+                {likedEpisodes?.length !== 0 && (
+                    <>
+                        {context.contextType === 'likedEpisodes' ? (
                             <IconButton className={cx('play-btn')} disableRipple onClick={handleTogglePlay}>
                                 {isPlaying ? (
                                     <PauseCircleIcon
@@ -155,26 +135,18 @@ const Album = () => {
                                 />
                             </IconButton>
                         )}
-                    </div>
+                    </>
                 )}
-
-                {album && album?.owner?._id !== userId && (
-                    <div className={cx('action')}>
-                        <Like type='album' size='large' albumId={album?._id} />
-                    </div>
-                )}
-                <div className={cx('action')}>
-                    <AlbumMenu tracks={album?.tracks} albumOwnerId={album?.owner?._id} albumId={album?._id} />
-                </div>
             </div>
             <div className={cx('content')}>
-                {album?.tracks?.length !== 0 ? (
+                {likedEpisodes?.length !== 0 ? (
                     <TableContainer component={Paper} className={cx('table-container')} sx={{ overflowX: 'inherit' }}>
                         <Table sx={{ minWidth: 650 }} stickyHeader>
                             <TableHead>
                                 <TableRow>
                                     <TableCell align='center'>#</TableCell>
-                                    <TableCell align='left'>{t('Track')}</TableCell>
+                                    <TableCell align='left'>{t('Episode')}</TableCell>
+                                    <TableCell align='left'>{t('Podcast')}</TableCell>
                                     <TableCell align='left'>{t('Added Date')}</TableCell>
                                     <TableCell align='left' />
                                     <TableCell align='left'>
@@ -184,9 +156,9 @@ const Album = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {album !== null ? (
+                                {likedEpisodes !== null ? (
                                     <>
-                                        {album?.tracks?.map((item, index) => (
+                                        {likedEpisodes?.map((item, index) => (
                                             <TableRow
                                                 key={index}
                                                 className={cx('track-container', {
@@ -262,13 +234,13 @@ const Album = () => {
                                                         <div className={cx('right')}>
                                                             <div className={cx('name')}>
                                                                 <Link
+                                                                    to={`/episode/${item?.track?._id}/podcast/${
+                                                                        item?.podcast?._id
+                                                                    }`}
                                                                     className={cx('name-link', {
                                                                         active:
-                                                                            context.context_uri === item.context_uri,
+                                                                            context.context_uri === item?.context_uri,
                                                                     })}
-                                                                    to={`/track/${item?.track?._id}/album/${
-                                                                        item?.track?._id
-                                                                    }`}
                                                                 >
                                                                     {item?.track.name}
                                                                 </Link>
@@ -278,7 +250,7 @@ const Album = () => {
                                                                     return (
                                                                         <span key={index}>
                                                                             {index !== 0 ? ', ' : ''}
-                                                                            <Link to={`/artist/${artist.id}`}>
+                                                                            <Link to={`/podcaster/${artist.id}`}>
                                                                                 {artist.name}
                                                                             </Link>
                                                                         </span>
@@ -289,28 +261,41 @@ const Album = () => {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
+                                                    <div className={cx('album-name')}>
+                                                        <Link
+                                                            className={cx('album-name-link')}
+                                                            to={`/podcast/${item?.podcast._id}`}
+                                                        >
+                                                            {item?.podcast.name}
+                                                        </Link>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell align='left'>
                                                     <div className={cx('added-date')}>
                                                         {timeAgoFormat(item?.addedAt)}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    <Like type='track' trackId={item?.track._id} albumId={album?._id} />
+                                                    <Like
+                                                        type='episode'
+                                                        trackId={item?.track._id}
+                                                        podcastId={item?.podcast._id}
+                                                    />
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     <div className={cx('duration')}>
-                                                        {fancyTimeFormat(item.track.duration)}
+                                                        {fancyTimeFormat(item?.track.duration)}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell align='left' sx={{ padding: 0 }}>
                                                     <div className={cx('track-menu')}>
                                                         <TrackMenu
                                                             trackId={item?.track._id}
-                                                            albumId={album?._id}
+                                                            podcastId={item?.podcast._id}
                                                             artists={item?.track.artists}
                                                             context_uri={item?.context_uri}
                                                             position={item?.position}
-                                                            inPage='album'
-                                                            albumOwnerId={album?.owner?._id}
+                                                            inPage='liked-episodes'
                                                         />
                                                     </div>
                                                 </TableCell>
@@ -331,25 +316,11 @@ const Album = () => {
                         </Table>
                     </TableContainer>
                 ) : (
-                    <div className={cx('notification')}>{t('Do not have item yet')}.</div>
+                    <div className={cx('notification')}>{t('Do not have item yet')}</div>
                 )}
             </div>
-
-            <section className={cx('section-container')}>
-                <h1 className={cx('heading')}> {album?.owner?.name}</h1>
-                <div className={cx('section-content')}>
-                    <Grid container spacing={2}>
-                        {moreAlbums?.length !== 0 &&
-                            moreAlbums?.map((item, index) => (
-                                <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
-                                    <AlbumItem album={item} to={`/album/${item._id}`} />
-                                </Grid>
-                            ))}
-                    </Grid>
-                </div>
-            </section>
         </div>
     );
 };
 
-export default Album;
+export default LikedEpisodes;

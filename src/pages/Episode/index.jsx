@@ -6,7 +6,7 @@ import { IconButton, Avatar, Grid } from '@mui/material';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
-import AlbumItem from '~/components/AlbumItem';
+// import AlbumItem from '~/components/AlbumItem';
 import UserItem from '~/components/UserItem';
 import styles from './styles.scoped.scss';
 import { playTrack, pauseTrack } from '~/api/audioPlayer';
@@ -14,18 +14,20 @@ import axiosInstance from '~/api/axiosInstance';
 import Like from '~/components/Like';
 import { fancyTimeFormat } from '~/utils/Format';
 import unknownPlaylistImg from '~/assets/images/playlist_unknown.jpg';
-import { getTrackByIdUrl } from '~/api/urls/tracksUrls';
+import { getEpisodeByIdUrl } from '~/api/urls/tracksUrls';
 import { useTranslation } from 'react-i18next';
+import PodcastItem from '~/components/PodcastItem';
 
 const cx = classNames.bind(styles);
 
-const Track = () => {
+const Episode = () => {
     const [track, setTrack] = useState(null);
     const { context, isPlaying } = useSelector((state) => state.audioPlayer);
 
-    const { id, albumId } = useParams();
+    const { id, podcastId } = useParams();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    console.log(podcastId);
 
     const handleTogglePlay = async () => {
         if (isPlaying) {
@@ -36,18 +38,18 @@ const Track = () => {
     };
 
     const handlePlayTrack = async (payload) => {
-        playTrack(dispatch, { context_uri: `album:${albumId}:${id}:${albumId}:album` }).catch(console.error);
+        playTrack(dispatch, { context_uri: `podcast:${podcastId}:${id}:${podcastId}:podcast` }).catch(console.error);
     };
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await axiosInstance.get(getTrackByIdUrl(id), { params: { detail: true } });
+            const { data } = await axiosInstance.get(getEpisodeByIdUrl(id), { params: { detail: true } });
             setTrack(data.data);
-            // console.log(data.data);
+            console.log(data.data);
         };
 
         fetchData().catch(console.error);
-    }, [id, albumId]);
+    }, [id, podcastId]);
 
     return (
         <div className={cx('container')}>
@@ -62,7 +64,7 @@ const Track = () => {
                     />
                 </div>
                 <div className={cx('info')}>
-                    <h2 className={cx('type')}>{t('TRACK')}</h2>
+                    <h2 className={cx('type')}>{t('EPISODE')}</h2>
                     <span className={cx('name')}>{track?.name}</span>
                     {/* <div className='description'>{album?.description}</div> */}
                     <div className={cx('detail')}>
@@ -71,7 +73,7 @@ const Track = () => {
                         </Link> */}
                         {track?.artists?.map((artist, index) => (
                             <span key={index} className={cx('artist')}>
-                                <Link to={`/artist/${artist?.id}`} className={cx('owner-name')}>
+                                <Link to={`/podcaster/${artist?.id}`} className={cx('owner-name')}>
                                     {artist?.name}
                                 </Link>
                             </span>
@@ -119,7 +121,7 @@ const Track = () => {
                 </div>
 
                 <div className={cx('action')}>
-                    <Like type='track' size='large' trackId={id} albumId={albumId} />
+                    <Like type='episode' size='large' trackId={id} podcastId={podcastId} />
                 </div>
                 {/* <div className={cx('action')}>
                     <AlbumMenu tracks={album?.tracks} albumOwnerId={album?.owner?._id} albumId={album?._id} />
@@ -138,7 +140,7 @@ const Track = () => {
                     </div>
                 )}
                 <div className={cx('artist-container')}>
-                    <h3 className={cx('heading')}>{t('Artists')}</h3>
+                    <h3 className={cx('heading')}>{t('Podcasters')}</h3>
                     <Grid container spacing={2}>
                         {track?.artists?.map((item, index) => (
                             <Grid item xs={12} key={index}>
@@ -159,14 +161,14 @@ const Track = () => {
                     {track?.artists?.map((artist, index) => (
                         <section className={cx('section-container')} key={index}>
                             <h1 className={cx('heading')}>
-                                {t('More albums of')} {artist?.name}
+                                {t('More podcasts of')} {artist?.name}
                             </h1>
                             <div className={cx('section-content')}>
                                 <Grid container spacing={2}>
-                                    {artist?.popularAlbums?.length !== 0 &&
-                                        artist?.popularAlbums?.map((item, index) => (
+                                    {artist?.popularPodcasts?.length !== 0 &&
+                                        artist?.popularPodcasts?.map((item, index) => (
                                             <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
-                                                <AlbumItem album={item} to={`/album/${item._id}`} />
+                                                <PodcastItem podcast={item} to={`/podcast/${item._id}`} />
                                             </Grid>
                                         ))}
                                 </Grid>
@@ -179,4 +181,4 @@ const Track = () => {
     );
 };
 
-export default Track;
+export default Episode;

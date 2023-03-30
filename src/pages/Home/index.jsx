@@ -6,10 +6,12 @@ import { Grid } from '@mui/material';
 
 import PlaylistItem from '~/components/PlaylistItem';
 import AlbumItem from '~/components/AlbumItem';
+import PodcastItem from '~/components/PodcastItem';
 import axiosInstance from '~/api/axiosInstance';
 import { getPlaylistsByTagsUrl } from '~/api/urls/playlistsUrl';
 import { getSavedPlaylistsUrl } from '~/api/urls/me';
 import { getAlbumsByTagsUrl } from '~/api/urls/albumsUrl';
+import { getPodcastsByTagsUrl } from '~/api/urls/podcastsUrl';
 import { useTranslation } from 'react-i18next';
 const cx = classNames.bind(styles);
 
@@ -21,6 +23,9 @@ const Home = () => {
     const [popularAlbums, setPopularAlbums] = useState([]);
     const [newReleaseAlbums, setNewReleaseAlbums] = useState([]);
     const [randomAlbums, setRandomAlbums] = useState([]);
+    const [popularPodcasts, setPopularPodcasts] = useState([]);
+    const [newReleasePodcasts, setNewReleasePodcasts] = useState([]);
+    const [randomPodcasts, setRandomPodcasts] = useState([]);
 
     const { t } = useTranslation();
 
@@ -38,7 +43,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchDataPlaylists = async () => {
             const { data: playlistsResponse } = await axiosInstance.get(getPlaylistsByTagsUrl, {
                 params: {
                     tags: ['popular', 'recommend', 'random'],
@@ -48,7 +53,9 @@ const Home = () => {
             setRecommendPlaylists(playlistsResponse.data.recommendPlaylists);
             setRandomPlaylists(playlistsResponse.data.randomPlaylists);
             // console.log(playlistsResponse.data.randomPlaylists);
+        };
 
+        const fetchDataAlbums = async () => {
             const { data: albumsResponse } = await axiosInstance.get(getAlbumsByTagsUrl, {
                 params: {
                     tags: ['popular', 'new-release', 'random'],
@@ -57,13 +64,31 @@ const Home = () => {
             setPopularAlbums(albumsResponse.data.popularAlbums);
             setNewReleaseAlbums(albumsResponse.data.newReleaseAlbums);
             setRandomAlbums(albumsResponse.data.randomAlbums);
+        };
 
+        const fetchDataPodcasts = async () => {
+            const { data: podcastsResponse } = await axiosInstance.get(getPodcastsByTagsUrl, {
+                params: {
+                    tags: ['popular', 'new-release', 'random'],
+                },
+            });
+            setPopularPodcasts(podcastsResponse.data.popularPodcasts);
+            setNewReleasePodcasts(podcastsResponse.data.newReleasePodcasts);
+            setRandomPodcasts(podcastsResponse.data.randomPodcasts);
+
+            console.log(podcastsResponse.data);
+        };
+
+        const fetchDataSavedPlaylists = async () => {
             const { data: savedPlaylistsRes } = await axiosInstance(getSavedPlaylistsUrl);
             setSavedPlaylists(savedPlaylistsRes.data);
             // console.log(savedPlaylistsRes.data);
         };
 
-        fetchData().catch(console.error);
+        fetchDataPlaylists().catch(console.error);
+        fetchDataAlbums().catch(console.error);
+        fetchDataSavedPlaylists().catch(console.error);
+        fetchDataPodcasts().catch(console.error);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -137,6 +162,20 @@ const Home = () => {
             </section>
 
             <section className={cx('section-container')}>
+                <h1 className={cx('heading')}>{t('New Release Podcasts')}</h1>
+                <div className={cx('section-content')}>
+                    <Grid container spacing={2}>
+                        {newReleasePodcasts?.length !== 0 &&
+                            newReleasePodcasts?.map((item, index) => (
+                                <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                    <PodcastItem podcast={item} to={`/podcast/${item._id}`} />
+                                </Grid>
+                            ))}
+                    </Grid>
+                </div>
+            </section>
+
+            <section className={cx('section-container')}>
                 <h1 className={cx('heading')}>{t('Popular Playlists')}</h1>
                 <div className={cx('section-content')}>
                     <Grid container spacing={2}>
@@ -200,6 +239,34 @@ const Home = () => {
                             popularAlbums?.map((item, index) => (
                                 <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
                                     <AlbumItem album={item} to={`/album/${item._id}`} />
+                                </Grid>
+                            ))}
+                    </Grid>
+                </div>
+            </section>
+
+            <section className={cx('section-container')}>
+                <h1 className={cx('heading')}>{t('Discover New Podcasts')}</h1>
+                <div className={cx('section-content')}>
+                    <Grid container spacing={2}>
+                        {randomPodcasts?.length !== 0 &&
+                            randomPodcasts?.map((item, index) => (
+                                <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                    <PodcastItem podcast={item} to={`/podcast/${item._id}`} />
+                                </Grid>
+                            ))}
+                    </Grid>
+                </div>
+            </section>
+
+            <section className={cx('section-container')}>
+                <h1 className={cx('heading')}>{t('Popular Podcasts')}</h1>
+                <div className={cx('section-content')}>
+                    <Grid container spacing={2}>
+                        {popularPodcasts?.length !== 0 &&
+                            popularPodcasts?.map((item, index) => (
+                                <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                    <PodcastItem podcast={item} to={`/podcast/${item._id}`} />
                                 </Grid>
                             ))}
                     </Grid>

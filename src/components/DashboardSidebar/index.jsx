@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import styles from './styles.scoped.scss';
 // import sidebarConfig from './config';
@@ -11,7 +11,9 @@ const DashboardSidebar = ({ sidebarConfig }) => {
     return (
         <div className={cx('container')}>
             <div className={cx('brand')}>
-                <h3>CATCHY MUSIC</h3>
+                <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <h3>CATCHY MUSIC</h3>
+                </Link>
             </div>
             <div className={cx('list')}>
                 {sidebarConfig.map((item, index) => (

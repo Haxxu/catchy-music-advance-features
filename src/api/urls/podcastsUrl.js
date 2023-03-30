@@ -7,7 +7,7 @@ export const getPodcastsInfoUrl = baseApiUrl + '/podcasts/info';
 export const getPodcastsByContextUrl = baseApiUrl + '/podcasts/context';
 
 // [GET] get albums by tags
-export const getAlbumsByTagsUrl = baseApiUrl + '/albums/tags';
+export const getPodcastsByTagsUrl = baseApiUrl + '/podcasts/tags';
 
 // [GEt] (userauth)
 export const getPodcastByIdUrl = (id) => baseApiUrl + `/podcasts/${id}`;

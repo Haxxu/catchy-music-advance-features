@@ -61,6 +61,7 @@ export const playTrack = async (dispatch, payload) => {
         const { data } = await axiosInstance.put(playTrackUrl, payload);
         if (data) {
             const { data } = await axiosInstance.get(getCurrentlyPlayingTrackUrl);
+            // console.log({ context: data.data.context });
             dispatch(setContext(data.data.context));
             dispatch(setCurrentTrack(data.data.currentPlayingTrack));
             dispatch(setPlayMode(true));

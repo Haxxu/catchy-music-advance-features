@@ -6,11 +6,17 @@ export const getCurrentUserProfileUrl = baseApiUrl + '/me';
 // [GET] get liked tracks
 export const getLikedTracksUrl = baseApiUrl + '/me/tracks';
 
+// [GET] get liked tracks
+export const getLikedEpisodessUrl = baseApiUrl + '/me/episodes';
+
 // [GET] get saved playlists
 export const getSavedPlaylistsUrl = baseApiUrl + '/me/playlists';
 
 // [GET] get saved albums
 export const getSavedAlbumsUrl = baseApiUrl + '/me/albums';
+
+// [GET] get saved podcasts
+export const getSavedPodcastsUrl = baseApiUrl + '/me/podcasts';
 
 // [GET] get following user
 export const getFollowingUsersUrl = baseApiUrl + '/me/following';
@@ -60,6 +66,9 @@ export const checkLikedTrackUrl = baseApiUrl + '/me/tracks/contains';
 // [GET] check saved album
 export const checkSavedAlbumUrl = baseApiUrl + '/me/albums/contains';
 
+// [GET] check saved podcast
+export const checkSavedPodcastUrl = baseApiUrl + '/me/podcasts/contains';
+
 // [GET] check saved playlist
 export const checkSavedPlaylistUrl = baseApiUrl + '/me/playlists/contains';
 
@@ -98,3 +107,9 @@ export const removeLikedEpisodeFromLibraryUrl = baseApiUrl + '/me/episodes';
 
 // [PUT] save episode to library
 export const saveEpisodeToLibraryUrl = baseApiUrl + '/me/episodes';
+
+// [DELETE] remove podcast from library
+export const removePodcastFromLibraryUrl = baseApiUrl + '/me/podcasts';
+
+// [PUT] save podcast to library
+export const savePodcastToLibraryUrl = baseApiUrl + '/me/podcasts';

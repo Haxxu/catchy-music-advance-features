@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
@@ -7,6 +7,7 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 import { routes } from '~/config';
 import styles from './styles.scoped.scss';
@@ -70,7 +71,17 @@ const Sidebar = () => {
     return (
         <div className={cx('container')}>
             <div className={cx('brand')}>
-                <h3>CATCHY MUSIC</h3>
+                <Link
+                    to={'/'}
+                    style={{
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        display: 'block',
+                        padding: '2.5rem 0 1.5rem 1rem',
+                    }}
+                >
+                    <h3>CATCHY MUSIC</h3>
+                </Link>
             </div>
             <div className={cx('navigation')}>
                 <NavLink className={({ isActive }) => cx('link', { active: isActive })} end to={routes.home}>
@@ -102,6 +113,16 @@ const Sidebar = () => {
                 <NavLink className={({ isActive }) => cx('link', { active: isActive })} to={routes.likedTracks}>
                     <FavoriteIcon />
                     <span>{t('Liked tracks')}</span>
+                    <span className={cx('icon')}>
+                        {context && context?.contextType === 'liked' && isPlaying && <VolumeUpIcon />}
+                    </span>
+                </NavLink>
+                <NavLink className={({ isActive }) => cx('link', { active: isActive })} to={routes.likedEpisodes}>
+                    <BookmarkIcon />
+                    <span>{t('Saved episodes')}</span>
+                    <span className={cx('icon')}>
+                        {context && context?.contextType === 'likedEpisodes' && isPlaying && <VolumeUpIcon />}
+                    </span>
                 </NavLink>
             </div>
             <div className={cx('playlist-container')}>

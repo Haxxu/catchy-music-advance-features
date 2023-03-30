@@ -4,16 +4,22 @@ const updateState = createSlice({
     name: 'updateState',
     initialState: {
         likeTrackState: false,
+        likeEpisodeState: false,
         playlistState: false,
         playlistsInSidebarState: false,
         userProfileState: false,
         userPageState: false,
         albumState: false,
+        podcastState: false,
         queueState: false,
     },
     reducers: {
         updateLikeTrackState: (state, payload) => {
             state.likeTrackState = !state.likeTrackState;
+        },
+
+        updateLikeEpisodeState: (state, payload) => {
+            state.likeEpisodeState = !state.likeEpisodeState;
         },
 
         updatePlaylistState: (state, payload) => {
@@ -36,6 +42,10 @@ const updateState = createSlice({
             state.albumState = !state.albumState;
         },
 
+        updatePodcastState: (state, payload) => {
+            state.albumState = !state.podcastState;
+        },
+
         updateQueueState: (state, payload) => {
             state.queueState = !state.queueState;
         },
@@ -45,11 +55,13 @@ const updateState = createSlice({
 export const updateStateReducer = updateState.reducer;
 export const {
     updateLikeTrackState,
+    updateLikeEpisodeState,
     updatePlaylistState,
     updatePlaylistInSidebarState,
     updateUserProfileState,
     updateUserPageState,
     updateAlbumState,
+    updatePodcastState,
     updateQueueState,
 } = updateState.actions;
 
