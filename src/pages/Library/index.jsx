@@ -8,6 +8,7 @@ import SavedPlaylists from '~/pages/SavedPlaylists';
 import SavedAlbums from '~/pages/SavedAlbums';
 import SavedPodcasts from '~/pages/SavedPodcasts';
 import FollowingArtists from '~/pages/FollowingArtists';
+import FollowingPodcasters from '~/pages/FollowingPodcasters';
 import { useTranslation } from 'react-i18next';
 
 const cx = classNames.bind(styles);
@@ -30,6 +31,9 @@ const Library = () => {
                 <NavLink className={cx('subnav-item')} to={routes.library_artists}>
                     {t('Artists')}
                 </NavLink>
+                <NavLink className={cx('subnav-item')} to={routes.library_podcasters}>
+                    {t('Podcasters')}
+                </NavLink>
             </div>
             <div className={cx('main')}>
                 <Routes>
@@ -37,6 +41,7 @@ const Library = () => {
                     <Route path={routes.library_albums} element={<SavedAlbums />} />
                     <Route path={routes.library_podcasts} element={<SavedPodcasts />} />
                     <Route path={routes.library_artists} element={<FollowingArtists />} />
+                    <Route path={routes.library_podcasters} element={<FollowingPodcasters />} />
                 </Routes>
             </div>
         </div>

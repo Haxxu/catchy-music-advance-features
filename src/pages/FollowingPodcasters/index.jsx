@@ -10,14 +10,14 @@ import { useTranslation } from 'react-i18next';
 
 const cx = classNames.bind(styles);
 
-const FollowingArtists = () => {
-    const [artists, setArtists] = useState();
+const FollowingPodcasters = () => {
+    const [podcasters, setPodcasters] = useState();
     const { t } = useTranslation();
 
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await axiosInstance.get(getFollowingUsersUrl);
-            setArtists(data.data.artists);
+            setPodcasters(data.data.podcasters);
             // console.log(data.data.artists);
         };
 
@@ -27,11 +27,11 @@ const FollowingArtists = () => {
     return (
         <div className={cx('container')}>
             <section className={cx('section-container')}>
-                <h1 className={cx('heading')}>{t('Artists')}</h1>
+                <h1 className={cx('heading')}>{t('Podcasters')}</h1>
                 <div className={cx('section-content')}>
                     <Grid container spacing={2}>
-                        {artists?.length !== 0 &&
-                            artists?.map((item, index) => (
+                        {podcasters?.length !== 0 &&
+                            podcasters?.map((item, index) => (
                                 <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
                                     <UserItem
                                         name={item.name}
@@ -48,4 +48,4 @@ const FollowingArtists = () => {
     );
 };
 
-export default FollowingArtists;
+export default FollowingPodcasters;

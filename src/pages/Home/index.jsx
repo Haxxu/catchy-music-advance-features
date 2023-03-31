@@ -76,7 +76,7 @@ const Home = () => {
             setNewReleasePodcasts(podcastsResponse.data.newReleasePodcasts);
             setRandomPodcasts(podcastsResponse.data.randomPodcasts);
 
-            console.log(podcastsResponse.data);
+            // console.log(podcastsResponse.data);
         };
 
         const fetchDataSavedPlaylists = async () => {

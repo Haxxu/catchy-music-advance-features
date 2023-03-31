@@ -16,6 +16,7 @@ const routes = {
     library_playlists: 'playlists',
     library_albums: 'albums',
     library_artists: 'artists',
+    library_podcasters: 'podcasters',
     library_podcasts: 'podcasts',
     likedTracks: '/library/tracks',
     likedEpisodes: '/library/episodes',

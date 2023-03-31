@@ -27,7 +27,7 @@ const User = () => {
         const fetchAlbum = async () => {
             const { data } = await axiosInstance.get(getUserByIdUrl(id), { params: { detail: true } });
             setUser(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         };
 
         fetchAlbum().catch(console.error);
