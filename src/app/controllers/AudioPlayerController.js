@@ -1056,6 +1056,40 @@ class AudioPlayerController {
         }
     }
 
+    async getCurrentPlayingTime(req, res, next) {
+        try {
+            const library = await Library.findOne({ owner: req.user._id }).lean();
+            if (!library) {
+                return res.status(404).send({ message: 'Library not found' });
+            }
+
+            const track = await Track.findOne({ _id: req.query.track });
+            if (!track) {
+                return res.status(404).send({ message: 'Track not found' });
+            }
+
+            const podcast = await Podcast.findOne({ _id: req.query.podcast });
+            if (!track) {
+                return res.status(404).send({ message: 'Podcast not found' });
+            }
+
+            let index = library.listeningTracks
+                .map((item) => item.track + item.podcast)
+                .indexOf(req.query.track + req.query.podcast);
+
+            let data;
+
+            if (index !== -1) {
+                data = library.listeningTracks[index];
+            }
+
+            return res.status(200).send({ data, message: 'Get current playing time successfully' });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
     async increasePlay(req, res, next) {
         try {
             const player = await AudioPlayer.findOne({ owner: req.user._id });

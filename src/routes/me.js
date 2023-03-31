@@ -62,6 +62,8 @@ router.put('/audio-player/currently-playing/increase', userAuth, audioPlayerCont
 router.put('/audio-player/currently-playing/set-listening-track', userAuth, audioPlayerController.setListeningTrack);
 // [GET] /api/me/audio-player => get audio player state
 router.get('/audio-player/currently-playing', userAuth, audioPlayerController.getCurrentlyPlayingTrack);
+// [GET] /api/me/audio-player => get audio currentPlayingTime of episdoe
+router.get('/audio-player/current-playing-time', userAuth, audioPlayerController.getCurrentPlayingTime);
 // [GET] /api/me/audio-player/queue => get queue
 router.get('/audio-player/queue', userAuth, audioPlayerController.getQueue);
 // [GET] /api/me/audio-player => get audio player state
