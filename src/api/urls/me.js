@@ -60,6 +60,12 @@ export const setShuffleModeUrl = baseApiUrl + '/me/audio-player/shuffle';
 // [PUT] set repeat mode
 export const setRepeatModeUrl = baseApiUrl + '/me/audio-player/repeat';
 
+// [PUT] set listening track
+export const setListeningTrackUrl = baseApiUrl + '/me/audio-player/currently-playing/set-listening-track';
+
+// [PUT] set listening track
+export const getCurrentPlayingTimeUrl = baseApiUrl + '/me/audio-player/current-playing-time';
+
 // [GET] check liked track
 export const checkLikedTrackUrl = baseApiUrl + '/me/tracks/contains';
 

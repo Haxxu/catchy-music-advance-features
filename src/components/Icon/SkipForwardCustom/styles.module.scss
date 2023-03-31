@@ -1,0 +1,16 @@
+.container {
+    position: relative;
+    color: var(--light-gray);
+
+    .number {
+        position: absolute;
+        font-size: 1rem;
+        bottom: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &:hover {
+        color: white;
+    }
+}

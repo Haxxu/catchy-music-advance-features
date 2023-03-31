@@ -18,7 +18,7 @@ import Like from '~/components/Like';
 import TrackProgressBar from '~/components/TrackProgressBar';
 import VolumeControl from '~/components/VolumeControl';
 import { fancyTimeFormat } from '~/utils/Format';
-import styles from './styles.scoped.scss';
+import styles from './styles.module.scss';
 import { routes } from '~/config';
 import {
     getAudioPlayerState,
@@ -30,7 +30,11 @@ import {
     skipPrevious,
     changeRepeatMode,
     changeShuffleMode,
+    setListeningTrack,
+    getCurrentPlayingTime,
 } from '~/api/audioPlayer';
+import SkipForwardCustomIcon from '~/components/Icon/SkipForwardCustom';
+import SkipBackwardCustomIcon from '~/components/Icon/SkipBackwardCustom';
 
 const cx = classNames.bind(styles);
 
@@ -45,6 +49,8 @@ const AudioPlayer = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    // console.log(currentTrack);
+
     const audioRef = useRef();
 
     const getCurrDuration = (e) => {
@@ -58,7 +64,16 @@ const AudioPlayer = () => {
     const onChangeAudio = (e) => {
         const audio = audioRef.current;
         audio.currentTime = (audio.duration / 100) * e.target.value;
-        setPercentage(e.target.value);
+        // setPercentage(e.target.value);
+
+        if (currentTrack.trackType === 'episode') {
+            let payload = {
+                track: currentTrack.track,
+                podcast: currentTrack.detailPodcast._id,
+                offset: parseInt(audio.currentTime),
+            };
+            setListeningTrack(dispatch, payload).catch(console.error);
+        }
     };
 
     const onChangeVolume = (e) => {
@@ -66,10 +81,25 @@ const AudioPlayer = () => {
     };
 
     const handleTogglePlay = async () => {
-        if (isPlaying) {
-            pauseTrack(dispatch).catch(console.error);
+        if (currentTrack.trackType === 'episode') {
+            const payload = {
+                track: currentTrack.track,
+                podcast: currentTrack.detailPodcast._id,
+                offset: parseInt(audioRef.current.currentTime),
+            };
+            if (isPlaying) {
+                setListeningTrack(dispatch, payload);
+                pauseTrack(dispatch).catch(console.error);
+            } else {
+                setListeningTrack(dispatch, payload);
+                playTrack(dispatch).catch(console.error);
+            }
         } else {
-            playTrack(dispatch).catch(console.error);
+            if (isPlaying) {
+                pauseTrack(dispatch).catch(console.error);
+            } else {
+                playTrack(dispatch).catch(console.error);
+            }
         }
     };
 
@@ -96,14 +126,60 @@ const AudioPlayer = () => {
         setCurrentTime(0);
     };
 
+    const handleSkipBackward = async () => {
+        const audio = audioRef.current;
+        audio.currentTime = audio.currentTime - 15;
+        // console.log(audio.currenTime);
+        // console.log(currentTrack);
+
+        if (currentTrack.trackType === 'episode') {
+            let payload = {
+                track: currentTrack.track,
+                podcast: currentTrack.detailPodcast._id,
+                offset: parseInt(audio.currentTime),
+            };
+            setListeningTrack(dispatch, payload).catch(console.error);
+        }
+    };
+    const handleSkipForward = async () => {
+        const audio = audioRef.current;
+        audio.currentTime = audio.currentTime + 15;
+        // console.log(audio.currentTime);
+
+        if (currentTrack.trackType === 'episode') {
+            let payload = {
+                track: currentTrack.track,
+                podcast: currentTrack.detailPodcast._id,
+                offset: parseInt(audio.currentTime),
+            };
+            setListeningTrack(dispatch, payload).catch(console.error);
+        }
+    };
+
     const handleEndedTrack = async (e) => {
         if (repeat === 'repeat-one' && isPlaying) {
             audioRef.current.currentTime = 0;
             audioRef.current.play();
         } else if (repeat === 'repeat' && isPlaying) {
-            handleSkipNext().catch(console.error);
+            if (currentTrack.trackType === 'episode') {
+                let payload = {
+                    track: currentTrack.track,
+                    podcast: currentTrack.detailPodcast._id,
+                    offset: parseInt(duration) + 15,
+                };
+                await setListeningTrack(dispatch, payload).catch(console.error);
+            }
+            await handleSkipNext().catch(console.error);
         } else {
-            handleSkipNext().catch(console.error);
+            if (currentTrack.trackType === 'episode') {
+                let payload = {
+                    track: currentTrack.track,
+                    podcast: currentTrack.detailPodcast._id,
+                    offset: parseInt(duration) + 15,
+                };
+                await setListeningTrack(dispatch, payload).catch(console.error);
+            }
+            await handleSkipNext().catch(console.error);
         }
 
         // if (repeat === 'none' && isPlaying && currentTrack?.position) {
@@ -153,6 +229,41 @@ const AudioPlayer = () => {
         audioRef.current.volume = volume / 100.0;
     }, [dispatch, volume]);
 
+    const setListeningTrackTimeout = async () => {
+        if (currentTrack.trackType === 'episode' && isPlaying === true) {
+            console.log('run' + isPlaying);
+            let payload = {
+                track: currentTrack.track,
+                podcast: currentTrack.detailPodcast._id,
+                offset: parseInt(audioRef.current.currentTime),
+            };
+            // console.log(parseInt(currentTime));
+            await setListeningTrack(dispatch, payload).catch(console.error);
+        }
+    };
+
+    const handleLoadedData = async (e) => {
+        if (currentTrack.trackType === 'episode') {
+            const res = await getCurrentPlayingTime(dispatch, {
+                params: {
+                    track: currentTrack.track,
+                    podcast: currentTrack.podcast,
+                },
+            });
+            // console.log(res);
+            audioRef.current.currentTime = parseInt(res.data.currentListeningTime) || 0;
+        }
+        setDuration(e.currentTarget?.duration.toFixed(2));
+    };
+
+    useEffect(() => {
+        let myInterval = setInterval(setListeningTrackTimeout, 5000);
+
+        // console.log(myInterval);
+        return () => clearInterval(myInterval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentTrack.track, isPlaying]);
+
     return (
         <div className={cx('container')}>
             <audio
@@ -160,9 +271,7 @@ const AudioPlayer = () => {
                 // src={trackSrc}
                 ref={audioRef}
                 onTimeUpdate={getCurrDuration}
-                onLoadedData={(e) => {
-                    setDuration(e.currentTarget.duration.toFixed(2));
-                }}
+                onLoadedData={handleLoadedData}
                 onEnded={handleEndedTrack}
                 autoPlay={isPlaying}
                 // muted
@@ -220,9 +329,16 @@ const AudioPlayer = () => {
             </div>
             <div className={cx('center')}>
                 <div className={cx('audio-controls')}>
-                    <IconButton className={cx('control-btn')} onClick={handleToggleShuffle} disableRipple>
-                        <ShuffleIcon className={cx('control', { active: shuffle === 'shuffle' })} />
-                    </IconButton>
+                    {currentTrack.trackType === 'episode' ? (
+                        <IconButton className={cx('control-btn')} onClick={handleSkipBackward} disableRipple>
+                            <SkipBackwardCustomIcon classNamesCus={cx('control')} number={15} />
+                        </IconButton>
+                    ) : (
+                        <IconButton className={cx('control-btn')} onClick={handleToggleShuffle} disableRipple>
+                            <ShuffleIcon className={cx('control', { active: shuffle === 'shuffle' })} />
+                        </IconButton>
+                    )}
+
                     <IconButton className={cx('control-btn')} onClick={handleSkipPrevious} disableRipple>
                         <SkipPreviousIcon className={cx('control')} />
                     </IconButton>
@@ -236,13 +352,19 @@ const AudioPlayer = () => {
                     <IconButton className={cx('control-btn')} onClick={handleSkipNext} disableRipple>
                         <SkipNextIcon className={cx('control')} />
                     </IconButton>
-                    <IconButton className={cx('control-btn')} onClick={handleToggleRepeatMode} disableRipple>
-                        {repeat === 'repeat-one' ? (
-                            <RepeatOneIcon className={cx('control', 'active')} />
-                        ) : (
-                            <RepeatIcon className={cx('control', { active: repeat === 'repeat' })} />
-                        )}
-                    </IconButton>
+                    {currentTrack.trackType === 'episode' ? (
+                        <IconButton className={cx('control-btn')} onClick={handleSkipForward} disableRipple>
+                            <SkipForwardCustomIcon classNamesCus={cx('control')} number={15} />
+                        </IconButton>
+                    ) : (
+                        <IconButton className={cx('control-btn')} onClick={handleToggleRepeatMode} disableRipple>
+                            {repeat === 'repeat-one' ? (
+                                <RepeatOneIcon className={cx('control', 'active')} />
+                            ) : (
+                                <RepeatIcon className={cx('control', { active: repeat === 'repeat' })} />
+                            )}
+                        </IconButton>
+                    )}
                 </div>
                 <div className={cx('track-progress')}>
                     <span className={cx('timer')}>{fancyTimeFormat(currentTime)}</span>

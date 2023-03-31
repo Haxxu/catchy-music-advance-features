@@ -10,6 +10,8 @@ import {
     setRepeatModeUrl,
     setShuffleModeUrl,
     increaseCurrenTrackPlaysUrl,
+    setListeningTrackUrl,
+    getCurrentPlayingTimeUrl,
 } from '~/api/urls/me';
 import {
     setCurrentTrack,
@@ -161,5 +163,24 @@ export const changeShuffleMode = async (dispatch, payload) => {
         }
     } catch (err) {
         console.log(err);
+    }
+};
+
+export const setListeningTrack = async (dispatch, payload) => {
+    try {
+        const { data } = await axiosInstance.put(setListeningTrackUrl, payload);
+        console.log(data);
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const getCurrentPlayingTime = async (dispatch, config) => {
+    try {
+        const { data } = await axiosInstance.get(getCurrentPlayingTimeUrl, config);
+
+        return data;
+    } catch (error) {
+        console.log(error);
     }
 };

@@ -27,7 +27,7 @@ const Episode = () => {
     const { id, podcastId } = useParams();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    console.log(podcastId);
+    // console.log(podcastId);
 
     const handleTogglePlay = async () => {
         if (isPlaying) {
@@ -45,7 +45,7 @@ const Episode = () => {
         const fetchData = async () => {
             const { data } = await axiosInstance.get(getEpisodeByIdUrl(id), { params: { detail: true } });
             setTrack(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         };
 
         fetchData().catch(console.error);
