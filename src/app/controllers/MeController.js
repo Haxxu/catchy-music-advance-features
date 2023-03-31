@@ -109,13 +109,16 @@ class MeController {
             const artists = await User.find({ _id: { $in: followings }, type: 'artist' })
                 .select('-password -__v -email -createdAt -updatedAt')
                 .lean();
-            let users = await User.find({ _id: { $in: followings }, type: { $ne: 'artist' } })
+            const podcasters = await User.find({ _id: { $in: followings }, type: 'podcaster' })
+                .select('-password -__v -email -createdAt -updatedAt')
+                .lean();
+            let users = await User.find({ _id: { $in: followings }, type: { $ne: 'artist', $ne: 'podcaster' } })
                 .select('-password -__v -email -createdAt -updatedAt')
                 .lean();
             users = users.map((user) => ({ ...user, type: 'user' }));
 
             return res.status(200).send({
-                data: { artists: artists, users: users, all: [...artists, users] },
+                data: { artists: artists, users: users, podcasters, all: [...artists, ...podcasters, ...users] },
                 message: 'Get following user successfully',
             });
         } catch (err) {
