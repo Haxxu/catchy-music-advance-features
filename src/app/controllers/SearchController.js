@@ -1,6 +1,7 @@
 const { Album } = require('../models/Album');
 const { Playlist } = require('../models/Playlist');
 const { Track } = require('../models/Track');
+const { Podcast } = require('../models/Podcast');
 const { User } = require('../models/User');
 
 class SearchController {
@@ -20,7 +21,7 @@ class SearchController {
 
                 const userIds = users.map((user) => user._id.toString());
 
-                if (req.query.tags.includes('track')) {
+                if (req.query.tags.includes('track') || req.query.tags.includes('episodes')) {
                     const searchCondition = {
                         $or: [
                             {
@@ -43,6 +44,7 @@ class SearchController {
 
                     let trackLenght = tracks.length;
                     const trackResults = [];
+                    const episodeResults = [];
 
                     for (let i = 0; i < trackLenght; ++i) {
                         const album = await Album.findOne({
@@ -50,21 +52,48 @@ class SearchController {
                             tracks: { $elemMatch: { track: tracks[i]._id } },
                         }).lean();
 
-                        if (!album) {
-                            continue;
+                        const podcast = await Podcast.findOne({
+                            isReleased: true,
+                            episodes: { $elemMatch: { track: tracks[i]._id } },
+                        }).lean();
+
+                        if (album) {
+                            let position = album.tracks.map((item) => item.track).indexOf(tracks[i]._id.toString());
+
+                            trackResults.push({
+                                track: tracks[i],
+                                album: album,
+                                context_uri:
+                                    'album' + ':' + album._id + ':' + tracks[i]._id + ':' + album._id + ':album',
+                                position: position,
+                                trackType: 'song',
+                            });
                         }
 
-                        let position = album.tracks.map((item) => item.track).indexOf(tracks[i]._id.toString());
+                        if (podcast) {
+                            let position = podcast.episodes.map((item) => item.track).indexOf(tracks[i]._id.toString());
 
-                        trackResults.push({
-                            track: tracks[i],
-                            album: album,
-                            context_uri: 'album' + ':' + album._id + ':' + tracks[i]._id + ':' + album._id,
-                            position: position,
-                        });
+                            episodeResults.push({
+                                track: tracks[i],
+                                podcast: podcast,
+                                context_uri:
+                                    'podcast' +
+                                    ':' +
+                                    podcast._id +
+                                    ':' +
+                                    tracks[i]._id +
+                                    ':' +
+                                    podcast._id +
+                                    ':podcast',
+                                position: position,
+                                trackType: 'episode',
+                            });
+                        }
                     }
 
                     data.tracks = trackResults;
+
+                    data.episodes = episodeResults;
                 }
 
                 if (req.query.tags.includes('playlist')) {
@@ -90,10 +119,18 @@ class SearchController {
                         if (playlist.tracks.length === 0) {
                             return playlist;
                         } else {
+                            let trackContextType, trackContextId;
+                            if (playlist.tracks[0].trackType === 'episode') {
+                                trackContextType = 'podcast';
+                                trackContextId = playlist.tracks[0].podcast;
+                            } else {
+                                trackContextType = 'album';
+                                trackContextId = playlist.tracks[0].album;
+                            }
                             return {
                                 ...playlist,
                                 firstTrack: {
-                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${playlist.tracks[0]?.album}`,
+                                    context_uri: `playlist:${playlist._id}:${playlist.tracks[0]?.track}:${trackContextId}:${trackContextType}`,
                                     position: 0,
                                 },
                             };
@@ -109,6 +146,7 @@ class SearchController {
 
                     data.playlists = playlistResults;
                 }
+
                 if (req.query.tags.includes('album')) {
                     const searchCondition = {
                         $or: [
@@ -135,7 +173,7 @@ class SearchController {
                             return {
                                 ...album,
                                 firstTrack: {
-                                    context_uri: `album:${album._id}:${album.tracks[0]?.track}:${album._id}`,
+                                    context_uri: `album:${album._id}:${album.tracks[0]?.track}:${album._id}:album`,
                                     position: 0,
                                 },
                             };
@@ -152,6 +190,49 @@ class SearchController {
                     data.albums = albumResults;
                 }
 
+                if (req.query.tags.includes('podcasts')) {
+                    const searchCondition = {
+                        $or: [
+                            {
+                                name: { $regex: search, $options: 'i' },
+                            },
+                            {
+                                owner: { $in: userIds },
+                            },
+                        ],
+                        isReleased: true,
+                    };
+
+                    const podcasts = await Podcast.find({ ...searchCondition })
+                        .populate({ path: 'owner', select: '_id name type' })
+                        .sort({ saved: 'desc' })
+                        .limit(limit)
+                        .lean();
+
+                    const podcastResults = podcasts.map((podcast) => {
+                        if (podcast.episodes.length === 0) {
+                            return podcast;
+                        } else {
+                            return {
+                                ...podcast,
+                                firstTrack: {
+                                    context_uri: `podcast:${podcast._id}:${podcast.episodes[0]?.track}:${podcast._id}:podcast`,
+                                    position: 0,
+                                },
+                            };
+                        }
+                    });
+
+                    let length = podcastResults.length;
+                    for (let i = 0; i < length; ++i) {
+                        if (podcastResults[i].owner.type === 'admin') {
+                            podcastResults[i].owner.type = 'user';
+                        }
+                    }
+
+                    data.podcasts = podcastResults;
+                }
+
                 if (req.query.tags.includes('artist')) {
                     const artists = await User.find({
                         $or: [
@@ -165,6 +246,21 @@ class SearchController {
                         .lean();
 
                     data.artists = artists;
+                }
+
+                if (req.query.tags.includes('podcasters')) {
+                    const podcasters = await User.find({
+                        $or: [
+                            { name: { $regex: search, $options: 'i' } },
+                            { email: { $regex: search, $options: 'i' } },
+                        ],
+                        type: 'podcaster',
+                    })
+                        .select('_id name description image type')
+                        .limit(limit)
+                        .lean();
+
+                    data.podcasters = podcasters;
                 }
 
                 if (req.query.tags.includes('user')) {

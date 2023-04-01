@@ -408,7 +408,6 @@ class PlaylistController {
 
     async addTrackToPlaylist(req, res, next) {
         try {
-            console.log('lkfasd;');
             if (!mongoose.isValidObjectId(req.body.track)) {
                 return res.status(404).send({ message: 'Invalid track ID' });
             }
