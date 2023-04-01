@@ -168,8 +168,8 @@ export const changeShuffleMode = async (dispatch, payload) => {
 
 export const setListeningTrack = async (dispatch, payload) => {
     try {
-        const { data } = await axiosInstance.put(setListeningTrackUrl, payload);
-        console.log(data);
+        await axiosInstance.put(setListeningTrackUrl, payload);
+        // console.log(data);
     } catch (err) {
         console.log(err);
     }

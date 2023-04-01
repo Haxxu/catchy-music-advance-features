@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
-
-import styles from './styles.scoped.scss';
-import { useDebounce } from '~/hooks';
-import axiosInstance from '~/api/axiosInstance';
-import { searchUrl } from '~/api/urls/searchUrl';
-import PlaylistItem from '~/components/PlaylistItem';
-import AlbumItem from '~/components/AlbumItem';
-import UserItem from '~/components/UserItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -26,24 +18,36 @@ import {
 // import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { useTranslation } from 'react-i18next';
 
-import TrackMenu from '~/components/TrackMenu';
+import styles from './styles.scoped.scss';
+import { useDebounce } from '~/hooks';
+import axiosInstance from '~/api/axiosInstance';
+import { searchUrl } from '~/api/urls/searchUrl';
 import { playTrack, pauseTrack } from '~/api/audioPlayer';
 import { fancyTimeFormat } from '~/utils/Format';
+import PlaylistItem from '~/components/PlaylistItem';
+import AlbumItem from '~/components/AlbumItem';
+import UserItem from '~/components/UserItem';
+import TrackMenu from '~/components/TrackMenu';
 import Like from '~/components/Like';
-import { useTranslation } from 'react-i18next';
+import EpisodeItem from '~/components/EpisodeItem';
+import PodcastItem from '~/components/PodcastItem';
 
 const cx = classNames.bind(styles);
 
 const SearchResults = ({ searchInput }) => {
     const [tracks, setTracks] = useState([]);
+    const [episodes, setEpisodes] = useState([]);
     const [playlists, setPlaylists] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [users, setUsers] = useState([]);
     const [artists, setArtists] = useState([]);
+    const [podcasters, setPodcasters] = useState([]);
+    const [podcasts, setPodcasts] = useState([]);
     const debouncedValue = useDebounce(searchInput, 800);
-
     const { context, isPlaying } = useSelector((state) => state.audioPlayer);
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -65,15 +69,20 @@ const SearchResults = ({ searchInput }) => {
                 const { data } = await axiosInstance.get(searchUrl, {
                     params: {
                         q: searchInput,
-                        tags: ['track', 'album', 'playlist', 'artist', 'user'],
+                        tags: ['track', 'episodes', 'album', 'playlist', 'artist', 'user', 'podcasters', 'podcasts'],
                         limit: 10,
                     },
                 });
                 setTracks(data.data?.tracks);
+                setEpisodes(data.data?.episodes);
                 setPlaylists(data.data?.playlists);
                 setAlbums(data.data?.albums);
                 setUsers(data.data?.users);
                 setArtists(data.data?.artists);
+                setPodcasters(data.data?.podcasters);
+                setPodcasts(data.data?.podcasts);
+
+                // console.log(data.data);
             }
 
             // console.log(data.data?.playlists);
@@ -83,6 +92,7 @@ const SearchResults = ({ searchInput }) => {
 
         if (searchInput.trim() === '') {
             setTracks([]);
+            setEpisodes([]);
             setPlaylists([]);
             setAlbums([]);
             setUsers([]);
@@ -308,6 +318,26 @@ const SearchResults = ({ searchInput }) => {
                 </section>
             )}
 
+            {podcasters.length !== 0 && (
+                <section className={cx('section-container')}>
+                    <h1 className={cx('heading')}>{t('Podcasters')}</h1>
+                    <div className={cx('section-content')}>
+                        <Grid container spacing={2}>
+                            {podcasters?.map((item, index) => (
+                                <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                    <UserItem
+                                        name={item.name}
+                                        image={item.image}
+                                        type={item.type}
+                                        to={`/${item.type}/${item._id}`}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </div>
+                </section>
+            )}
+
             {albums.length !== 0 && (
                 <section className={cx('section-container')}>
                     <h1 className={cx('heading')}>{t('Albums')}</h1>
@@ -333,6 +363,44 @@ const SearchResults = ({ searchInput }) => {
                                 playlists?.map((item, index) => (
                                     <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
                                         <PlaylistItem playlist={item} to={`/playlist/${item?._id}`} />
+                                    </Grid>
+                                ))}
+                        </Grid>
+                    </div>
+                </section>
+            )}
+
+            {podcasts.length !== 0 && (
+                <section className={cx('section-container')}>
+                    <h1 className={cx('heading')}>{t('Podcasts')}</h1>
+                    <div className={cx('section-content')}>
+                        <Grid container spacing={2}>
+                            {podcasts?.length !== 0 &&
+                                podcasts?.map((item, index) => (
+                                    <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                        <PodcastItem podcast={item} to={`/podcast/${item._id}`} />
+                                    </Grid>
+                                ))}
+                        </Grid>
+                    </div>
+                </section>
+            )}
+
+            {episodes.length !== 0 && (
+                <section className={cx('section-container')}>
+                    <h1 className={cx('heading')}>{t('Episodes')}</h1>
+                    <div className={cx('section-content')}>
+                        <Grid container spacing={2}>
+                            {episodes?.length !== 0 &&
+                                episodes?.map((item, index) => (
+                                    <Grid item xl={2} lg={3} md={4} xs={6} key={index}>
+                                        <EpisodeItem
+                                            podcast={item.podcast}
+                                            episode={item.track}
+                                            context_uri={item.context_uri}
+                                            position={item.position}
+                                            to={`/episode/${item?.track._id}/podcast/${item?.podcast._id}`}
+                                        />
                                     </Grid>
                                 ))}
                         </Grid>

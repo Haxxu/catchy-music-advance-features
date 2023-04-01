@@ -257,7 +257,7 @@ const AudioPlayer = () => {
     };
 
     useEffect(() => {
-        let myInterval = setInterval(setListeningTrackTimeout, 5000);
+        let myInterval = setInterval(setListeningTrackTimeout, 15000);
 
         // console.log(myInterval);
         return () => clearInterval(myInterval);

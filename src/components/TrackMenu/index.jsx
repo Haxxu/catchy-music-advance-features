@@ -12,7 +12,12 @@ import axiosInstance from '~/api/axiosInstance';
 import { addItemsToQueueUrl, removeItemsFromQueueUrl } from '~/api/urls/me';
 import AddToPlaylistMenu from '~/components/AddToPlaylistMenu';
 import { removeLikedTrackFromLibraryUrl, removeLikedEpisodeFromLibraryUrl } from '~/api/urls/me';
-import { updateLikeTrackState, updatePlaylistState, updateQueueState } from '~/redux/updateStateSlice';
+import {
+    updateLikeTrackState,
+    updatePlaylistState,
+    updateQueueState,
+    updateLikeEpisodeState,
+} from '~/redux/updateStateSlice';
 import { removeTrackFromPlaylistUrl } from '~/api/urls/playlistsUrl';
 import { useAuth } from '~/hooks';
 import { useTranslation } from 'react-i18next';
@@ -80,8 +85,16 @@ const TrackMenu = ({
         navigate(`/track/${trackId}/album/${albumId}`);
     };
 
+    const goToEpisodePage = () => {
+        navigate(`/episode/${trackId}/podcast/${podcastId}`);
+    };
+
     const goToAlbumPage = () => {
         navigate(`/album/${albumId}`);
+    };
+
+    const goToPodcastPage = () => {
+        navigate(`/podcast/${podcastId}`);
     };
 
     const removeTrackFromLikedTracks = async (trackId, albumId) => {
@@ -101,7 +114,7 @@ const TrackMenu = ({
             const { data } = await axiosInstance.delete(removeLikedEpisodeFromLibraryUrl, {
                 data: { track: trackId, podcast: podcastId },
             });
-            dispatch(updateLikeTrackState());
+            dispatch(updateLikeEpisodeState());
             toast.success(data.message);
         } catch (err) {
             console.log(err);
@@ -139,18 +152,38 @@ const TrackMenu = ({
                                 </div>
                             )}
                             <div className={cx('menu-item', 'item-have-sub-menu')}>
-                                <AddToPlaylistMenu trackId={trackId} albumId={albumId} />
+                                {trackType === 'song' ? (
+                                    <AddToPlaylistMenu trackId={trackId} albumId={albumId} />
+                                ) : (
+                                    <AddToPlaylistMenu trackId={trackId} podcastId={podcastId} />
+                                )}
                             </div>
                             <Divider />
-                            <div className={cx('menu-item')} onClick={goToTrackPage}>
-                                {t('Go to track')}
-                            </div>
+                            {trackType === 'song' ? (
+                                <div className={cx('menu-item')} onClick={goToTrackPage}>
+                                    {t('Go to track')}
+                                </div>
+                            ) : (
+                                <div className={cx('menu-item')} onClick={goToEpisodePage}>
+                                    {t('Go to episode')}
+                                </div>
+                            )}
                             <div className={cx('menu-item', 'item-have-sub-menu')}>
-                                <GoToArtistMenu artists={artists} />
+                                {trackType === 'song' ? (
+                                    <GoToArtistMenu artists={artists} />
+                                ) : (
+                                    <GoToArtistMenu artists={artists} type='podcaster' />
+                                )}
                             </div>
-                            <div className={cx('menu-item')} onClick={goToAlbumPage}>
-                                {t('Go to album')}
-                            </div>
+                            {trackType === 'song' ? (
+                                <div className={cx('menu-item')} onClick={goToAlbumPage}>
+                                    {t('Go to album')}
+                                </div>
+                            ) : (
+                                <div className={cx('menu-item')} onClick={goToPodcastPage}>
+                                    {t('Go to podcast')}
+                                </div>
+                            )}
                             <Divider />
                             {inPage === 'liked-tracks' && (
                                 <div

@@ -80,7 +80,7 @@ const Podcast = () => {
         const fetchPodcast = async () => {
             const { data } = await axiosInstance.get(getPodcastByIdUrl(id));
             setPodcast(data.data);
-            console.log(data.data);
+            // console.log(data.data);
             return data.data?.owner?._id;
         };
 
@@ -327,6 +327,7 @@ const Podcast = () => {
                                                             position={item?.position}
                                                             inPage='podcast'
                                                             podcastOwnerId={podcast?.owner?._id}
+                                                            trackType='episode'
                                                         />
                                                     </div>
                                                 </TableCell>

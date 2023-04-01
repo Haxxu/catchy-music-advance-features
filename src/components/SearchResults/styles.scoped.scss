@@ -7,7 +7,7 @@
     }
 
     .section-container {
-        margin-top: 20px;
+        margin-top: 40px;
 
         .heading {
             font-size: 2.4rem;
@@ -78,8 +78,8 @@
                         display: flex;
                         justify-content: center;
 
-                        .order-number {
-                        }
+                        // .order-number {
+                        // }
 
                         .play-btn {
                             display: none;
@@ -91,8 +91,8 @@
                         align-items: center;
                         font-size: 1.6rem;
 
-                        .left {
-                        }
+                        // .left {
+                        // }
 
                         .right {
                             margin-left: 8px;
@@ -185,8 +185,8 @@
                         }
 
                         .info {
-                            .left {
-                            }
+                            // .left {
+                            // }
 
                             .right {
                                 .artists {
@@ -203,9 +203,9 @@
                             }
                         }
 
-                        .track-menu {
-                            // display: flex;
-                        }
+                        // .track-menu {
+                        //     // display: flex;
+                        // }
                     }
 
                     &.active {

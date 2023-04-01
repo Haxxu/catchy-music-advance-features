@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 const cx = classNames.bind(styles);
 
-const AddToPlaylistMenu = ({ trackId, albumId }) => {
+const AddToPlaylistMenu = ({ trackId, albumId = '', podcastId = '', type = 'song' }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [playlists, setPlaylists] = useState([]);
 
@@ -33,6 +33,7 @@ const AddToPlaylistMenu = ({ trackId, albumId }) => {
             const { data } = await axiosInstance.post(addTrackToPlaylistUrl(playlistId), {
                 track: trackId,
                 album: albumId,
+                podcast: podcastId,
             });
             toast.success(data.message);
         } catch (err) {

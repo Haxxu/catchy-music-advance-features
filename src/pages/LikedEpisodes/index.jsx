@@ -67,7 +67,7 @@ const LikedEpisodes = () => {
         const fetchData = async () => {
             const { data } = await axiosInstance.get(getLikedEpisodessUrl);
             setLikedEpisodes(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         };
 
         fetchData().catch(console.error);
@@ -296,6 +296,7 @@ const LikedEpisodes = () => {
                                                             context_uri={item?.context_uri}
                                                             position={item?.position}
                                                             inPage='liked-episodes'
+                                                            trackType='episode'
                                                         />
                                                     </div>
                                                 </TableCell>
