@@ -112,8 +112,8 @@ class AuthController {
                 return res.status(200).json({
                     data: {
                         newUser: new_user,
-                        message: 'Account created successfully!',
                     },
+                    message: 'Account created successfully!',
                 });
             } else {
                 sendMail(req.body.email, url, 'Verify your email address');
@@ -137,7 +137,7 @@ class AuthController {
                 next(new ApiError(400, 'Invalid authentication'));
             }
 
-            const user = await userService.findOne({ email: req.body.email });
+            const user = await userService.findOne({ email: newUser.email });
             if (user) {
                 next(new ApiError(400, 'User with given email already registered!'));
             }
