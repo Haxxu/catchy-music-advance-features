@@ -9,6 +9,7 @@ import { userInterfaceReducer } from './userInterfaceSlice';
 import { userReducer } from './userSlice';
 import { audioPlayerReducer } from './audioPlayerSlice';
 import { updateStateReducer } from './updateStateSlice';
+import { commentReducer } from './commentSlice';
 
 const reducers = combineReducers({
     auth: authReducer,
@@ -16,12 +17,13 @@ const reducers = combineReducers({
     user: userReducer,
     audioPlayer: audioPlayerReducer,
     updateState: updateStateReducer,
+    comments: commentReducer,
 });
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'userInterface', 'user', 'audioPlayer', 'updateState'],
+    whitelist: ['auth', 'userInterface', 'user', 'audioPlayer', 'updateState', 'comments'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

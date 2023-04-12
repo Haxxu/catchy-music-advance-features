@@ -27,6 +27,7 @@ const routes = {
     profile: '/profile',
     settings: '/settings',
     lyrics: '/lyrics',
+    comments: '/:contextType/:contextId/comments',
     queue: '/queue',
     album: '/album/:id',
     podcast: '/podcast/:id',

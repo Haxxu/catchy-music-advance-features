@@ -20,6 +20,7 @@ import Track from '~/pages/Track';
 import User from '~/pages/User';
 import Genre from '~/pages/Genre';
 import Episode from '~/pages/Episode';
+import Comments from '~/pages/Comments';
 
 const privateRoutes = [
     // Home
@@ -145,6 +146,13 @@ const privateRoutes = [
     {
         path: routes.queue,
         component: Queue,
+        layout: MainLayout,
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
+    },
+    // Comments
+    {
+        path: routes.comments,
+        component: Comments,
         layout: MainLayout,
         roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },

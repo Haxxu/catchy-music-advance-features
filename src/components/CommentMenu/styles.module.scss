@@ -4,11 +4,10 @@
 .menu-container {
     background-color: var(--background2-color);
     min-width: 200px;
-    font-size: 1.8rem;
-    // z-index: 100;
+    font-size: 1.2rem;
 
     .menu-list {
-        padding: 8px;
+        padding: 4px;
         // border-top: 1px dashed var(--text-primary);
         // border-bottom: 0.5px dashed var(--text-secondary);
 
@@ -18,9 +17,9 @@
             justify-content: space-between;
             height: 40px;
             // color: var(--text-primary);
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 500;
-            padding: 6px 16px;
+            padding: 4px 12px;
             border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
@@ -42,8 +41,8 @@
             }
 
             .icon {
-                width: 30px;
-                height: 30px;
+                width: 20px;
+                height: 20px;
             }
         }
     }

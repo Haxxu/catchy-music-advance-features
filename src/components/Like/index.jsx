@@ -39,7 +39,7 @@ import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
-const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId }) => {
+const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId, commentId }) => {
     const [liked, setLiked] = useState(false);
 
     const { likeTrackState, playlistInSidebarState, likeEpisodeState } = useSelector((state) => state.updateState);
@@ -79,6 +79,7 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     setLiked(data.data);
                     dispatch(updatePodcastState());
                     toast.success(data.message);
+                } else if (type === 'comment') {
                 } else {
                     const { data } = await axiosInstance.delete(removePlaylistFromLibraryUrl, {
                         data: { playlist: playlistId },
@@ -114,7 +115,9 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     setLiked(data.data);
                     dispatch(updatePodcastState());
                     toast.success(data.message);
+                } else if (type === 'comment') {
                 } else {
+                    // playlist
                     const { data } = await axiosInstance.put(savePlaylistToLibraryUrl, { playlist: playlistId });
                     setLiked(data.data);
                     dispatch(updatePlaylistInSidebarState());
@@ -141,7 +144,9 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
             } else if (type === 'episode') {
                 const { data } = await axiosInstance.get(checkLikedEpisodeUrl, { params: { trackId, podcastId } });
                 setLiked(data.data);
+            } else if (type === 'comment') {
             } else {
+                // playlist
                 const { data } = await axiosInstance.get(checkSavedPlaylistUrl, { params: { playlistId } });
                 setLiked(data.data);
             }

@@ -1,0 +1,57 @@
+.container {
+    width: 100%;
+
+    .comment_box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 14px;
+        padding: 0.8rem 1.5rem 1rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 1rem;
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .comment_header {
+            padding: 10px;
+
+            .comment_owner_name {
+                text-decoration: none;
+                color: var(--text-primary);
+                font-size: 1.8rem;
+                font-weight: 700;
+            }
+        }
+
+        .comment_content {
+            padding: 10px;
+        }
+
+        .comment_actions {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0 10px;
+            margin: 10px 0 10px;
+
+            .comment_nav {
+                cursor: pointer;
+                display: none;
+                transition: 0.5s ease-in-out;
+            }
+        }
+
+        &:hover {
+            .comment_nav {
+                display: block;
+            }
+        }
+    }
+}

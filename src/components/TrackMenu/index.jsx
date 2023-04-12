@@ -21,6 +21,7 @@ import {
 import { removeTrackFromPlaylistUrl } from '~/api/urls/playlistsUrl';
 import { useAuth } from '~/hooks';
 import { useTranslation } from 'react-i18next';
+// import OpenCommentsButton from '~/components/button/OpenCommentsButton';
 
 const cx = classNames.bind(styles);
 
@@ -95,6 +96,10 @@ const TrackMenu = ({
 
     const goToPodcastPage = () => {
         navigate(`/podcast/${podcastId}`);
+    };
+
+    const goToCommentsPage = () => {
+        navigate(`/${trackType}/${trackId}/comments`);
     };
 
     const removeTrackFromLikedTracks = async (trackId, albumId) => {
@@ -209,6 +214,9 @@ const TrackMenu = ({
                                     {t('Remove track from this playlist')}
                                 </div>
                             )}
+                            <div className={cx('menu-item')} onClick={goToCommentsPage}>
+                                {t('Comments')}
+                            </div>
                         </div>
                     </Paper>
                 </ClickAwayListener>
