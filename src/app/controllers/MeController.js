@@ -7,6 +7,7 @@ const TrackService = require('../services/TrackService');
 const PodcastService = require('../services/PodcastService');
 const LibraryService = require('../services/LibraryService');
 const { Podcast } = require('../models/Podcast');
+const { Comment } = require('../models/Comment');
 
 class MeController {
     // Get current user profile
@@ -819,6 +820,75 @@ class MeController {
             await track.save();
 
             return res.status(200).send({ message: 'Removed from library' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Check saved albums
+    async checkLikedComment(req, res, next) {
+        try {
+            let saved = false;
+            if (req.query.commentId) {
+                const comment = await Comment.findOne({ _id: req.query.commentId });
+                if (!comment) {
+                    return res.status(404).send({ message: 'Comment not found' });
+                }
+
+                if (comment.likes.find((item) => item.user === req.user._id)) {
+                    saved = true;
+                }
+            } else {
+                return res.status(404).send({ message: 'Comment not found' });
+            }
+
+            return res.status(200).send({ data: saved, message: 'Check liked comment' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Save album to user library
+    async likeComment(req, res, next) {
+        try {
+            const comment = await Comment.findOne({ _id: req.body.comment });
+            if (!comment) {
+                return res.status(404).send({ message: 'Comment does not exist' });
+            }
+
+            if (!comment.likes.find((item) => item.user === req.user._id)) {
+                comment.likes.push({
+                    user: req.user._id,
+                    addedAt: Date.now(),
+                });
+                await comment.save();
+            }
+
+            return res.status(200).send({ message: 'Like comment successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // Remove album from user library
+    async unlikeComment(req, res, next) {
+        try {
+            const comment = await Comment.findOne({ _id: req.body.comment });
+            if (!comment) {
+                return res.status(404).send({ message: 'Comment does not exist' });
+            }
+
+            const index = comment.likes.map((item) => item.user).indexOf(req.user._id);
+            if (index !== -1) {
+                comment.likes.splice(index, 1);
+            }
+
+            comment.save();
+
+            return res.status(200).send({ message: 'Unlike comment successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });

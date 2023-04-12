@@ -180,7 +180,7 @@ class CommentController {
                                     let: { owner_id: '$owner' },
                                     pipeline: [
                                         {
-                                            $project: { name: 1, image: 1 },
+                                            $project: { name: 1, image: 1, type: 1 },
                                         },
                                         {
                                             $match: {
@@ -214,7 +214,7 @@ class CommentController {
                                                 let: { owner_id: '$owner' },
                                                 pipeline: [
                                                     {
-                                                        $project: { name: 1, image: 1 },
+                                                        $project: { name: 1, image: 1, type: 1 },
                                                     },
                                                     {
                                                         $match: {
@@ -234,7 +234,7 @@ class CommentController {
                                                 let: { reply_user_id: '$replyUser' },
                                                 pipeline: [
                                                     {
-                                                        $project: { name: 1, image: 1 },
+                                                        $project: { name: 1, image: 1, type: 1 },
                                                     },
                                                     {
                                                         $match: {
@@ -248,8 +248,18 @@ class CommentController {
                                             },
                                         },
                                         { $unwind: '$replyUser' },
+                                        {
+                                            $addFields: {
+                                                totalLikes: { $size: '$likes' },
+                                            },
+                                        },
                                     ],
                                     as: 'replyComments',
+                                },
+                            },
+                            {
+                                $addFields: {
+                                    totalLikes: { $size: '$likes' },
                                 },
                             },
                             { $sort: { createdAt: -1 } },
