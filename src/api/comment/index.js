@@ -1,6 +1,7 @@
 import axiosInstance from '~/api/axiosInstance';
-import { getCommentsUrl } from '~/api/urls/commentsUrl';
-import { getCommentsAction } from '~/redux/commentSlice';
+import { createCommentUrl, getCommentsUrl } from '~/api/urls/commentsUrl';
+import { createCommentAction, getCommentsAction } from '~/redux/commentSlice';
+import { updateCommentState } from '~/redux/updateStateSlice';
 
 export const getComments = async (dispatch, contextId, contextType) => {
     try {
@@ -16,6 +17,17 @@ export const getComments = async (dispatch, contextId, contextType) => {
                 contextType,
             }),
         );
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const createComment = async (dispatch, data) => {
+    try {
+        // console.log(data);
+        const res = await axiosInstance.post(createCommentUrl(), data);
+        await dispatch(createCommentAction(res.data.data));
+        return res.data.data;
     } catch (error) {
         console.log(error);
     }

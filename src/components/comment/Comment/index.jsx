@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 import styles from './styles.module.scss';
 import AvatarComment from '../AvatarComment';
 import CommentList from '../CommentList';
+import AvatarReplyComment from '../AvatarReplyComment';
 
 const cx = classNames.bind(styles);
 
@@ -36,19 +37,25 @@ const Comment = ({ comment }) => {
                             display: 'flex',
                         }}
                     >
-                        <AvatarComment user={replyComment.owner} />
+                        <AvatarReplyComment user={replyComment.owner} replyUser={replyComment.replyUser} />
                         <CommentList comment={replyComment} showReply={showReply} setShowReply={setShowReply} />
                     </div>
                 ))}
 
                 <div style={{ cursor: 'pointer' }}>
                     {showReply.length - next > 0 ? (
-                        <small style={{ color: 'crimson' }} onClick={() => setNext((prev) => prev + 5)}>
+                        <small
+                            style={{ color: 'crimson', fontWeight: 700, fontSize: '1.4rem' }}
+                            onClick={() => setNext((prev) => prev + 5)}
+                        >
                             See more comments
                         </small>
                     ) : (
                         showReply.length > 2 && (
-                            <small style={{ color: 'teal' }} onClick={() => setNext(2)}>
+                            <small
+                                style={{ color: 'teal', fontWeight: 700, fontSize: '1.4rem' }}
+                                onClick={() => setNext(2)}
+                            >
                                 Hide comments...
                             </small>
                         )

@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 import { Link } from 'react-router-dom';
 import CommentMenu from '~/components/CommentMenu';
 import Like from '~/components/Like';
+import { getTimeGap } from '~/utils/Format/timeFormat';
 
 const cx = classNames.bind(styles);
 
@@ -41,12 +42,28 @@ const CommentList = ({ children, comment }) => {
                         >
                             {comment.owner.name}
                         </Link>
+                        &nbsp;
+                        {comment.replyUser && (
+                            <>
+                                reply to&nbsp;
+                                <Link
+                                    className={cx('comment_reply_user')}
+                                    to={`/${comment.replyUser?.type === 'admin' ? 'user' : comment.replyUser?.type}/${
+                                        comment.replyUser?._id
+                                    }`}
+                                >
+                                    {comment.replyUser?.name}
+                                </Link>
+                            </>
+                        )}
+                        &nbsp;
+                        <div className={cx('comment_created_time')}>{getTimeGap(comment.createdAt)}</div>
                     </div>
 
                     <div className={cx('comment_content')} dangerouslySetInnerHTML={{ __html: comment.content }} />
 
                     <div className={cx('comment_actions')}>
-                        <small style={{ cursor: 'pointer' }} onClick={() => setOnReply(!onReply)}>
+                        <small style={{ cursor: 'pointer', marginRight: '10px' }} onClick={() => setOnReply(!onReply)}>
                             {onReply ? '- Cancel -' : '- Reply -'}
                         </small>
 

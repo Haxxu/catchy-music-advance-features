@@ -20,6 +20,8 @@
         }
 
         .comment_header {
+            display: flex;
+            align-items: center;
             padding: 10px;
 
             .comment_owner_name {
@@ -27,6 +29,19 @@
                 color: var(--text-primary);
                 font-size: 1.8rem;
                 font-weight: 700;
+                // margin-right: 30px;
+            }
+
+            .comment_reply_user {
+                text-decoration: none;
+                color: var(--text-primary);
+                font-size: 1.8rem;
+                font-weight: 700;
+                // margin-right: 30px;
+            }
+
+            .comment_created_time {
+                margin-left: 35px;
             }
         }
 

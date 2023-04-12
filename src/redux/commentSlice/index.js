@@ -9,14 +9,23 @@ const commentSlice = createSlice({
     },
     reducers: {
         getCommentsAction: (state, action) => {
-            state.comments = action.payload.comments;
-            state.contextId = action.payload.contextId;
-            state.contextType = action.payload.contextType;
+            return {
+                comments: action.payload.comments,
+                contextId: action.payload.contextId,
+                contextType: action.payload.contextType,
+            };
+        },
+
+        createCommentAction: (state, action) => {
+            return {
+                ...state,
+                comments: [action.payload, ...state.comments],
+            };
         },
     },
 });
 
-export const { getCommentsAction } = commentSlice.actions;
+export const { getCommentsAction, createCommentAction } = commentSlice.actions;
 
 export const commentReducer = commentSlice.reducer;
 

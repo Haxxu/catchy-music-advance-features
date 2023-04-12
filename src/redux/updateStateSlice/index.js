@@ -12,6 +12,7 @@ const updateState = createSlice({
         albumState: false,
         podcastState: false,
         queueState: false,
+        commentState: false,
     },
     reducers: {
         updateLikeTrackState: (state, payload) => {
@@ -49,6 +50,10 @@ const updateState = createSlice({
         updateQueueState: (state, payload) => {
             state.queueState = !state.queueState;
         },
+
+        updateCommentState: (state, payload) => {
+            state.commentState = !state.commentState;
+        },
     },
 });
 
@@ -63,6 +68,7 @@ export const {
     updateAlbumState,
     updatePodcastState,
     updateQueueState,
+    updateCommentState,
 } = updateState.actions;
 
 export default updateState;
