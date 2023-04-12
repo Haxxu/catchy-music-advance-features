@@ -17,6 +17,7 @@ class CommentService {
             contextType,
             contextOwner,
         }).save();
+        (await new_comment.populate({ path: 'owner', select: '_id name image type' })).save();
         return new_comment;
     }
 
