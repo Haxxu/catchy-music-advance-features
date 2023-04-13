@@ -48,7 +48,7 @@ const Comment = ({ comment }) => {
                             style={{ color: 'crimson', fontWeight: 700, fontSize: '1.4rem' }}
                             onClick={() => setNext((prev) => prev + 5)}
                         >
-                            See more comments
+                            See more comments...
                         </small>
                     ) : (
                         showReply.length > 2 && (

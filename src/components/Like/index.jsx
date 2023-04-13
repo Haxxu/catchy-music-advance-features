@@ -36,11 +36,14 @@ import {
     updateQueueState,
 } from '~/redux/updateStateSlice';
 import { toast } from 'react-toastify';
+import { useAuth } from '~/hooks';
+import { likeComment, unlikeComment } from '~/api/comment';
 
 const cx = classNames.bind(styles);
 
-const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId, commentId }) => {
+const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId, comment }) => {
     const [liked, setLiked] = useState(false);
+    const { userId } = useAuth();
 
     const { likeTrackState, playlistInSidebarState, likeEpisodeState } = useSelector((state) => state.updateState);
 
@@ -80,6 +83,7 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     dispatch(updatePodcastState());
                     toast.success(data.message);
                 } else if (type === 'comment') {
+                    await unlikeComment(dispatch, comment);
                 } else {
                     const { data } = await axiosInstance.delete(removePlaylistFromLibraryUrl, {
                         data: { playlist: playlistId },
@@ -116,6 +120,7 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     dispatch(updatePodcastState());
                     toast.success(data.message);
                 } else if (type === 'comment') {
+                    await likeComment(dispatch, comment);
                 } else {
                     // playlist
                     const { data } = await axiosInstance.put(savePlaylistToLibraryUrl, { playlist: playlistId });
@@ -145,6 +150,11 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                 const { data } = await axiosInstance.get(checkLikedEpisodeUrl, { params: { trackId, podcastId } });
                 setLiked(data.data);
             } else if (type === 'comment') {
+                if (comment.likes.map((item) => item.user).includes(userId)) {
+                    setLiked(true);
+                } else {
+                    setLiked(false);
+                }
             } else {
                 // playlist
                 const { data } = await axiosInstance.get(checkSavedPlaylistUrl, { params: { playlistId } });
@@ -154,7 +164,17 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
 
         fetchData().catch(console.error);
         // eslint-disable-next-line
-    }, [liked, trackId, albumId, playlistId, podcastId, likeTrackState, likeEpisodeState, playlistInSidebarState]);
+    }, [
+        liked,
+        trackId,
+        albumId,
+        playlistId,
+        podcastId,
+        likeTrackState,
+        likeEpisodeState,
+        playlistInSidebarState,
+        comment,
+    ]);
 
     return (
         <IconButton className={cx('like-btn')} onClick={handleLike} disableRipple>

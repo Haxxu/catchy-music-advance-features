@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 import React, { useState, useRef, useEffect } from 'react';
 
 import LiteQuill from '~/components/editor/LiteQuill';
+import './index.scss';
 
 const Input = ({ callback, edit, setEdit }) => {
     const [body, setBody] = useState('');
@@ -32,9 +33,9 @@ const Input = ({ callback, edit, setEdit }) => {
             <div ref={divRef} dangerouslySetInnerHTML={{ __html: body }} style={{ display: 'none' }} />
 
             <Button
-                sx={{ fontSize: '1.3rem', fontWeight: '800' }}
-                color='primary'
-                variant='outlined'
+                sx={{ fontSize: '1rem', fontWeight: '700', marginTop: '3px' }}
+                color='info'
+                variant='contained'
                 onClick={handleSubmit}
             >
                 {edit ? 'Update' : 'Send'}

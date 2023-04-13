@@ -119,3 +119,7 @@ export const removePodcastFromLibraryUrl = baseApiUrl + '/me/podcasts';
 
 // [PUT] save podcast to library
 export const savePodcastToLibraryUrl = baseApiUrl + '/me/podcasts';
+
+export const likeCommentUrl = () => `${baseApiUrl}/me/comments`;
+
+export const unlikeCommentUrl = () => `${baseApiUrl}/me/comments`;

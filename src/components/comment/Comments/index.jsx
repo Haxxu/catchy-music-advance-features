@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames/bind';
 import { CircularProgress } from '@mui/material';
@@ -17,21 +17,12 @@ const Comments = ({ contextId, contextType }) => {
     const { commentState } = useSelector((state) => state.updateState);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (comments.length === 0) return;
-        setShowComments(comments);
-        // console.log(comments);
-    }, [comments, contextId, contextType, commentState]);
-
-    useEffect(() => {
-        fetchComments(contextId, contextType);
-    }, [contextId, contextType]);
-
-    const fetchComments = async (contextId, contextType) => {
+    const fetchComments = useCallback(async (contextId, contextType) => {
         setIsLoading(true);
         await getComments(dispatch, contextId, contextType);
         setIsLoading(false);
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleComment = async (body) => {
         const data = {
@@ -42,9 +33,19 @@ const Comments = ({ contextId, contextType }) => {
 
         // console.log(data);
 
-        const new_data = await createComment(dispatch, data);
+        await createComment(dispatch, data);
         // setShowComments([new_data, ...showComments]);
     };
+
+    useEffect(() => {
+        // if (comments.length === 0) return;
+        setShowComments(comments);
+        // console.log(comments);
+    }, [comments, contextId, contextType, commentState, comments.likes]);
+
+    useEffect(() => {
+        fetchComments(contextId, contextType);
+    }, [contextId, contextType, fetchComments]);
 
     return (
         <div className={cx('container')}>
