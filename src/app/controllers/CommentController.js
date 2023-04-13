@@ -100,7 +100,7 @@ class CommentController {
 
             const comment = await CommentService.findOne({ _id: req.params.id });
             if (!comment) {
-                res.status(404).json({ message: 'Comment not found' });
+                return res.status(404).json({ message: 'Comment not found' });
             }
 
             if (req.user._id !== comment.owner.toString()) {
@@ -114,7 +114,7 @@ class CommentController {
             );
 
             if (!updated_comment) {
-                res.status(404).json({ message: 'Update comment failure.' });
+                return res.status(404).json({ message: 'Update comment failure.' });
             }
 
             return res.status(200).json({ data: updated_comment, message: 'Update comment successfully' });

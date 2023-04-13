@@ -40,7 +40,13 @@ class CommentService {
             },
         );
 
-        return new_comment;
+        const populated_comment = await Comment.findById(new_comment._id)
+            .populate({ path: 'owner', select: '_id name image type' })
+            .populate({ path: 'replyUser', select: '_id name image type' });
+
+        await populated_comment.save();
+
+        return populated_comment;
     }
 
     static async findOne(condition) {

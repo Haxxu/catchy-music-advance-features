@@ -863,10 +863,16 @@ class MeController {
                     user: req.user._id,
                     addedAt: Date.now(),
                 });
-                await comment.save();
             }
 
-            return res.status(200).send({ message: 'Like comment successfully' });
+            await comment.populate({ path: 'owner', select: '_id image type name' });
+            if (comment.replyUser) {
+                await comment.populate({ path: 'replyUser', select: '_id image type name' });
+            }
+
+            await comment.save();
+
+            return res.status(200).send({ data: comment, message: 'Like comment successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
@@ -886,9 +892,14 @@ class MeController {
                 comment.likes.splice(index, 1);
             }
 
-            comment.save();
+            await comment.populate({ path: 'owner', select: '_id image type name' });
+            if (comment.replyUser) {
+                await comment.populate({ path: 'replyUser', select: '_id image type name' });
+            }
 
-            return res.status(200).send({ message: 'Unlike comment successfully' });
+            await comment.save();
+
+            return res.status(200).send({ data: comment, message: 'Unlike comment successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
