@@ -37,6 +37,9 @@ class CommentController {
 
             const newComment = await CommentService.createComment(payload);
 
+            const { io } = require('../../index');
+            io.to(`${contextId}`).emit('createComment', newComment);
+
             return res.status(200).json({ data: newComment, message: 'Create comment successfully' });
         } catch (err) {
             console.log(err);
@@ -87,6 +90,9 @@ class CommentController {
 
             const newReplyComment = await CommentService.createReplyComment(payload);
 
+            const { io } = require('../..');
+            io.to(`${newReplyComment.contextId}`).emit('replyComment', newReplyComment);
+
             return res.status(200).json({ data: newReplyComment, message: 'Create reply comment successfully' });
         } catch (err) {
             console.log(err);
@@ -116,6 +122,10 @@ class CommentController {
             if (!updated_comment) {
                 return res.status(404).json({ message: 'Update comment failure.' });
             }
+
+            // Socket update
+            const { io } = require('../..');
+            io.to(`${updated_comment.contextId}`).emit('updateComment', updated_comment);
 
             return res.status(200).json({ data: updated_comment, message: 'Update comment successfully' });
         } catch (err) {
@@ -153,6 +163,9 @@ class CommentController {
                 // Delete comment and all reply comments (commentRoot)
                 await Comment.deleteMany({ _id: { $in: deleted_comment.replyComments } });
             }
+
+            const { io } = require('../..');
+            io.to(`${deleted_comment.contextId}`).emit('deleteComment', deleted_comment);
 
             return res.status(200).json({ data: deleted_comment, message: 'Delete comment successfully' });
         } catch (err) {

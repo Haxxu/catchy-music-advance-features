@@ -872,6 +872,9 @@ class MeController {
 
             await comment.save();
 
+            const { io } = require('../..');
+            io.to(`${comment.contextId}`).emit('likeComment', comment);
+
             return res.status(200).send({ data: comment, message: 'Like comment successfully' });
         } catch (err) {
             console.log(err);
@@ -898,6 +901,9 @@ class MeController {
             }
 
             await comment.save();
+
+            const { io } = require('../..');
+            io.to(`${comment.contextId}`).emit('likeComment', comment);
 
             return res.status(200).send({ data: comment, message: 'Unlike comment successfully' });
         } catch (err) {
