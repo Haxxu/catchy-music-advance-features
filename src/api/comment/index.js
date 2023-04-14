@@ -9,15 +9,15 @@ import {
     updateCommentByIdUrl,
 } from '~/api/urls/commentsUrl';
 import {
-    createCommentAction,
-    deleteCommentAction,
-    deleteReplyCommentAction,
     getCommentsAction,
-    likeCommentAction,
-    likeReplyCommentAction,
-    replyCommentAction,
-    updateCommentAction,
-    updateReplyCommentAction,
+    // createCommentAction,
+    // deleteCommentAction,
+    // deleteReplyCommentAction,
+    // likeCommentAction,
+    // likeReplyCommentAction,
+    // replyCommentAction,
+    // updateCommentAction,
+    // updateReplyCommentAction,
 } from '~/redux/commentSlice';
 import { likeCommentUrl, unlikeCommentUrl } from '~/api/urls/me';
 
@@ -46,7 +46,7 @@ export const createComment = async (dispatch, data) => {
         // console.log(data);
         const res = await axiosInstance.post(createCommentUrl(), data);
         if (res.status === 200) {
-            dispatch(createCommentAction(res.data.data));
+            // dispatch(createCommentAction(res.data.data));
         }
         return res.data.data;
     } catch (error) {
@@ -59,11 +59,11 @@ export const updateComment = async (dispatch, editComment, data) => {
     try {
         const res = await axiosInstance.patch(updateCommentByIdUrl(editComment._id), data);
         if (res.status === 200) {
-            if (editComment.commentRoot) {
-                dispatch(updateReplyCommentAction(res.data.data));
-            } else {
-                dispatch(updateCommentAction(res.data.data));
-            }
+            // if (editComment.commentRoot) {
+            //     dispatch(updateReplyCommentAction(res.data.data));
+            // } else {
+            //     dispatch(updateCommentAction(res.data.data));
+            // }
         }
     } catch (error) {
         console.log(error);
@@ -75,7 +75,7 @@ export const replyComment = async (dispatch, data) => {
     try {
         const res = await axiosInstance.post(replyCommentUrl(), data);
         if (res.status === 200) {
-            dispatch(replyCommentAction(res.data.data));
+            // dispatch(replyCommentAction(res.data.data));
         }
     } catch (error) {
         console.log(error);
@@ -87,11 +87,11 @@ export const deleteComment = async (dispatch, comment) => {
     try {
         const res = await axiosInstance.delete(deleteCommentByIdUrl(comment._id));
         if (res.status === 200) {
-            if (comment.commentRoot) {
-                dispatch(deleteReplyCommentAction(res.data.data));
-            } else {
-                dispatch(deleteCommentAction(res.data.data));
-            }
+            // if (comment.commentRoot) {
+            //     dispatch(deleteReplyCommentAction(res.data.data));
+            // } else {
+            //     dispatch(deleteCommentAction(res.data.data));
+            // }
         }
     } catch (error) {
         console.log(error);
@@ -106,11 +106,11 @@ export const likeComment = async (dispatch, comment) => {
         });
 
         if (res.status === 200) {
-            if (comment.commentRoot) {
-                dispatch(likeReplyCommentAction(res.data.data));
-            } else {
-                dispatch(likeCommentAction(res.data.data));
-            }
+            // if (comment.commentRoot) {
+            //     dispatch(likeReplyCommentAction(res.data.data));
+            // } else {
+            //     dispatch(likeCommentAction(res.data.data));
+            // }
         }
     } catch (error) {
         console.log(error);
@@ -128,11 +128,11 @@ export const unlikeComment = async (dispatch, comment) => {
         });
 
         if (res.status === 200) {
-            if (comment.commentRoot) {
-                dispatch(likeReplyCommentAction(res.data.data));
-            } else {
-                dispatch(likeCommentAction(res.data.data));
-            }
+            // if (comment.commentRoot) {
+            //     dispatch(likeReplyCommentAction(res.data.data));
+            // } else {
+            //     dispatch(likeCommentAction(res.data.data));
+            // }
         }
     } catch (error) {
         console.log(error);

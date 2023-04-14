@@ -1,15 +1,34 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import { useDispatch } from 'react-redux';
 
 import { publicRoutes, privateRoutes, adminRoutes, artistRoutes, podcasterRoutes } from '~/routes';
 import MainLayout from '~/layouts/MainLayout';
 import AdminDashboardLayout from '~/layouts/AdminDashboardLayout';
 import ArtistDashboardLayout from './layouts/ArtistDashboardLayout';
 import RequireAuth from './components/RequireAuth';
+import { setSocketAction } from './redux/socketSlice';
+import SocketClient from '~/utils/SocketClient';
 
 function App() {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const socket = io(process.env.REACT_APP_SERVER_URL);
+
+        socket.on('connect', () => {
+            dispatch(setSocketAction(socket));
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [dispatch]);
+
     return (
         <Fragment>
+            <SocketClient />
             <Routes>
                 {/* Public Routes */}
                 {publicRoutes.map((route, index) => {

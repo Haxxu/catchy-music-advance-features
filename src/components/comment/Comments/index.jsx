@@ -15,6 +15,7 @@ const Comments = ({ contextId, contextType }) => {
     const [showComments, setShowComments] = useState([]);
     const { comments } = useSelector((state) => state.comments);
     const { commentState } = useSelector((state) => state.updateState);
+    const { socket } = useSelector((state) => state.socket);
     const dispatch = useDispatch();
 
     const fetchComments = useCallback(async (contextId, contextType) => {
@@ -46,6 +47,16 @@ const Comments = ({ contextId, contextType }) => {
     useEffect(() => {
         fetchComments(contextId, contextType);
     }, [contextId, contextType, fetchComments]);
+
+    useEffect(() => {
+        if (!contextId || !socket) return;
+
+        socket && socket.emit('joinRoom', contextId);
+
+        return () => {
+            socket.emit('outRoom', contextId);
+        };
+    }, [contextId, socket]);
 
     return (
         <div className={cx('container')}>
