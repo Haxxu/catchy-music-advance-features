@@ -1,0 +1,109 @@
+const ApiError = require('../../utils/ApiError');
+const { validatePost, Post } = require('../models/Post');
+const { User } = require('../models/User');
+const PostService = require('../services/PostService');
+
+class PostController {
+    async createPost(req, res, next) {
+        try {
+            const { error } = validatePost(req.body);
+            if (error) {
+                return next(new ApiError(400, error.details[0].message));
+            }
+
+            const new_post = await PostService.createNewPost({
+                ...req.body,
+                owner: req.user?._id,
+            });
+
+            return res.status(200).json({ data: new_post, message: 'Create post successfully' });
+        } catch (err) {
+            console.log(err);
+            return next(new ApiError());
+        }
+    }
+
+    async updatePostById(req, res, next) {
+        try {
+            const { title, description, image } = req.body;
+            const post = await Post.findOne({ _id: req.params.id });
+            if (!post) {
+                return res.status(404).json({ message: 'Post does not exist' });
+            }
+
+            if (req.user?._id !== post.owner.toString()) {
+                return res.status(403).json({ message: "User don't have permission to perform this action" });
+            }
+
+            const updated_post = await PostService.updatePostById(req.params.id, {
+                title,
+                description,
+                image,
+            });
+
+            return res.status(200).json({ data: updated_post, message: 'Update post successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async deletePostById(req, res, next) {
+        try {
+            const post = await Post.findOne({ _id: req.params.id });
+            if (!post) {
+                return res.status(404).json({ message: 'Post does not exist' });
+            }
+
+            if (req.user?._id !== post.owner.toString()) {
+                return res.status(403).json({ message: "User don't have permission to perform this action" });
+            }
+
+            const deleted_post = await PostService.deletePostById(req.params.id);
+
+            return res.status(200).json({ data: deleted_post, message: 'Delete post successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async getPostsByTags(req, res, next) {
+        try {
+            const { tags, limit } = req.query;
+
+            const data = {};
+
+            if (tags.includes('following')) {
+                data.following = await PostService.getPostsByFollowing(req.user._id, limit);
+            }
+
+            if (tags.includes('random')) {
+                data.random = await PostService.getPostsByRandom(limit);
+            }
+
+            return res.status(200).json({ data, message: 'Get posts by tags successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async getPostsByUserId(req, res, next) {
+        try {
+            const user = await User.findOne({ _id: req.params.id });
+            if (!user) {
+                return res.status(404).json({ message: 'Post does not exists' });
+            }
+
+            const posts = await PostService.getPostsByUserId(user._id);
+
+            return res.status(200).json({ data: posts, message: 'Get user posts successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+}
+
+module.exports = new PostController();

@@ -62,6 +62,14 @@ router.get('/comments/contains', userAuth, meController.checkLikedComment);
 router.put('/comments', userAuth, meController.likeComment);
 // [DELETE] /api/me/episodes => remove liked episode from library
 router.delete('/comments', userAuth, meController.unlikeComment);
+// [GET] /api/me/posts/contains => check liked post
+router.get('/posts/contains', userAuth, meController.checkLikedPost);
+// [GET] /api/me/posts => get liked post
+router.get('/posts', userAuth, meController.getLikedPost);
+// [PUT] /api/me/posts =>  like post
+router.put('/posts', userAuth, meController.likePost);
+// [DELETE] /api/me/posts => unlike post
+router.delete('/posts', userAuth, meController.unlikePost);
 // [PUT] /api/me/audio-player/current-playing/increase => increase plays of current Track
 router.put('/audio-player/currently-playing/increase', userAuth, audioPlayerController.increasePlay);
 // [PUT] /api/me/audio-player/current-play/ => increase plays of current Track

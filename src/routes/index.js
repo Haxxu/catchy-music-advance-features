@@ -12,6 +12,7 @@ const podcastRoutes = require('./podcasts');
 const episodeRoutes = require('./episodes');
 const podcasterRoutes = require('./podcasters');
 const commentRoutes = require('./comments');
+const postRoutes = require('./posts');
 
 const routes = (app) => {
     // - /api
@@ -62,6 +63,9 @@ const routes = (app) => {
 
     // - /api/comments
     app.use('/api/comments', commentRoutes);
+
+    // - /api/posts
+    app.use('/api/posts', postRoutes);
 };
 
 module.exports = routes;

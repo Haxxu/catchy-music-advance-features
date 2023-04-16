@@ -70,6 +70,13 @@ const librarySchema = new mongoose.Schema(
                 played: { type: Boolean, default: false },
             },
         ],
+        likedPosts: [
+            {
+                post: { type: String, required: true },
+                addedAt: { type: Date, dafault: Date.now() },
+                _id: false,
+            },
+        ],
     },
     { timestamps: true },
 );

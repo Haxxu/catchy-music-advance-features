@@ -6,6 +6,7 @@ const albumController = require('../app/controllers/AlbumController');
 const userAuth = require('../app/middlewares/userAuth');
 const adminAuth = require('../app/middlewares/adminAuth');
 const validateObjectId = require('../app/middlewares/validateObjectId');
+const postController = require('../app/controllers/PostController');
 
 // [POST] /api/users => create user
 router.post('/', userController.createUser);
@@ -33,6 +34,8 @@ router.get('/:id', [userAuth, validateObjectId], userController.getUserById);
 router.get('/:id/playlists', [userAuth, validateObjectId], playlistController.getUserPlaylists);
 // [GET] /api/users/:id/albums => get user albums by user_id
 router.get('/:id/albums', [userAuth, validateObjectId], albumController.getUserAlbums);
+// [GET] /api/users/:id/posts => get user posts by user_id
+router.get('/:id/posts', [userAuth, validateObjectId], postController.getPostsByUserId);
 // [PUT] /api/users/:id => update user by id
 router.put('/:id', [userAuth, validateObjectId], userController.updateUser);
 

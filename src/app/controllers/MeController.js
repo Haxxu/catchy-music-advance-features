@@ -8,6 +8,9 @@ const PodcastService = require('../services/PodcastService');
 const LibraryService = require('../services/LibraryService');
 const { Podcast } = require('../models/Podcast');
 const { Comment } = require('../models/Comment');
+const { Post } = require('../models/Post');
+const ApiError = require('../../utils/ApiError');
+const PostService = require('../services/PostService');
 
 class MeController {
     // Get current user profile
@@ -909,6 +912,113 @@ class MeController {
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    async likePost(req, res, next) {
+        try {
+            const post = await Post.findOne({ _id: req.body.post });
+            if (!post) {
+                return res.status(404).send({ message: 'Post does not exist' });
+            }
+
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).json({ message: 'Library does not exist' });
+            }
+
+            if (!post.likes.find((item) => item.user === req.user._id)) {
+                post.likes.push({
+                    user: req.user._id,
+                    addedAt: Date.now(),
+                });
+            }
+            if (!library.likedPosts.find((item) => item.post === req.body.post)) {
+                library.likedPosts.unshift({
+                    post: req.body.post,
+                    addedAt: Date.now(),
+                });
+            }
+
+            await post.populate({ path: 'owner', select: '_id image type name' });
+
+            await post.save();
+
+            await library.save();
+
+            return res.status(200).send({ data: post, message: 'Like post successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async unlikePost(req, res, next) {
+        try {
+            const post = await Post.findOne({ _id: req.body.post });
+            if (!post) {
+                return res.status(404).send({ message: 'Post does not exist' });
+            }
+
+            const library = await Library.findOne({ owner: req.user._id });
+            if (!library) {
+                return res.status(404).json({ message: 'Library does not exist' });
+            }
+
+            const index = post.likes.map((item) => item.user).indexOf(req.user._id);
+            if (index !== -1) {
+                post.likes.splice(index, 1);
+            }
+
+            const indexLib = library.likedPosts.map((item) => item.post).indexOf(req.body.post);
+            if (indexLib !== -1) {
+                library.likedPosts.splice(indexLib, 1);
+            }
+
+            await post.populate({ path: 'owner', select: '_id image type name' });
+
+            await post.save();
+
+            await library.save();
+
+            return res.status(200).send({ data: post, message: 'Unlike post successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async checkLikedPost(req, res, next) {
+        try {
+            let saved = false;
+            if (req.query.postId) {
+                const post = await Post.findOne({ _id: req.query.postId });
+                if (!post) {
+                    return res.status(404).send({ message: 'Post not found' });
+                }
+
+                if (post.likes.find((item) => item.user === req.user._id)) {
+                    saved = true;
+                }
+            } else {
+                return res.status(404).send({ message: 'Post not found' });
+            }
+
+            return res.status(200).send({ data: saved, message: 'Check liked post' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
+    async getLikedPost(req, res, next) {
+        try {
+            const posts = await PostService.getLikedPostsByUserId(req.user._id);
+
+            return res.status(200).json({ data: posts, message: 'Get liked posts successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
         }
     }
 }
