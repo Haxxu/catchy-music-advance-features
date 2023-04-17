@@ -61,7 +61,7 @@ class PostService {
         ]);
         const posts = await Post.populate(result, {
             path: 'owner',
-            select: '_id name, image, type',
+            select: '_id name image type',
         });
 
         return posts;
@@ -86,8 +86,8 @@ class PostService {
         return orderedPosts;
     }
 
-    static async getPostsByUserId(userId) {
-        const posts = await Post.find({ owner: userId })
+    static async getPostsByUserId(userId, condition) {
+        const posts = await Post.find({ owner: userId, ...condition })
             .sort({ createdAt: -1 })
             .populate({ path: 'owner', select: '_id type image name' });
         return posts;
@@ -105,7 +105,7 @@ class PostService {
         ]);
         const posts = await Post.populate(result, {
             path: 'owner',
-            select: '_id name, image, type',
+            select: '_id name image type',
         });
 
         return posts;

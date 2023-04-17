@@ -11,6 +11,9 @@ router.patch('/:id', userAuth, postController.updatePostById);
 // [DELETE] /api/posts/:id => delete post by id
 router.delete('/:id', userAuth, postController.deletePostById);
 
+// [GET] /api/posts/:id => get post by id
+router.get('/:id', userAuth, postController.getPostById);
+
 // [POST] /api/posts => create post
 router.post('/', userAuth, postController.createPost);
 

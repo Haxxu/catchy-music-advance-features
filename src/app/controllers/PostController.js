@@ -4,6 +4,23 @@ const { User } = require('../models/User');
 const PostService = require('../services/PostService');
 
 class PostController {
+    async getPostById(req, res, next) {
+        try {
+            const post = await Post.findOne({ _id: req.params.id }).populate({
+                path: 'owner',
+                select: '_id image name type',
+            });
+            if (!post) {
+                return res.status(404).json({ message: 'Post does not exist' });
+            }
+
+            return res.status(200).json({ data: post, message: 'Get post successfully' });
+        } catch (error) {
+            console.log(error);
+            return next(new ApiError());
+        }
+    }
+
     async createPost(req, res, next) {
         try {
             const { error } = validatePost(req.body);
@@ -93,10 +110,26 @@ class PostController {
         try {
             const user = await User.findOne({ _id: req.params.id });
             if (!user) {
-                return res.status(404).json({ message: 'Post does not exists' });
+                return res.status(404).json({ message: 'User does not exists' });
             }
 
-            const posts = await PostService.getPostsByUserId(user._id);
+            let searchCondition = {};
+            if (req.query.search && req.query.search.trim() !== '') {
+                let search = req.query.search.trim();
+
+                searchCondition = {
+                    $or: [
+                        {
+                            title: { $regex: search, $options: 'i' },
+                        },
+                        {
+                            description: { $regex: search, $options: 'i' },
+                        },
+                    ],
+                };
+            }
+
+            const posts = await PostService.getPostsByUserId(user._id, searchCondition);
 
             return res.status(200).json({ data: posts, message: 'Get user posts successfully' });
         } catch (error) {

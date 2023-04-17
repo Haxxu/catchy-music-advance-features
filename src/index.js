@@ -17,7 +17,7 @@ const { SocketServer } = require('./config/socket');
 database.connect();
 
 app.use(cors());
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
 
 // Socket.io

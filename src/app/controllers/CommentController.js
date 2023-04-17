@@ -4,6 +4,7 @@ const { validateComment, validateReplyComment, Comment } = require('../models/Co
 const CommentService = require('../services/CommentService');
 const TrackService = require('../services/TrackService');
 const UserService = require('../services/UserService');
+const { Post } = require('../models/Post');
 
 class CommentController {
     async createComment(req, res, next) {
@@ -17,8 +18,10 @@ class CommentController {
 
             let context;
 
-            if (contextType == 'episode') {
+            if (contextType === 'episode') {
                 context = await TrackService.findOne({ _id: contextId, type: 'episode' });
+            } else if (contextType === 'post') {
+                context = await Post.findOne({ _id: contextId });
             } else {
                 context = await TrackService.findOne({ _id: contextId, type: 'song' });
             }
@@ -58,8 +61,10 @@ class CommentController {
 
             let context;
 
-            if (contextType == 'episode') {
+            if (contextType === 'episode') {
                 context = await TrackService.findOne({ _id: contextId, type: 'episode' });
+            } else if (contextType === 'post') {
+                context = await Post.findOne({ _id: contextId });
             } else {
                 context = await TrackService.findOne({ _id: contextId, type: 'song' });
             }
