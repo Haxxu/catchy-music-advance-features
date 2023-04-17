@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import classNames from 'classnames/bind';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import styles from './styles.module.scss';
-import { Link } from 'react-router-dom';
 import CommentMenu from '~/components/comment/CommentMenu';
 import Like from '~/components/Like';
 import { getTimeGap } from '~/utils/Format/timeFormat';
 import Input from '../Input';
 import { useAuth } from '~/hooks';
 import { replyComment, updateComment, deleteComment } from '~/api/comment';
-import { useDispatch } from 'react-redux';
 
 const cx = classNames.bind(styles);
 
@@ -65,6 +66,9 @@ const CommentList = ({ children, comment }) => {
                             >
                                 {comment.owner.name}
                             </Link>
+                            {(comment.owner.type === 'podcaster' || comment.owner.type === 'artist') && (
+                                <VerifiedIcon sx={{ width: 20, height: 20 }} color='primary' />
+                            )}
                             &nbsp;
                             {comment.replyUser && (
                                 <>
@@ -77,6 +81,10 @@ const CommentList = ({ children, comment }) => {
                                     >
                                         {comment.replyUser?.name}
                                     </Link>
+                                    {(comment.replyUser.type === 'podcaster' ||
+                                        comment.replyUser.type === 'artist') && (
+                                        <VerifiedIcon sx={{ width: 20, height: 20 }} color='primary' />
+                                    )}
                                 </>
                             )}
                             &nbsp;

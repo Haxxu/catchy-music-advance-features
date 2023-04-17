@@ -8,6 +8,7 @@ const routes = {
 
     // private routes
     home: '/',
+    posts: '/posts',
     search: '/search',
     library: '/library/*',
     library_home: '/library/playlists',
@@ -18,6 +19,7 @@ const routes = {
     library_artists: 'artists',
     library_podcasters: 'podcasters',
     library_podcasts: 'podcasts',
+    library_posts: 'posts',
     likedTracks: '/library/tracks',
     likedEpisodes: '/library/episodes',
     playlist: '/playlist/:id',
@@ -34,6 +36,14 @@ const routes = {
     track: '/track/:id/album/:albumId',
     episode: '/episode/:id/podcast/:podcastId',
     genre: '/genre/:id',
+
+    // Manage posts
+    managePosts: '/manage-posts/',
+    managePosts_posts: '/manage-posts/posts',
+    managePosts_newPost: '/manage-posts/posts/new-post',
+    managePosts_specifiedPost: '/manage-posts/posts/:id/*',
+    managePosts_specifiedPost_nested_edit: '',
+    managePosts_specifiedPost_nested_comments: 'comments',
 
     // admin routes
     admin_dashboard: '/admin-dashboard/home',

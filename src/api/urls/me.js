@@ -123,3 +123,15 @@ export const savePodcastToLibraryUrl = baseApiUrl + '/me/podcasts';
 export const likeCommentUrl = () => `${baseApiUrl}/me/comments`;
 
 export const unlikeCommentUrl = () => `${baseApiUrl}/me/comments`;
+
+// [PUT]
+export const likePostUrl = () => `${baseApiUrl}/me/posts`;
+
+// [DELETE]
+export const unlikePostUrl = () => `${baseApiUrl}/me/posts`;
+
+// [DELETE]
+export const deletePostByIdUrl = (postId) => `${baseApiUrl}/posts/${postId}`;
+
+// [GET]
+export const getLikedPostsUrl = () => `${baseApiUrl}/me/posts`;

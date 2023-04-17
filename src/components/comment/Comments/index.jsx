@@ -42,7 +42,7 @@ const Comments = ({ contextId, contextType }) => {
         // if (comments.length === 0) return;
         setShowComments(comments);
         // console.log(comments);
-    }, [comments, contextId, contextType, commentState, comments.likes]);
+    }, [comments, contextId, contextType, commentState]);
 
     useEffect(() => {
         fetchComments(contextId, contextType);

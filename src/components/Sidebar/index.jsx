@@ -8,6 +8,8 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import AddCardIcon from '@mui/icons-material/AddCard';
+import FeedIcon from '@mui/icons-material/Feed';
 
 import { routes } from '~/config';
 import styles from './styles.scoped.scss';
@@ -88,6 +90,10 @@ const Sidebar = () => {
                     <HomeIcon />
                     <span>{t('Home')}</span>
                 </NavLink>
+                <NavLink className={({ isActive }) => cx('link', { active: isActive })} end to={routes.posts}>
+                    <FeedIcon />
+                    <span>{t('Posts')}</span>
+                </NavLink>
                 <NavLink className={({ isActive }) => cx('link', { active: isActive })} to={routes.search}>
                     <SearchIcon />
                     <span>{t('Search')}</span>
@@ -110,6 +116,10 @@ const Sidebar = () => {
                     <AddBoxIcon />
                     <span>{t('Create playlist')}</span>
                 </div>
+                <NavLink className={({ isActive }) => cx('link', { active: isActive })} to={routes.managePosts}>
+                    <AddCardIcon />
+                    <span>{t('Manage posts')}</span>
+                </NavLink>
                 <NavLink className={({ isActive }) => cx('link', { active: isActive })} to={routes.likedTracks}>
                     <FavoriteIcon />
                     <span>{t('Liked tracks')}</span>

@@ -11,6 +11,7 @@ import { audioPlayerReducer } from './audioPlayerSlice';
 import { updateStateReducer } from './updateStateSlice';
 import { commentReducer } from './commentSlice';
 import { socketReducer } from './socketSlice';
+import { postReducer } from './postSlice';
 
 const reducers = combineReducers({
     auth: authReducer,
@@ -20,6 +21,7 @@ const reducers = combineReducers({
     updateState: updateStateReducer,
     comments: commentReducer,
     socket: socketReducer,
+    post: postReducer,
 });
 
 const persistConfig = {

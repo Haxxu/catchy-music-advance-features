@@ -1,0 +1,119 @@
+.post-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    width: 550px;
+
+    .post-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .left {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+            h4 {
+                margin: 0;
+                font-size: 1.5rem;
+                margin-right: 5px;
+            }
+
+            .time-gap {
+                display: block;
+                margin-left: 20px;
+                font-size: 1.4rem;
+            }
+        }
+
+        .right {
+            padding: 10px;
+        }
+    }
+
+    .post-card-image {
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .post-card-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        // padding: 5px;
+    }
+
+    .post-card-info {
+        padding: 0 10px;
+        font-size: 1.2rem;
+    }
+
+    .post-card-description {
+        padding: 10px;
+
+        h5 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin: 5px 0 0;
+            font-size: 1rem;
+        }
+    }
+}
+.comment-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    width: 800px;
+    max-width: 900px;
+    max-height: 90vh;
+    min-height: 40vh;
+    padding: 20px;
+    border: 2px solid #000;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 24;
+    // padding: 20px 15px 20px;
+    padding: 20px 15px;
+    // padding: 15px;
+    overflow-y: scroll;
+    z-index: 100;
+
+    &::-webkit-scrollbar-track {
+        border: 1px solid var(--text-color);
+        // background-color: var(--background-color);
+    }
+
+    &::-webkit-scrollbar {
+        width: 10px;
+        // background-color: var(--background-color);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--text-secondary);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        // position: fixed;
+        // top: 0;
+        // left: 0;
+        // right: 0;
+        // padding: 10px 20px;
+    }
+}

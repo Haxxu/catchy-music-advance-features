@@ -38,10 +38,11 @@ import {
 import { toast } from 'react-toastify';
 import { useAuth } from '~/hooks';
 import { likeComment, unlikeComment } from '~/api/comment';
+import { likePost, unlikePost } from '~/api/post';
 
 const cx = classNames.bind(styles);
 
-const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId, comment }) => {
+const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, podcastId, comment, post }) => {
     const [liked, setLiked] = useState(false);
     const { userId } = useAuth();
 
@@ -84,6 +85,8 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     toast.success(data.message);
                 } else if (type === 'comment') {
                     await unlikeComment(dispatch, comment);
+                } else if (type === 'post') {
+                    await unlikePost(dispatch, post);
                 } else {
                     const { data } = await axiosInstance.delete(removePlaylistFromLibraryUrl, {
                         data: { playlist: playlistId },
@@ -121,6 +124,8 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                     toast.success(data.message);
                 } else if (type === 'comment') {
                     await likeComment(dispatch, comment);
+                } else if (type === 'post') {
+                    await likePost(dispatch, post);
                 } else {
                     // playlist
                     const { data } = await axiosInstance.put(savePlaylistToLibraryUrl, { playlist: playlistId });
@@ -155,6 +160,12 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
                 } else {
                     setLiked(false);
                 }
+            } else if (type === 'post') {
+                if (post.likes.map((item) => item.user).includes(userId)) {
+                    setLiked(true);
+                } else {
+                    setLiked(false);
+                }
             } else {
                 // playlist
                 const { data } = await axiosInstance.get(checkSavedPlaylistUrl, { params: { playlistId } });
@@ -174,20 +185,29 @@ const Like = ({ type = 'track', size = 'normal', trackId, albumId, playlistId, p
         likeEpisodeState,
         playlistInSidebarState,
         comment,
+        post,
     ]);
 
     return (
         <IconButton className={cx('like-btn')} onClick={handleLike} disableRipple>
             {liked ? (
                 type === 'episode' ? (
-                    <CheckCircleIcon className={cx('like-filled', { large: size === 'large' })} />
+                    <CheckCircleIcon
+                        className={cx('like-filled', { large: size === 'large', medium: size === 'medium' })}
+                    />
                 ) : (
-                    <FavoriteIcon className={cx('like-filled', { large: size === 'large' })} />
+                    <FavoriteIcon
+                        className={cx('like-filled', { large: size === 'large', medium: size === 'medium' })}
+                    />
                 )
             ) : type === 'episode' ? (
-                <AddCircleOutlineIcon className={cx('like-outlined', { large: size === 'large' })} />
+                <AddCircleOutlineIcon
+                    className={cx('like-outlined', { large: size === 'large', medium: size === 'medium' })}
+                />
             ) : (
-                <FavoriteBorderIcon className={cx('like-outlined', { large: size === 'large' })} />
+                <FavoriteBorderIcon
+                    className={cx('like-outlined', { large: size === 'large', medium: size === 'medium' })}
+                />
             )}
         </IconButton>
     );

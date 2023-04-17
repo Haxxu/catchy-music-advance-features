@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import { NavLink, Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import styles from './styles.scoped.scss';
 import { routes } from '~/config';
@@ -9,7 +10,7 @@ import SavedAlbums from '~/pages/SavedAlbums';
 import SavedPodcasts from '~/pages/SavedPodcasts';
 import FollowingArtists from '~/pages/FollowingArtists';
 import FollowingPodcasters from '~/pages/FollowingPodcasters';
-import { useTranslation } from 'react-i18next';
+import LikedPosts from '~/pages/post/LikedPosts';
 
 const cx = classNames.bind(styles);
 
@@ -34,6 +35,9 @@ const Library = () => {
                 <NavLink className={cx('subnav-item')} to={routes.library_podcasters}>
                     {t('Podcasters')}
                 </NavLink>
+                <NavLink className={cx('subnav-item')} to={routes.library_posts}>
+                    {t('Posts')}
+                </NavLink>
             </div>
             <div className={cx('main')}>
                 <Routes>
@@ -42,6 +46,7 @@ const Library = () => {
                     <Route path={routes.library_podcasts} element={<SavedPodcasts />} />
                     <Route path={routes.library_artists} element={<FollowingArtists />} />
                     <Route path={routes.library_podcasters} element={<FollowingPodcasters />} />
+                    <Route path={routes.posts} element={<LikedPosts />} />
                 </Routes>
             </div>
         </div>

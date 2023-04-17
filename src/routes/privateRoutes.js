@@ -21,6 +21,9 @@ import User from '~/pages/User';
 import Genre from '~/pages/Genre';
 import Episode from '~/pages/Episode';
 import Comments from '~/pages/Comments';
+import ManagePosts from '~/pages/post/ManagePosts';
+import SpecifiedPost from '~/pages/post/SpecifiedPost';
+import Posts from '~/pages/post/Posts';
 
 const privateRoutes = [
     // Home
@@ -153,6 +156,27 @@ const privateRoutes = [
     {
         path: routes.comments,
         component: Comments,
+        layout: MainLayout,
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
+    },
+    // Post
+    {
+        path: routes.posts,
+        component: Posts,
+        layout: MainLayout,
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
+    },
+    // Manage posts
+    {
+        path: routes.managePosts,
+        component: ManagePosts,
+        layout: MainLayout,
+        roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
+    },
+    // Specified posts
+    {
+        path: routes.managePosts_specifiedPost,
+        component: SpecifiedPost,
         layout: MainLayout,
         roles: [roles.admin, roles.artist, roles.user, roles.podcaster],
     },
