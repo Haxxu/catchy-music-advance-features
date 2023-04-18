@@ -13,6 +13,7 @@ import { getPodcastsInfoUrl } from '~/api/urls/podcastsUrl';
 import { getPlaylistsInfoUrl } from '~/api/urls/playlistsUrl';
 import { nFormatter } from '~/utils/Format';
 import styles from './styles.scoped.scss';
+import { getPostsInfoUrl } from '~/api/urls/postUrl';
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +27,7 @@ const Dashboard = () => {
     const [albumsInfo, setAlbumsInfo] = useState(null);
     const [playlistsInfo, setPlaylistsInfo] = useState(null);
     const [podcastsInfo, setPodcastsInfo] = useState(null);
+    const [postsInfo, setPostsInfo] = useState(null);
 
     const { t } = useTranslation();
 
@@ -66,6 +68,10 @@ const Dashboard = () => {
             const { data: playlists } = await axiosInstance(getPlaylistsInfoUrl);
             setPlaylistsInfo(playlists.data);
         };
+        const fetchDataPosts = async () => {
+            const res = await axiosInstance.get(getPostsInfoUrl());
+            setPostsInfo(res.data.data);
+        };
 
         fetchDataUsers().catch(console.error);
         fetchDataArtists().catch(console.error);
@@ -76,6 +82,7 @@ const Dashboard = () => {
         fetchDataAlbums().catch(console.error);
         fetchDataPodcasts().catch(console.error);
         fetchDataPlaylists().catch(console.error);
+        fetchDataPosts().catch(console.error);
     }, []);
 
     return (
@@ -327,6 +334,36 @@ const Dashboard = () => {
                                     <span className={cx('number')}>
                                         {nFormatter(playlistsInfo.newPlaylistsLastMonth)}
                                     </span>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <CircularProgress color='primary' />
+                    )}
+                </Grid>
+
+                <Grid item xs={12} md={6} xl={4}>
+                    {postsInfo ? (
+                        <div className={cx('info')}>
+                            <div className={cx('left')}>
+                                <div className={cx('title')}>{t('Posts')}</div>
+                                <div className={cx('new-today')}>
+                                    <span className={cx('number')}>{nFormatter(postsInfo.newPostsToday)}</span>
+                                </div>
+                                <div className={cx('bottom-title')}>{t('New Posts today')}</div>
+                            </div>
+                            <div className={cx('right')}>
+                                <div className={cx('detail-info')}>
+                                    {t('Total Posts')}:{' '}
+                                    <span className={cx('number')}>{nFormatter(postsInfo.totalPosts)}</span>
+                                </div>
+                                <div className={cx('detail-info')}>
+                                    {t('This month')}:{' '}
+                                    <span className={cx('number')}>{nFormatter(postsInfo.newPostsThisMonth)}</span>
+                                </div>
+                                <div className={cx('detail-info')}>
+                                    {t('This month')}:{' '}
+                                    <span className={cx('number')}>{nFormatter(postsInfo.newPostsLastMonth)}</span>
                                 </div>
                             </div>
                         </div>

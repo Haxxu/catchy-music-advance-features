@@ -9,6 +9,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import RadioIcon from '@mui/icons-material/Radio';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 
 const adminSidebarConfig = [
     {
@@ -55,6 +56,11 @@ const adminSidebarConfig = [
         title: 'Genre',
         path: routes.admin_manageGenre,
         icon: <CategoryOutlinedIcon fontSize='large' />,
+    },
+    {
+        title: 'Post',
+        path: routes.admin_managePost,
+        icon: <DynamicFeedIcon fontSize='large' />,
     },
 ];
 

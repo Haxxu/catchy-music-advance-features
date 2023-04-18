@@ -57,6 +57,7 @@ const routes = {
     admin_managePlaylist: '/admin-dashboard/playlists',
     admin_manageGenre: '/admin-dashboard/genres',
     admin_manageGenre_genreForm: '/admin-dashboard/genres/:id',
+    admin_managePost: '/admin-dashboard/posts',
 
     // artist routes
     artist_dashboard: '/artist-dashboard/home',

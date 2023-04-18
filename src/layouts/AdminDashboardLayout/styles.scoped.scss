@@ -12,6 +12,26 @@ $navbar-height: 8rem;
     .sidebar {
         width: 25rem;
         border-right: 0.1rem dashed var(--text-primary);
+
+        overflow-y: scroll;
+
+        &::-webkit-scrollbar-track {
+            border: 1px solid var(--text-color);
+            // background-color: var(--background-color);
+        }
+
+        &::-webkit-scrollbar {
+            width: 2px;
+            // background-color: var(--background-color);
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--text-secondary);
+        }
+
+        // &::-webkit-scrollbar-thumb:hover {
+        //     // background-color: var(--text-primary);
+        // }
     }
 
     .main {

@@ -13,6 +13,7 @@ import ManagePlaylist from '~/pages/admindashboard/ManagePlaylist';
 import ManageGenre from '~/pages/admindashboard/ManageGenre';
 import GenreForm from '~/components/Forms/GenreForm';
 import Profile from '~/pages/Profile';
+import ManagePosts from '~/pages/admindashboard/ManagePosts';
 
 const adminRoutes = [
     {
@@ -79,6 +80,12 @@ const adminRoutes = [
     {
         path: routes.admin_manageGenre_genreForm,
         component: GenreForm,
+        layout: AdminDashboardLayout,
+        roles: [roles.admin],
+    },
+    {
+        path: routes.admin_managePost,
+        component: ManagePosts,
         layout: AdminDashboardLayout,
         roles: [roles.admin],
     },

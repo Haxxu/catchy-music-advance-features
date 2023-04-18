@@ -17,3 +17,6 @@ export const createPostUrl = () => `${baseApiUrl}/posts`;
 
 // [GET] get post by tags [following, random, ...]
 export const getPostsByTagsUrl = () => `${baseApiUrl}/posts`;
+
+// [GET]
+export const getPostsInfoUrl = () => baseApiUrl + '/posts/info';
