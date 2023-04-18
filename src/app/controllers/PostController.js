@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const ApiError = require('../../utils/ApiError');
 const { validatePost, Post } = require('../models/Post');
 const { User } = require('../models/User');
@@ -72,7 +74,7 @@ class PostController {
                 return res.status(404).json({ message: 'Post does not exist' });
             }
 
-            if (req.user?._id !== post.owner.toString()) {
+            if (req.user?._id !== post.owner.toString() && req.user?.type !== 'admin') {
                 return res.status(403).json({ message: "User don't have permission to perform this action" });
             }
 
@@ -91,13 +93,44 @@ class PostController {
 
             const data = {};
 
-            if (tags.includes('following')) {
-                data.following = await PostService.getPostsByFollowing(req.user._id, limit);
+            if (tags) {
+                if (tags.includes('following')) {
+                    data.following = await PostService.getPostsByFollowing(req.user._id, limit);
+                }
+
+                if (tags.includes('random')) {
+                    data.random = await PostService.getPostsByRandom(limit);
+                }
             }
 
-            if (tags.includes('random')) {
-                data.random = await PostService.getPostsByRandom(limit);
+            let searchCondition = {};
+            let search = req.query.search.trim();
+
+            if (search !== '') {
+                const users = await User.find({
+                    $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
+                }).select('_id');
+
+                const userIds = users.map((user) => user._id.toString());
+
+                searchCondition = {
+                    $or: [
+                        {
+                            owner: { $in: userIds },
+                        },
+                        {
+                            title: { $regex: search, $options: 'i' },
+                        },
+                        {
+                            description: { $regex: search, $options: 'i' },
+                        },
+                    ],
+                };
             }
+
+            data.posts = await PostService.getPosts(searchCondition);
+
+            // console.log(data.posts);
 
             return res.status(200).json({ data, message: 'Get posts by tags successfully' });
         } catch (error) {
@@ -135,6 +168,44 @@ class PostController {
         } catch (error) {
             console.log(error);
             return next(new ApiError());
+        }
+    }
+
+    // get posts info for admin
+    async getPostsInfo(req, res, next) {
+        try {
+            const totalPosts = await Post.count('_id');
+
+            const today = moment().startOf('day');
+
+            const newPostsToday = await Post.find({
+                createdAt: {
+                    $gte: today.toDate(),
+                    $lte: moment(today).endOf('day').toDate(),
+                },
+            }).count('_id');
+
+            const newPostsThisMonth = await Post.find({
+                createdAt: {
+                    $gte: moment(today).startOf('month').toDate(),
+                    $lte: moment(today).endOf('month').toDate(),
+                },
+            }).count('_id');
+
+            const newPostsLastMonth = await Post.find({
+                createdAt: {
+                    $gte: moment(today).subtract(1, 'months').startOf('month').toDate(),
+                    $lte: moment(today).subtract(1, 'months').endOf('month').toDate(),
+                },
+            }).count('_id');
+
+            return res.status(200).send({
+                data: { totalPosts, newPostsToday, newPostsThisMonth, newPostsLastMonth },
+                message: 'Get posts info successfuly',
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ message: 'Something went wrong' });
         }
     }
 }

@@ -5,6 +5,9 @@ const adminAuth = require('../app/middlewares/adminAuth');
 const validateObjectId = require('../app/middlewares/validateObjectId');
 const postController = require('../app/controllers/PostController');
 
+// [GET] /api/posts/info => get post info
+router.get('/info', userAuth, postController.getPostsInfo);
+
 // [PATCH] /api/posts/:id => update post by id
 router.patch('/:id', userAuth, postController.updatePostById);
 

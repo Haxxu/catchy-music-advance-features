@@ -93,6 +93,13 @@ class PostService {
         return posts;
     }
 
+    static async getPosts(condition) {
+        const posts = await Post.find({ ...condition })
+            .sort({ createdAt: -1 })
+            .populate({ path: 'owner', select: '_id type image name email' });
+        return posts;
+    }
+
     static async getPostsByRandom(limit) {
         const result = await Post.aggregate([
             {
