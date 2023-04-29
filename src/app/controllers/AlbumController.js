@@ -6,6 +6,7 @@ const { Library } = require('../models/Library');
 const { Playlist } = require('../models/Playlist');
 const { Track } = require('../models/Track');
 const { User } = require('../models/User');
+const NotificationService = require('../services/NotificationService');
 
 class AlbumController {
     // get album by id (get released album or album artist own)
@@ -372,6 +373,33 @@ class AlbumController {
                 message = 'Released album successfully';
             }
             await album.updateOne({ isReleased: !flag, releaseDate: Date.now() });
+
+            // New Notification
+            if (flag === false && req.user._id === album.owner.toString()) {
+                const payload = {
+                    owner: req.user._id,
+                };
+
+                if (album.tracks[0]) {
+                    payload.trackType = 'song';
+                    payload.trackContextId = album._id.toString();
+                    payload.type = 'new-album';
+                    payload.context_uri = `album:${album._id.toString()}:${
+                        album.tracks[0].track
+                    }:${album._id.toString()}:album`;
+                    payload.addedAt = Date.now();
+                    payload.position = 0;
+                    payload.description = album.name;
+
+                    const owner = await User.findOne({ _id: album.owner.toString() });
+
+                    payload.artists = [{ id: owner._id, name: owner.name, url: `/artist/${owner._id}` }];
+                }
+                const new_notification = await NotificationService.createNotifcation(payload);
+
+                const { io } = require('../../index');
+                io.to(`${req.user._id}`).emit('createNotification', new_notification);
+            }
 
             return res.status(200).send({ message: message });
         } catch (err) {

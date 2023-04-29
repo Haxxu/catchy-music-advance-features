@@ -104,9 +104,9 @@ class PostController {
             }
 
             let searchCondition = {};
-            let search = req.query.search.trim();
 
-            if (search !== '') {
+            if (req.query.search && req.query.search.trim() !== '') {
+                let search = req.query.search.trim();
                 const users = await User.find({
                     $or: [{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
                 }).select('_id');

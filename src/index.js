@@ -5,6 +5,13 @@ const cors = require('cors');
 const morgan = require('morgan');
 const http = require('http');
 const { Server } = require('socket.io');
+const paypal = require('paypal-rest-sdk');
+
+paypal.configure({
+    mode: process.env.PAYPAL_MODE,
+    client_id: process.env.PAYPAL_CLIENT_ID,
+    client_secret: process.env.PAYPAL_CLIENT_SECRET,
+});
 
 const app = express();
 const port = process.env.PORT || 8080;
