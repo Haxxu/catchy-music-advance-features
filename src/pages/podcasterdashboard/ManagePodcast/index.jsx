@@ -43,7 +43,7 @@ const ManagePodcast = () => {
                 params: { search: searchPodcast, context: 'detail' },
             });
             setRows(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         };
 
         fetchData().catch(console.error);
