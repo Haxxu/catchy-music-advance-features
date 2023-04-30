@@ -380,25 +380,39 @@ class AlbumController {
                     owner: req.user._id,
                 };
 
+                payload.contextObject = {
+                    name: album.name,
+                    _id: album._id.toString(),
+                    image: album.image,
+                    type: 'album',
+                    url: `/album/${album._id.toString()}`,
+                };
+
                 if (album.tracks[0]) {
-                    payload.trackType = 'song';
-                    payload.trackContextId = album._id.toString();
-                    payload.type = 'new-album';
-                    payload.context_uri = `album:${album._id.toString()}:${
-                        album.tracks[0].track
-                    }:${album._id.toString()}:album`;
-                    payload.addedAt = Date.now();
-                    payload.position = 0;
-                    payload.description = album.name;
-
-                    const owner = await User.findOne({ _id: album.owner.toString() });
-
-                    payload.artists = [{ id: owner._id, name: owner.name, url: `/artist/${owner._id}` }];
+                    payload.playTrack = {
+                        trackId: album.tracks[0].track,
+                        trackType: 'song',
+                        trackContextId: album._id.toString(),
+                        context_uri: `album:${album._id.toString()}:${
+                            album.tracks[0].track
+                        }:${album._id.toString()}:album`,
+                        position: 0,
+                    };
                 }
+
+                payload.description = 'New album release';
+                payload.addedAt = Date.now();
+                payload.type = 'new-album';
+
+                const owner = await User.findOne({ _id: album.owner.toString() });
+
+                payload.artists = [{ id: owner._id, name: owner.name, url: `/artist/${owner._id}` }];
+
                 const new_notification = await NotificationService.createNotifcation(payload);
 
                 const { io } = require('../../index');
-                io.to(`${req.user._id}`).emit('createNotification', new_notification);
+                // console.log(req.user._id);
+                io.to(`${req.user._id}`).emit('newNotification', new_notification);
             }
 
             return res.status(200).send({ message: message });

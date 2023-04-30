@@ -8,6 +8,8 @@ const validateObjectId = require('../app/middlewares/validateObjectId');
 
 // [GET] /api/me => get current user profile
 router.get('/', userAuth, meController.getCurrentUserProfile);
+// [GET] /api/me/notifications => get current user notifications
+router.get('/notifications', userAuth, meController.getCurrentUserNotifications);
 // [GET] /api/me/following/contains => check following user
 router.get('/following/contains', userAuth, meController.checkFollowingUser);
 // [GET] /api/me/following => get following user

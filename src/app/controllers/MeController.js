@@ -11,6 +11,7 @@ const { Comment } = require('../models/Comment');
 const { Post } = require('../models/Post');
 const ApiError = require('../../utils/ApiError');
 const PostService = require('../services/PostService');
+const NotificationService = require('../services/NotificationService');
 
 class MeController {
     // Get current user profile
@@ -19,6 +20,18 @@ class MeController {
             const user = await User.findOne({ _id: req.user._id }).select('-password -__v');
 
             return res.status(200).send({ data: user, message: 'Get user profile successfully' });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({ message: 'Something went wrong' });
+        }
+    }
+
+    // get current user notification
+    async getCurrentUserNotifications(req, res, next) {
+        try {
+            const notifications = await NotificationService.getNotificationsByUserId(req.user._id);
+
+            return res.status(200).send({ data: notifications, message: 'Get user notifications successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
@@ -162,7 +175,9 @@ class MeController {
             await library.save();
             await userFollowLibrary.save();
 
-            return res.status(200).send({ message: 'Follow user or artist successfully' });
+            const followUser = await User.findOne({ _id: req.body.user }).select('-password -__v');
+
+            return res.status(200).send({ data: followUser, message: 'Follow user or artist successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });
@@ -196,7 +211,9 @@ class MeController {
             await library.save();
             await userFollowLibrary.save();
 
-            return res.status(200).send({ message: 'Unfollow user or artist successfully' });
+            const followUser = await User.findOne({ _id: req.body.user }).select('-password -__v');
+
+            return res.status(200).send({ data: followUser, message: 'Unfollow user or artist successfully' });
         } catch (err) {
             console.log(err);
             return res.status(500).send({ message: 'Something went wrong' });

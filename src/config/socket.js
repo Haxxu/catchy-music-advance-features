@@ -3,6 +3,7 @@ function SocketServer(socket) {
 
     socket.on('joinRoom', (id) => {
         socket.join(id);
+        // console.log('join room: ', id);
         // console.log({ joinRoom: socket.adapter.rooms });
     });
 

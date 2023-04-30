@@ -8,6 +8,7 @@ const PodcastService = require('../services/PodcastService');
 const TrackService = require('../services/TrackService');
 const LibraryService = require('../services/LibraryService');
 const PlaylistService = require('../services/PlaylistService');
+const NotificationService = require('../services/NotificationService');
 
 class PodcastController {
     // get podcast by id (get released podcast or podcast podcaster own)
@@ -262,6 +263,42 @@ class PodcastController {
                 podcast = await podcastService.addEpisode(req.body.track);
             }
 
+            // New Notification
+            if (podcast.isReleased && req.user._id === podcast.owner.toString()) {
+                const payload = {
+                    owner: req.user._id,
+                };
+
+                payload.contextObject = {
+                    name: track.name,
+                    _id: track._id.toString(),
+                    image: track.image,
+                    type: 'episode',
+                    url: `/episode/${track._id.toString()}/podcast/${podcast._id.toString()}`,
+                };
+
+                payload.playTrack = {
+                    trackId: track._id.toString(),
+                    trackType: 'episode',
+                    trackContextId: podcast._id.toString(),
+                    context_uri: `podcast:${podcast._id.toString()}:${track._id.toString()}:${podcast._id.toString()}:podcast`,
+                    position: 0,
+                };
+
+                payload.description = 'New episode release';
+                payload.addedAt = Date.now();
+                payload.type = 'new-epoisode';
+
+                const owner = await User.findOne({ _id: podcast.owner.toString() });
+
+                payload.artists = [{ id: owner._id, name: owner.name, url: `/podcaster/${owner._id}` }];
+
+                const new_notification = await NotificationService.createNotifcation(payload);
+
+                const { io } = require('../../index');
+                io.to(`${podcast.owner.toString()}`).emit('newNotification', new_notification);
+            }
+
             return res.status(200).send({ data: podcast, message: 'Added to podcast' });
         } catch (err) {
             console.log(err);
@@ -320,6 +357,46 @@ class PodcastController {
                 message = 'Released podcast successfully';
             }
             await podcast.updateOne({ isReleased: !flag, releaseDate: Date.now() });
+
+            // New Notification
+            if (flag === false && req.user._id === podcast.owner.toString()) {
+                const payload = {
+                    owner: req.user._id,
+                };
+
+                payload.contextObject = {
+                    name: podcast.name,
+                    _id: podcast._id.toString(),
+                    image: podcast.image,
+                    type: 'podcast',
+                    url: `/podcast/${podcast._id.toString()}`,
+                };
+
+                if (podcast.episodes[0]) {
+                    payload.playTrack = {
+                        trackId: podcast.episodes[0].track,
+                        trackType: 'episode',
+                        trackContextId: podcast._id.toString(),
+                        context_uri: `podcast:${podcast._id.toString()}:${
+                            podcast.episodes[0].track
+                        }:${podcast._id.toString()}:podcast`,
+                        position: 0,
+                    };
+                }
+
+                payload.description = 'New podcast release';
+                payload.addedAt = Date.now();
+                payload.type = 'new-podcast';
+
+                const owner = await User.findOne({ _id: podcast.owner.toString() });
+
+                payload.artists = [{ id: owner._id, name: owner.name, url: `/podcasters/${owner._id}` }];
+
+                const new_notification = await NotificationService.createNotifcation(payload);
+
+                const { io } = require('../../index');
+                io.to(`${req.user._id}`).emit('newNotification', new_notification);
+            }
 
             return res.status(200).send({ message: message });
         } catch (err) {

@@ -5,13 +5,26 @@ const { Schema } = mongoose;
 const notificationSchema = new Schema(
     {
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        trackType: { type: String, default: 'song' },
-        trackContextId: { type: String, default: '' },
-        context_uri: { type: String, default: '' },
+        contextObject: {
+            _id: { type: String },
+            name: { type: String },
+            image: { type: String },
+            // album, podcast, episode
+            type: { type: String, default: 'album' },
+            url: { type: String },
+        },
+        playTrack: {
+            trackId: { type: String, default: '' },
+            trackContextId: { type: String, default: '' },
+            trackType: { type: String, default: 'song' },
+            context_uri: { type: String, default: '' },
+            position: { type: Number, default: 0 },
+            duration: { type: Number, default: 0 },
+        },
+        // new-album, new-podcast, new-episode
         type: { type: String, default: 'new-album' },
         addedAt: { type: Date, default: Date.now() },
         description: { type: String },
-        duration: { type: Number, default: 0 },
         artists: [
             {
                 name: { type: String },
