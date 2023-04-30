@@ -10,6 +10,7 @@ import ArtistDashboardLayout from './layouts/ArtistDashboardLayout';
 import RequireAuth from './components/RequireAuth';
 import { setSocketAction } from './redux/socketSlice';
 import SocketClient from '~/utils/SocketClient';
+import { fetchUserFollowing } from './api/user';
 
 function App() {
     const dispatch = useDispatch();
@@ -24,6 +25,14 @@ function App() {
         return () => {
             socket.disconnect();
         };
+    }, [dispatch]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await fetchUserFollowing(dispatch);
+        };
+
+        fetchData().catch(console.error);
     }, [dispatch]);
 
     return (

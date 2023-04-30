@@ -22,6 +22,7 @@ import axiosInstance from '~/api/axiosInstance';
 import styles from './styles.module.scss';
 import { getCurrentUserProfileUrl } from '~/api/urls/me';
 import { useTranslation } from 'react-i18next';
+import Notifications from '~/components/notification/Notifications';
 
 const cx = classNames.bind(styles);
 
@@ -110,6 +111,7 @@ const Navbar = () => {
             </div>
             <div className={cx('settings')}>
                 <DarkModeToggle />
+                <Notifications />
                 <div className={cx('profile')}>
                     <div className={cx('avatar')} onClick={toggleProfileMenu}>
                         <Avatar

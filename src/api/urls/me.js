@@ -135,3 +135,7 @@ export const deletePostByIdUrl = (postId) => `${baseApiUrl}/posts/${postId}`;
 
 // [GET]
 export const getLikedPostsUrl = () => `${baseApiUrl}/me/posts`;
+
+// [GET]
+
+export const getNotificationsUrl = () => `${baseApiUrl}/me/notifications`;

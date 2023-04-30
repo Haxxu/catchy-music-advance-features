@@ -10,6 +10,7 @@ import {
     updateCommentAction,
     updateReplyCommentAction,
 } from '~/redux/commentSlice';
+import { addNewNotifications } from '~/redux/notificationSlice';
 
 const SocketClient = () => {
     const { socket } = useSelector((state) => state.socket);
@@ -91,6 +92,18 @@ const SocketClient = () => {
 
         return () => {
             socket.off('likeComment');
+        };
+    }, [socket, dispatch]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('newNotification', (data) => {
+            dispatch(addNewNotifications(data));
+        });
+
+        return () => {
+            socket.off('newNotification');
         };
     }, [socket, dispatch]);
 

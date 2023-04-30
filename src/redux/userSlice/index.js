@@ -7,11 +7,42 @@ const userSlice = createSlice({
         getUserProgress: false,
         updateUserProgress: false,
         error: false,
+        following: [],
     },
-    reducers: {},
+    reducers: {
+        setFollowing: (state, action) => {
+            return {
+                ...state,
+                following: action.payload,
+            };
+        },
+
+        followUserAction: (state, action) => {
+            if (!state.following.find((item) => item._id === action.payload._id)) {
+                return {
+                    ...state,
+                    following: [action.payload, ...state.following],
+                };
+            }
+        },
+
+        unfollowUserAction: (state, action) => {
+            return {
+                ...state,
+                following: state.following.filter((item) => item._id !== action.payload._id),
+            };
+        },
+    },
 });
 
-export const { getUserStart, getUserSuccess, getUserFailure } = userSlice.actions;
+export const {
+    getUserStart,
+    getUserSuccess,
+    getUserFailure,
+    setFollowing,
+    followUserAction,
+    unfollowUserAction,
+} = userSlice.actions;
 
 export const userReducer = userSlice.reducer;
 

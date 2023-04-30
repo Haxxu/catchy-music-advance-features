@@ -3,6 +3,9 @@ import { toast } from 'react-toastify';
 
 // import { createUserUrl } from '~/api/urls/usersUrl';
 import { registerUrl } from '~/api/urls/authUrls';
+import axiosInstance from '../axiosInstance';
+import { getFollowingUsersUrl } from '../urls/me';
+import { setFollowing } from '~/redux/userSlice';
 
 export const createUser = async (payload) => {
     try {
@@ -17,4 +20,13 @@ export const createUser = async (payload) => {
         }
         return false;
     }
+};
+
+export const fetchUserFollowing = async (dispatch) => {
+    try {
+        const res = await axiosInstance.get(getFollowingUsersUrl);
+        if (res.status === 200) {
+            dispatch(setFollowing(res.data.data.all));
+        }
+    } catch (error) {}
 };

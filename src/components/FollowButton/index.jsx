@@ -9,6 +9,7 @@ import { followUserUrl, unfollowUserUrl, checkFollowingUserUrl } from '~/api/url
 import { updateUserPageState } from '~/redux/updateStateSlice';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { followUserAction, unfollowUserAction } from '~/redux/userSlice';
 
 // const cx = classNames.bind(styles);
 
@@ -22,17 +23,23 @@ const FollowButton = ({ userId }) => {
     const handleFollow = async () => {
         try {
             if (following) {
-                const { data } = await axiosInstance.delete(unfollowUserUrl, {
+                const res = await axiosInstance.delete(unfollowUserUrl, {
                     data: { user: userId },
                 });
-                setFollowing(data.data);
                 dispatch(updateUserPageState());
-                toast.success(data.message);
+                if (res.status === 200) {
+                    setFollowing(false);
+                    dispatch(unfollowUserAction(res.data.data));
+                }
+                toast.success(res.data.message);
             } else {
-                const { data } = await axiosInstance.put(followUserUrl, { user: userId });
-                setFollowing(data.data);
+                const res = await axiosInstance.put(followUserUrl, { user: userId });
                 dispatch(updateUserPageState());
-                toast.success(data.message);
+                if (res.status === 200) {
+                    setFollowing(true);
+                    dispatch(followUserAction(res.data.data));
+                }
+                toast.success(res.data.message);
             }
         } catch (err) {
             console.log(err);

@@ -12,6 +12,7 @@ import { updateStateReducer } from './updateStateSlice';
 import { commentReducer } from './commentSlice';
 import { socketReducer } from './socketSlice';
 import { postReducer } from './postSlice';
+import { notificationReducer } from './notificationSlice';
 
 const reducers = combineReducers({
     auth: authReducer,
@@ -22,6 +23,7 @@ const reducers = combineReducers({
     comments: commentReducer,
     socket: socketReducer,
     post: postReducer,
+    notification: notificationReducer,
 });
 
 const persistConfig = {
