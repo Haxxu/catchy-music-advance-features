@@ -177,7 +177,7 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                     sx={{ minWidth: '100px' }}
                     onClick={() =>
                         confirmAlert({
-                            title: t('Confirm to freeze this user'),
+                            title: t('Confirm to block this user'),
                             message: t('Are you sure to do this.'),
                             buttons: [
                                 {
@@ -191,7 +191,7 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                         })
                     }
                 >
-                    {t('Freeze')}
+                    {t('Block')}
                 </Button>
             ) : (
                 <Button
@@ -200,7 +200,7 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                     sx={{ minWidth: '100px' }}
                     onClick={() =>
                         confirmAlert({
-                            title: t('Confirm to unfreeze this user'),
+                            title: t('Confirm to unblock this user'),
                             message: t('Are you sure to do this.'),
                             buttons: [
                                 {
@@ -214,7 +214,7 @@ const UserActionsMenu = ({ handleUpdateData, row }) => {
                         })
                     }
                 >
-                    {t('Unfreeze')}
+                    {t('Unblock')}
                 </Button>
             )}
             <Modal

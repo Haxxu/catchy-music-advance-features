@@ -107,7 +107,7 @@ const ManageUser = () => {
                 else {
                     return (
                         <Chip
-                            label='Freezed'
+                            label='Blocked'
                             icon={<AcUnitIcon />}
                             sx={{
                                 fontSize: '1.2rem',

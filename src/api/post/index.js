@@ -8,12 +8,16 @@ export const getPosts = async (dispatch) => {
     try {
         const res = await axiosInstance.get(getPostsByTagsUrl(), {
             params: {
-                tags: ['following', 'random'],
+                tags: ['following', 'random', 'my-posts'],
                 limit: 10,
             },
         });
 
-        const posts = mergeAndShuffleArrays(res.data.data.following, res.data.data.random);
+        const posts = mergeSortAndRemoveDuplicates(
+            res.data.data.following,
+            res.data.data.random,
+            res.data.data.myPosts,
+        );
 
         if (res.status === 200) {
             dispatch(
@@ -89,16 +93,34 @@ export const deletePost = async (dispatch, post) => {
     }
 };
 
-function mergeAndShuffleArrays(arr1, arr2) {
-    // Merge the arrays
-    const mergedArr = arr1.concat(arr2);
+// function mergeAndShuffleArrays(arr1, arr2) {
+//     // Merge the arrays
+//     const mergedArr = arr1.concat(arr2);
 
-    // Shuffle the merged array
-    for (let i = mergedArr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [mergedArr[i], mergedArr[j]] = [mergedArr[j], mergedArr[i]];
-    }
+//     // Shuffle the merged array
+//     for (let i = mergedArr.length - 1; i > 0; i--) {
+//         const j = Math.floor(Math.random() * (i + 1));
+//         [mergedArr[i], mergedArr[j]] = [mergedArr[j], mergedArr[i]];
+//     }
 
-    // Return the shuffled merged array
-    return mergedArr;
+//     // Return the shuffled merged array
+//     return mergedArr;
+// }
+
+function mergeSortAndRemoveDuplicates(...arrays) {
+    // merge arrays
+    const merged = [].concat(...arrays);
+
+    // sort by createdAt in descending order
+    merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // remove duplicates by _id
+    const output = merged.reduce((acc, curr) => {
+        if (!acc.find((e) => e._id === curr._id)) {
+            acc.push(curr);
+        }
+        return acc;
+    }, []);
+
+    return output;
 }
