@@ -101,6 +101,10 @@ class PostController {
                 if (tags.includes('random')) {
                     data.random = await PostService.getPostsByRandom(limit);
                 }
+
+                if (tags.includes('my-posts')) {
+                    data.myPosts = await PostService.getPostsByUserId(req.user._id);
+                }
             }
 
             let searchCondition = {};
