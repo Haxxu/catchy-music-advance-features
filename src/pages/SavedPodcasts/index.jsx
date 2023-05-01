@@ -19,7 +19,7 @@ const SavedPodcasts = () => {
         const fetchSavedPodcasts = async () => {
             const { data } = await axiosInstance.get(getSavedPodcastsUrl);
             setSavedPodcasts(data.data);
-            console.log(data.data);
+            // console.log(data.data);
         };
 
         fetchSavedPodcasts().catch(console.error);
