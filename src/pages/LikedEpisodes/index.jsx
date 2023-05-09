@@ -81,7 +81,7 @@ const LikedEpisodes = () => {
                 </div>
                 <div className={cx('info')}>
                     <h2 className={cx('type')}>{t('PLAYLIST')}</h2>
-                    <span className={cx('name')}>{t('Liked Episodes')}</span>
+                    <span className={cx('name')}>{t('Saved Episodes')}</span>
                     {/* <div className='description'>
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam quis eos ipsam dicta veritatis
                         rem porro odit eligendi molestiae pariatur, blanditiis numquam adipisci voluptatibus velit quos
